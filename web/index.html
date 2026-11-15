@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>塑料件材料费计算器（免费网页版）— 上传 STEP 自动列出每个零件的体积、克重和材料费</title>
+<meta name="description" content="免费在线工具：上传 STEP/IGES 模型，自动识别每个零件、算出体积和克重，按材料单价算材料费。全部在浏览器本地计算，模型不上传服务器。">
+<meta name="keywords" content="STEP体积计算,塑料件材料费,克重计算,注塑成本,塑料零件报价,3D模型算重量">
+<style>
+  :root{
+    --ink:#08182A; --ink-2:#0B2237; --teal:#0A6BC4; --teal-bright:#5FD8F5;
+    --paper:#F5F9FE; --paper-2:#E9F1FA; --card:#FFFFFF;
+    --line:#DEE9F5; --line-2:#C8D8EA;
+    --text:#0C1B2A; --text-2:#33475B; --muted:#5A6E84;
+    --soft:#E6F2FC; --ok:#0E8A5F; --warn:#A35D00;
+    --r-xs:8px; --r-sm:12px; --r-md:16px; --r-lg:20px; --r-pill:999px;
+    --sh-1:0 1px 2px rgba(8,24,42,.05);
+    --sh-2:0 10px 30px -18px rgba(8,24,42,.22), 0 1px 2px rgba(8,24,42,.04);
+    --sh-3:0 24px 60px -32px rgba(8,24,42,.38);
+    --f-sans:"PingFang SC","HarmonyOS Sans SC","MiSans","Microsoft YaHei UI","Microsoft YaHei","Noto Sans SC","Segoe UI",system-ui,-apple-system,sans-serif;
+    --f-num:ui-monospace,"SF Mono","Cascadia Mono",Consolas,"Roboto Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--paper);color:var(--text);font-family:var(--f-sans);
+       font-size:15.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  a{color:var(--teal);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,28px)}
+
+  /* 头部 */
+  header{padding:28px 0 4px}
+  .brand{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .mark{width:22px;height:22px;border-radius:7px;background:var(--ink);position:relative;flex:none}
+  .mark::after{content:"";position:absolute;left:5px;right:5px;bottom:5px;height:2px;
+               border-radius:2px;background:var(--teal-bright)}
+  h1{font-size:clamp(21px,2.4vw,25px);line-height:1.3;margin:0;font-weight:700;letter-spacing:-.01em}
+  .tag{display:inline-block;background:var(--soft);color:#0A5AA8;border-radius:var(--r-pill);
+       padding:2px 10px;font-size:12px;font-weight:600;letter-spacing:.02em}
+  .sub{color:var(--muted);font-size:14.5px;line-height:1.72;margin:12px 0 0;max-width:800px;text-wrap:pretty}
+
+  /* 返回条：胶囊软底 */
+  .backbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:20px 0 20px;
+           padding:10px 18px;border:0;border-radius:var(--r-pill);background:var(--soft);
+           font-size:13px;color:#0A5AA8}
+  .backbar a{color:#0A5AA8;font-weight:600}
+  .backbar a:hover{text-decoration:underline}
+
+  /* 布局 */
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+  @media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+  /* 卡片 */
+  .card{background:var(--card);border:0;border-radius:var(--r-lg);box-shadow:var(--sh-2);
+        padding:22px;margin-bottom:18px;min-width:0}
+  .card h2{font-size:15px;margin:0 0 14px;color:var(--ink);font-weight:700;letter-spacing:.01em}
+
+  /* 拖放区 */
+  .drop{border:1.5px dashed var(--line-2);border-radius:var(--r-md);background:var(--paper);
+        padding:38px 20px;text-align:center;cursor:pointer;
+        transition:background .18s,border-color .18s}
+  .drop:hover,.drop.over{border-color:var(--teal);background:var(--soft)}
+  .drop .icon{font-size:34px;line-height:1;margin-bottom:12px}
+  .drop b{display:block;font-size:16px;margin-bottom:6px;color:var(--ink)}
+  .drop span{color:var(--muted);font-size:13px}
+  #file{display:none}
+  .hint{color:var(--muted);font-size:12.5px;margin-top:10px;line-height:1.65;text-wrap:pretty}
+  .status{font-size:13px;color:var(--muted);margin-top:14px;min-height:20px}
+  .status.err{color:var(--warn)}
+  .status.ok{color:var(--ok)}
+  .spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--soft);
+    border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;
+    vertical-align:-2px;margin-right:7px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* 3D 预览 */
+  .viewer{position:relative;border-radius:var(--r-md);border:1px solid var(--line);
+          background:linear-gradient(180deg,#FBFDFF,#EFF6FE);margin:0 0 14px;overflow:hidden}
+  #view3d{display:block;width:100%;height:320px;cursor:grab;touch-action:none}
+  #view3d:active{cursor:grabbing}
+  .viewer-hint{position:absolute;left:12px;bottom:10px;font-size:11.5px;color:var(--muted);
+    background:rgba(255,255,255,.88);padding:4px 11px;border-radius:var(--r-pill)}
+  .viewer-tools{position:absolute;right:10px;top:10px;display:flex;gap:8px;align-items:center}
+  .viewer-tools button{padding:5px 12px;font-size:12px;border-radius:var(--r-pill);
+    background:rgba(255,255,255,.92);box-shadow:var(--sh-1)}
+  @media (max-width:640px){#view3d{height:250px}}
+
+  /* 汇总四格 */
+  .summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:2px 0 16px}
+  .summary div{background:var(--paper);border-radius:var(--r-sm);padding:12px 14px}
+  .summary div b{display:block;font-family:var(--f-num);font-size:21px;line-height:1.2;
+    color:var(--ink);letter-spacing:-.01em}
+  .summary div span{display:block;margin-top:3px;color:var(--muted);font-size:11.5px}
+  @media (max-width:640px){.summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+  /* 表格 */
+  .tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:660px}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+  th{color:var(--muted);font-weight:600;font-size:12px;background:var(--paper-2);letter-spacing:.02em}
+  tbody tr:last-child td{border-bottom:none}
+  tr.row{cursor:pointer}
+  tr.row:hover td{background:#F2F8FE}
+  tr.row.sel td{background:var(--soft)}
+  tfoot td{font-weight:700;color:var(--ink);border-top:1px solid var(--line);
+    border-bottom:none;background:var(--paper)}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+
+  /* 表单控件 */
+  select,input{width:100%;padding:7px 10px;border:1px solid var(--line-2);border-radius:var(--r-xs);
+    background:var(--card);color:var(--text);font-size:13px;font-family:inherit;outline:none;
+    transition:border-color .15s,box-shadow .15s}
+  select:focus,input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(10,107,196,.16)}
+  td:nth-child(6) input{width:96px;text-align:right}
+
+  /* 按钮：胶囊 */
+  button{cursor:pointer;border:1px solid var(--line-2);background:var(--card);color:var(--text);
+    padding:9px 18px;border-radius:var(--r-pill);font-size:13.5px;font-family:inherit;font-weight:600;
+    transition:background .16s,border-color .16s,color .16s,transform .16s}
+  button:hover{border-color:var(--teal);color:var(--teal);background:var(--soft)}
+  button.primary{background:var(--ink);border-color:var(--ink);color:#fff}
+  button.primary:hover{background:var(--teal);border-color:var(--teal);color:#fff;
+    transform:translateY(-1px)}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+
+  /* 右栏：深色引导卡 */
+  .card.cta{background:var(--ink);box-shadow:var(--sh-3);position:relative;overflow:hidden}
+  .card.cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:230px;height:230px;
+    border-radius:50%;background:radial-gradient(circle,rgba(95,216,245,.30),transparent 70%)}
+  .cta h3{position:relative;z-index:1;margin:0 0 8px;font-size:15px;color:#fff}
+  .cta p{position:relative;z-index:1;margin:0 0 12px;font-size:13px;color:#A9C0D4;line-height:1.72}
+  .cta-btn{position:relative;z-index:1;display:inline-block;margin:2px 0 10px;padding:11px 20px;
+    border-radius:var(--r-pill);background:var(--teal-bright);color:#04121F;
+    font-size:13.5px;font-weight:700;transition:background .16s,transform .16s}
+  .cta-btn:hover{background:#86E4FA;text-decoration:none;transform:translateY(-1px)}
+  .cta p.cta-note{color:#7F97B0;font-size:12px;margin:0}
+  .cta p.cta-note a{color:var(--teal-bright)}
+
+  /* 正文 SEO 段 */
+  .seo{margin:26px 0 0}
+  .seo h2{font-size:17px;margin:0 0 10px;color:var(--ink)}
+  .seo p,.seo li{color:var(--text-2);font-size:14px;line-height:1.78}
+  .seo ul{padding-left:18px;margin:0}
+  .seo li{margin-bottom:6px}
+
+  footer{border-top:1px solid var(--line);margin-top:26px;padding:20px 0 34px;
+         color:var(--muted);font-size:12.5px;line-height:1.85}
+  footer a{color:var(--teal)}
+
+  @media print{.backbar,.btns,.cta,footer,.seo,.drop{display:none!important}}
+
+  /* ===== v3 科技化设计语言（与落地页同一套） ===== */
+  :root{
+    --grid-c:rgba(10,107,196,.055);
+    --hair:linear-gradient(150deg,rgba(95,216,245,.6),rgba(10,107,196,.07) 38%,
+                          rgba(10,107,196,.07) 62%,rgba(10,107,196,.3));
+    --accent-2:#1385DA;
+  }
+  body{position:relative}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:linear-gradient(to right,var(--grid-c) 1px,transparent 1px),
+                     linear-gradient(to bottom,var(--grid-c) 1px,transparent 1px);
+    background-size:64px 64px;
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 0%,transparent 78%);
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 0%,transparent 78%)}
+  body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse 40vw 34vh at 6% 0%,rgba(95,216,245,.16),transparent 66%),
+               radial-gradient(ellipse 34vw 30vh at 96% 4%,rgba(10,107,196,.10),transparent 66%)}
+  header,.wrap,.grid,main,footer{position:relative;z-index:1}
+
+  /* 品牌标：切角 + 冰青小方点，和落地页导航同源 */
+  .mark{background:linear-gradient(135deg,var(--teal) 0 50%,transparent 50%);
+        border-radius:6px;overflow:hidden}
+  .mark::after{left:auto;right:3px;bottom:3px;width:5px;height:5px;border-radius:1px;
+        background:var(--teal-bright)}
+  .tag{background:var(--soft);color:#0A5AA8;border:1px solid rgba(10,107,196,.14)}
+
+  /* 卡片：1px 渐变发丝边（mask 掏空，不占位） */
+  .card{position:relative}
+  .card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+    background:var(--hair);pointer-events:none;
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    mask-composite:exclude}
+
+  /* 汇总四格：上沿刻度 */
+  .summary div{position:relative;padding-top:15px}
+  .summary div::before{content:"";position:absolute;left:14px;top:9px;width:20px;height:2px;
+    border-radius:2px;background:linear-gradient(90deg,var(--teal),var(--teal-bright))}
+  .summary div b{text-shadow:0 1px 0 rgba(95,216,245,.16)}
+
+  /* 按钮：主按钮改渐变 + 内高光 */
+  button.primary{background:linear-gradient(135deg,#0A6BC4,#1385DA);border-color:transparent;
+    box-shadow:0 8px 18px -10px rgba(10,107,196,.85),inset 0 1px 0 rgba(255,255,255,.22)}
+  button.primary:hover{background:linear-gradient(135deg,#0B74D2,#1E9BE8);border-color:transparent}
+  button:focus-visible,.drop:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+  /* 表格头：细上边 + 冷调底 */
+  th{background:var(--paper-2);box-shadow:inset 0 -1px 0 var(--line)}
+  .tablebox{border-color:var(--line-2)}
+  tr.row.sel td{background:var(--soft);box-shadow:inset 2px 0 0 var(--teal)}
+
+  /* 深色引导卡：网格 + 光晕 */
+  .card.cta{background:linear-gradient(160deg,#08182A,#0B2237 60%,#103049)}
+  .card.cta::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+    background:linear-gradient(150deg,rgba(95,216,245,.55),rgba(10,107,196,.06) 46%,rgba(10,107,196,.06));
+    pointer-events:none;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    mask-composite:exclude}
+  .cta-btn{box-shadow:0 10px 24px -14px rgba(95,216,245,.9)}
+
+  /* 拖放区：hover 时虚线变实、底色冷调 */
+  .drop:hover,.drop.over{border-style:solid;background:var(--soft)}
+
+  /* 顶栏返回条：细发丝边 */
+  .backbar{border:1px solid rgba(10,107,196,.14)}
+
+  @media (max-width:640px){
+    body::before{background-size:44px 44px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <h1>塑料件材料费计算器</h1>
+      <span class="tag">免费 · 在线</span>
+    </div>
+    <p class="sub">上传 STEP / IGES 模型，自动识别每个零件、算出体积和克重，选好材料就能看到每个零件和总的材料费。全部在你的浏览器里计算，模型不上传服务器。</p>
+    <div id="file-warn" style="display:none;margin:10px 0;padding:10px 14px;border-radius:12px;
+         background:#FFF6E5;border:1px solid #EBD3A6;color:#7A5216;font-size:12.5px">
+      你是在用「文件方式」直接打开本页：浏览器会禁止读取本地 WASM，上传可能失败。
+      请用本地服务器打开（例如在本目录运行
+      <code style="background:#fff;padding:1px 5px;border-radius:5px">python -m http.server 8000</code>
+      后访问 <code style="background:#fff;padding:1px 5px;border-radius:5px">http://localhost:8000</code>），
+      或直接<a href="../index.html">下载桌面版</a>。
+    </div>
+  </header>
+
+  <div class="backbar">
+    <a href="../index.html">← 返回产品介绍</a>
+    <span>这里是免费网页版，只算材料费；完整成本与报价在桌面版。</span>
+  </div>
+
+  <div class="grid">
+    <main>
+      <section class="card">
+        <h2>① 上传模型</h2>
+        <div class="drop" id="drop">
+          <div class="icon">📦</div>
+          <b>把 STEP / IGES 文件拖到这里，或点击选择</b>
+          <span>支持 .stp / .step / .igs / .iges / .brep，建议单个文件 &lt; 50 MB</span>
+          <input type="file" id="file" accept=".stp,.step,.igs,.iges,.brep">
+        </div>
+        <div class="status" id="status">等待上传…</div>
+        <p class="hint">没有模型？<a href="#" id="demo-link">用示例模型试试</a>（一个 40×30×10mm 的方块，12 cm³）</p>
+      </section>
+
+      <section class="card" id="result-card" style="display:none">
+        <h2>② 零件与材料费</h2>
+        <div class="viewer">
+          <canvas id="view3d"></canvas>
+          <div class="viewer-hint">拖动旋转 · 滚轮缩放 · 双击复位 · 点表格行高亮零件</div>
+          <div class="viewer-tools">
+            <label id="v-only-wrap" style="display:flex;align-items:center;gap:4px;font-size:12px;
+                   white-space:nowrap;background:rgba(255,255,255,.9);padding:3px 8px;
+                   border-radius:8px;color:var(--text)">
+              <input type="checkbox" id="v-only"> 只看选中
+            </label>
+            <button type="button" id="v-reset">复位视角</button>
+          </div>
+        </div>
+        <div class="summary" id="summary"></div>
+        <div class="tablebox">
+          <table>
+            <thead>
+              <tr><th>#</th><th>零件（实体）</th><th>体积 cm³</th><th>克重 g</th>
+                  <th>材料</th><th>单价 元/kg</th><th>材料费 元</th></tr>
+            </thead>
+            <tbody id="rows"></tbody>
+            <tfoot>
+              <tr><td></td><td>合计</td><td id="t-vol">—</td><td id="t-weight">—</td>
+                  <td></td><td></td><td id="t-cost">—</td></tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="btns">
+          <button type="button" class="primary" id="again">换一个模型</button>
+          <button type="button" id="print">打印 / 存 PDF</button>
+        </div>
+        <p class="hint">材料费 = 克重 ÷ 1000 × 单价（未计损耗、成型、人工、模具等；这些在桌面完整版里算）。</p>
+      </section>
+    </main>
+
+    <aside>
+      <div class="card cta">
+        <h3>要算完整成本？</h3>
+        <p>这里只算材料费。桌面完整版能算：成型费、机台费、人工、二次加工、外购件、包装、模具摊销、管理费用、利润和税，直接出含税出厂价，还能导出 Excel 和 PDF 报价单。</p>
+        <a class="cta-btn" href="../index.html#get">下载桌面版（Windows）</a>
+        <p class="cta-note">30 天试用，装好就能用；也可以先看<a href="../index.html">完整功能介绍</a>。</p>
+      </div>
+
+      <div class="card">
+        <h2>怎么算的</h2>
+        <p style="margin:0;font-size:12.5px;color:var(--text)">
+          体积由模型三角面积分得到（曲面有不到 1% 的离散误差）；<br>
+          克重 = 体积 × 材料密度；<br>
+          材料费 = 克重 ÷ 1000 × 单价。
+        </p>
+      </div>
+    </aside>
+  </div>
+
+  <section class="seo">
+    <h2>这个工具能做什么</h2>
+    <p>做塑料件报价、核价时，第一步就是算材料费：需要知道零件体积、克重和材料单价。以前要开 CAD 量体积、手算克重；
+       现在把 3D 模型拖进来，自动列出每个零件（装配体会逐个拆开），选好材料立刻看到每个零件和总的材料费。</p>
+    <h2 style="margin-top:14px">常见问题</h2>
+    <ul>
+      <li><b>模型会上传吗？</b> 不会。STEP 解析和计算全部在你电脑的浏览器里完成，没有服务器接收文件。</li>
+      <li><b>支持什么格式？</b> .stp / .step / .igs / .iges / .brep。STL 这类网格文件没有实体信息，暂不支持。</li>
+      <li><b>为什么体积和 CAD 里差一点？</b> 用三角面近似积分，曲面越多误差越大，通常 &lt;1%，报价够用。</li>
+      <li><b>一个装配体会怎样？</b> 按实体拆成多行，每个零件单独选材料、单独算材料费。</li>
+    </ul>
+    <p style="color:var(--muted);font-size:12px">说明：结果为估算值，用于内部核算和报价参考，最终以实际工艺和供应商报价为准。</p>
+  </section>
+
+  <footer>
+    <div>塑料件材料费计算器（免费网页版）· 模型与数据只在本机浏览器计算</div>
+    <div>免费网页版 · 完整成本核算见 <a href="../index.html">桌面版介绍</a></div>
+  </footer>
+</div>
+
+<script src="./vendor/occt-import-js.js"></script>
+<script>
+/* ================= 配置区 ================= */
+const ADS = { adsenseClient: "", slots: { top: "", mid: "", bottom: "" } };
+
+/* 材料库：密度 g/cm³ + 参考单价 元/kg（可自行修改） */
+const MATERIALS = [
+  {name:"ABS", density:1.05, price:12.8},
+  {name:"HIPS", density:1.05, price:10.3},
+  {name:"PS", density:1.05, price:10.0},
+  {name:"AS/SAN", density:1.08, price:12.6},
+  {name:"PP", density:0.91, price:9.8},
+  {name:"PE", density:0.95, price:9.4},
+  {name:"PVC", density:1.38, price:9.4},
+  {name:"PMMA", density:1.19, price:16.0},
+  {name:"PC", density:1.20, price:24.0},
+  {name:"PC/ABS", density:1.13, price:22.0},
+  {name:"PA6", density:1.14, price:26.0},
+  {name:"PA66", density:1.15, price:30.0},
+  {name:"POM", density:1.41, price:22.0},
+  {name:"PBT", density:1.31, price:22.0},
+  {name:"PET", density:1.34, price:23.0},
+  {name:"TPU", density:1.14, price:32.0},
+  {name:"自定义", density:1.00, price:12.0}
+];
+
+const $ = (id) => document.getElementById(id);
+const money = (v) => (isFinite(v) ? v : 0).toFixed(3);
+const fmt = (v, d) => (isFinite(v) ? v : 0).toFixed(d === undefined ? 2 : d);
+
+let occtReady = null;
+let parts = [];
+
+function midx(i){ return MATERIALS[i] || MATERIALS[0]; }
+function getOcct(){
+  if (!occtReady){
+    if (!window.occtimportjs){
+      occtReady = Promise.reject(new Error("CAD 内核脚本没加载（如果是双击打开的文件方式，浏览器会禁止读取本地 WASM，请改用单文件版）"));
+      return occtReady;
+    }
+    const opts = (typeof OCCT_WASM_BYTES !== "undefined" && OCCT_WASM_BYTES)
+      ? { wasmBinary: OCCT_WASM_BYTES } : {};
+    occtReady = window.occtimportjs(opts);
+  }
+  return occtReady;
+}
+
+/* 三角面 → 体积 mm³ */
+function meshVolume(mesh){
+  const pos = mesh.attributes.position.array;
+  const idx = mesh.index && mesh.index.array ? mesh.index.array : null;
+  let vol = 0;
+  const n = idx ? idx.length : pos.length / 3;
+  for (let i = 0; i < n; i += 3){
+    const i0 = (idx ? idx[i] : i) * 3;
+    const i1 = (idx ? idx[i+1] : i+1) * 3;
+    const i2 = (idx ? idx[i+2] : i+2) * 3;
+    const ax=pos[i0], ay=pos[i0+1], az=pos[i0+2];
+    const bx=pos[i1], by=pos[i1+1], bz=pos[i1+2];
+    const cx=pos[i2], cy=pos[i2+1], cz=pos[i2+2];
+    vol += (ax*(by*cz-bz*cy) - ay*(bx*cz-bz*cx) + az*(bx*cy-by*cx)) / 6;
+  }
+  return Math.abs(vol);
+}
+
+function setStatus(html, cls){
+  const el = $("status");
+  el.className = "status" + (cls ? " " + cls : "");
+  el.innerHTML = html;
+}
+
+function total(){
+  let vol = 0, w = 0, c = 0;
+  parts.forEach(p => { vol += p.volumeCm3; w += p.weightG; c += p.weightG/1000*p.price; });
+  return {vol, w, c};
+}
+
+function renderParts(){
+  const body = $("rows");
+  body.innerHTML = "";
+  parts.forEach((p, i) => {
+    const tr = document.createElement("tr");
+    const opts = MATERIALS.map((m, mi) =>
+      `<option value="${mi}"${mi===p.materialIndex?" selected":""}>${m.name}</option>`).join("");
+    tr.className = "row" + (i === V3.sel ? " sel" : "");
+    tr.dataset.i = i;
+    tr.innerHTML = `<td><span class="dot" style="background:${partColor(i)}"></span>${i+1}</td>
+      <td title="${(p.name||"").replace(/"/g,"&quot;")}">${p.name || ("实体 " + (i+1))}</td>
+      <td>${p.volumeCm3 < 0.01 ? p.volumeCm3.toFixed(3) : fmt(p.volumeCm3,2)}</td>
+      <td>${fmt(p.weightG,2)}</td>
+      <td><select data-i="${i}" data-k="mat">${opts}</select></td>
+      <td><input type="number" step="0.1" min="0" value="${fmt(p.price,2)}" data-i="${i}"></td>
+      <td><b data-cost="${i}">${money(p.weightG/1000*p.price)}</b></td>`;
+    body.appendChild(tr);
+  });
+  body.querySelectorAll("tr.row").forEach(tr => {
+    tr.addEventListener("click", () => {
+      const i = +tr.dataset.i;
+      V3.sel = (V3.sel === i) ? -1 : i;
+      renderParts();
+      drawScene();
+    });
+  });
+  body.querySelectorAll("select").forEach(sel => {
+    sel.addEventListener("change", () => {
+      const i = +sel.dataset.i, mi = +sel.value;
+      parts[i].materialIndex = mi;
+      parts[i].price = MATERIALS[mi].price;
+      const inp = body.querySelector(`input[data-i="${i}"]`);
+      if (inp) inp.value = fmt(MATERIALS[mi].price, 2);
+      renderTotals();
+    });
+  });
+  body.querySelectorAll("input").forEach(inp => {
+    inp.addEventListener("input", () => {
+      parts[+inp.dataset.i].price = parseFloat(inp.value) || 0;
+      renderTotals();
+    });
+  });
+  renderTotals();
+  $("result-card").style.display = "";
+}
+
+function renderTotals(){
+  const t = total();
+  $("summary").innerHTML = `
+    <div><b>${parts.length}</b><span>零件数</span></div>
+    <div><b>${fmt(t.vol,2)}</b><span>总体积 cm³</span></div>
+    <div><b>${fmt(t.w,1)}</b><span>总克重 g</span></div>
+    <div><b>${money(t.c)}</b><span>材料费合计 元</span></div>`;
+  $("t-vol").textContent = fmt(t.vol,2);
+  $("t-weight").textContent = fmt(t.w,1);
+  $("t-cost").textContent = money(t.c);
+  parts.forEach((p, i) => {
+    const cell = document.querySelector(`b[data-cost="${i}"]`);
+    if (cell) cell.textContent = money(p.weightG/1000*p.price);
+  });
+}
+
+/* ================= 3D 预览：纯 Canvas 软件渲染 ================= */
+const PART_COLORS = ["#0A6BC4","#3E8FD0","#6FB6E8","#8C7BE0","#4FB3C8",
+                     "#7CA6D8","#5AA9E6","#9BC7E8","#B9A6E8","#7FD6E8"];
+const V3 = { yaw: -0.7, pitch: 0.42, zoom: 1, sel: -1, drag: null,
+             canvas: null, ctx: null, w: 0, h: 0, dpr: 1, ready: false,
+             center: [0,0,0], radius: 1, needsDraw: false };
+let meshCache = [];   // [{pos:Float32Array, idx:Uint32Array, colors:[r,g,b], tris:[]}]
+
+function partColor(i){ return PART_COLORS[i % PART_COLORS.length]; }
+
+function hexToRgb(h){
+  const n = parseInt(h.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+/* 把零件转成渲染用的三角形数据 */
+function buildMeshCache(){
+  meshCache = [];
+  let min = [1e18,1e18,1e18], max = [-1e18,-1e18,-1e18];
+  parts.forEach((p, pi) => {
+    const m = p._mesh;
+    if (!m || !m.pos || !m.idx) return;
+    const pos = m.pos, idx = m.idx;
+    // 归一化单位：STEP 一般是 mm；这里直接按 mm 用，相机自适应
+    for (let i = 0; i < pos.length; i += 3){
+      if (pos[i]   < min[0]) min[0] = pos[i];
+      if (pos[i+1] < min[1]) min[1] = pos[i+1];
+      if (pos[i+2] < min[2]) min[2] = pos[i+2];
+      if (pos[i]   > max[0]) max[0] = pos[i];
+      if (pos[i+1] > max[1]) max[1] = pos[i+1];
+      if (pos[i+2] > max[2]) max[2] = pos[i+2];
+    }
+    let bmin = [1e18,1e18,1e18], bmax = [-1e18,-1e18,-1e18];
+    for (let v = 0; v < pos.length; v += 3){
+      for (let a = 0; a < 3; a++){
+        if (pos[v+a] < bmin[a]) bmin[a] = pos[v+a];
+        if (pos[v+a] > bmax[a]) bmax[a] = pos[v+a];
+      }
+    }
+    const bsize = [bmax[0]-bmin[0], bmax[1]-bmin[1], bmax[2]-bmin[2]];
+    meshCache.push({ pos, idx, color: hexToRgb(partColor(pi)), pi,
+                     center: [(bmin[0]+bmax[0])/2, (bmin[1]+bmax[1])/2, (bmin[2]+bmax[2])/2],
+                     radius: Math.max(1, 0.5 * Math.hypot(bsize[0], bsize[1], bsize[2])) });
+  });
+  if (!meshCache.length) return;
+  V3.center = [(min[0]+max[0])/2, (min[1]+max[1])/2, (min[2]+max[2])/2];
+  const dx = max[0]-min[0], dy = max[1]-min[1], dz = max[2]-min[2];
+  V3.radius = Math.max(1, 0.5 * Math.sqrt(dx*dx + dy*dy + dz*dz));
+  V3.ready = true;
+}
+
+function resizeViewer(low){
+  const cv = V3.canvas;
+  if (!cv) return;
+  const dpr = window.devicePixelRatio || 1;
+  const q = low ? 0.65 : 1;
+  const w = cv.clientWidth || 600, h = cv.clientHeight || 300;
+  cv.width = Math.round(w * dpr * q);
+  cv.height = Math.round(h * dpr * q);
+  V3.ctx.setTransform(dpr * q, 0, 0, dpr * q, 0, 0);
+  V3.w = w; V3.h = h; V3.dpr = dpr;
+  drawScene();
+}
+
+function drawScene(){
+  const cv = V3.canvas, ctx = V3.ctx;
+  if (!ctx) return;
+  ctx.clearRect(0, 0, V3.w, V3.h);
+  ctx.fillStyle = "#FBFDFF";
+  ctx.fillRect(0, 0, V3.w, V3.h);
+  if (!V3.ready || !meshCache.length){
+    ctx.fillStyle = "#5A6E84";
+    ctx.font = "13px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("上传模型后这里显示 3D", V3.w/2, V3.h/2);
+    return;
+  }
+
+  const w = V3.w, h = V3.h;
+  const onlyEl = $("v-only");
+  const only = !!(onlyEl && onlyEl.checked && V3.sel >= 0 && meshCache.some(m => m.pi === V3.sel));
+  let center = V3.center, radius = V3.radius, list = meshCache;
+  if (only){
+    const target = meshCache.find(m => m.pi === V3.sel);
+    center = target.center; radius = target.radius; list = [target];
+  }
+  const cy = Math.cos(V3.yaw), sy = Math.sin(V3.yaw);
+  const cp = Math.cos(V3.pitch), sp = Math.sin(V3.pitch);
+  // 相机距离与焦距
+  const dist = radius * 2.6;
+  const focal = Math.min(w, h) * 1.25 * V3.zoom;
+  const cx = center[0], cyy = center[1], cz = center[2];
+  const lx = -0.35, ly = -0.5, lz = 0.79;   // 视空间光方向
+
+  const _t0 = performance.now();
+  const draws = [];
+  for (const mesh of list){
+    const pos = mesh.pos, idx = mesh.idx;
+    const nVert = pos.length / 3;
+    // 顶点旋转 + 透视投影
+    const px = new Float32Array(nVert), py = new Float32Array(nVert), pz = new Float32Array(nVert);
+    for (let v = 0; v < nVert; v++){
+      let x = pos[v*3] - cx, y = pos[v*3+1] - cyy, z = pos[v*3+2] - cz;
+      // 绕 Y 轴（yaw）
+      let x1 = cy * x + sy * z;
+      let z1 = -sy * x + cy * z;
+      // 绕 X 轴（pitch）
+      let y1 = cp * y - sp * z1;
+      let z2 = sp * y + cp * z1;
+      pz[v] = z2;
+      const k = focal / (dist - z2);
+      px[v] = w/2 + x1 * k;
+      py[v] = h/2 - y1 * k;
+    }
+    const nTri = idx ? idx.length / 3 : nVert / 3;
+    const isSel = mesh.pi === V3.sel && !only;
+    const base = mesh.color;
+    for (let t = 0; t < nTri; t++){
+      const i0 = idx ? idx[t*3]   : t*3;
+      const i1 = idx ? idx[t*3+1] : t*3+1;
+      const i2 = idx ? idx[t*3+2] : t*3+2;
+      // 面法线（模型空间）
+      const ax = pos[i1*3]-pos[i0*3], ay = pos[i1*3+1]-pos[i0*3+1], az = pos[i1*3+2]-pos[i0*3+2];
+      const bx = pos[i2*3]-pos[i0*3], by = pos[i2*3+1]-pos[i0*3+1], bz = pos[i2*3+2]-pos[i0*3+2];
+      let nx = ay*bz - az*by, ny = az*bx - ax*bz, nz = ax*by - ay*bx;
+      const nl = Math.hypot(nx, ny, nz) || 1;
+      nx /= nl; ny /= nl; nz /= nl;
+      // 法线转到视空间
+      let nx1 = cy*nx + sy*nz, nz1 = -sy*nx + cy*nz;
+      let ny1 = cp*ny - sp*nz1, nz2 = sp*ny + cp*nz1;
+      const diff = Math.abs(nx1*lx + ny1*ly + nz2*lz);
+      const shade = 0.42 + 0.58 * diff;
+      let r = base[0]*shade, g = base[1]*shade, b = base[2]*shade;
+      if (isSel){
+        const k = 0.55 + 0.45 * shade;
+        r = 236 * k; g = 48 * k; b = 96 * k;
+      }
+      const z = (pz[i0] + pz[i1] + pz[i2]) / 3;
+      draws.push([z, px[i0], py[i0], px[i1], py[i1], px[i2], py[i2], r, g, b]);
+    }
+  }
+  draws.sort((a, b) => a[0] - b[0]);   // 远的先画
+
+  for (let i = 0; i < draws.length; i++){
+    const d = draws[i];
+    ctx.beginPath();
+    ctx.moveTo(d[1], d[2]);
+    ctx.lineTo(d[3], d[4]);
+    ctx.lineTo(d[5], d[6]);
+    ctx.closePath();
+    const col = "rgb(" + (d[7]|0) + "," + (d[8]|0) + "," + (d[9]|0) + ")";
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.strokeStyle = col;       // 描边遮住三角拼接缝
+    ctx.lineWidth = 0.7;
+    ctx.stroke();
+  }
+  V3.triCount = draws.length;
+  V3.drawMs = performance.now() - _t0;
+  if (new URLSearchParams(location.search).get("perf")){
+    document.title = "tris=" + V3.triCount + " draw=" + V3.drawMs.toFixed(1) + "ms";
+  }
+}
+
+function setupViewer(){
+  V3.canvas = $("view3d");
+  if (!V3.canvas) return;
+  V3.ctx = V3.canvas.getContext("2d");
+  V3.canvas.addEventListener("pointerdown", e => {
+    V3.drag = { x: e.clientX, y: e.clientY };
+    V3.canvas.setPointerCapture(e.pointerId);
+    resizeViewer(true);
+  });
+  V3.canvas.addEventListener("pointermove", e => {
+    if (!V3.drag) return;
+    V3.yaw += (e.clientX - V3.drag.x) * 0.01;
+    V3.pitch = Math.max(-1.45, Math.min(1.45, V3.pitch + (e.clientY - V3.drag.y) * 0.01));
+    V3.drag = { x: e.clientX, y: e.clientY };
+    drawScene();
+  });
+  ["pointerup","pointercancel"].forEach(ev =>
+    V3.canvas.addEventListener(ev, () => {
+      if (!V3.drag) return;
+      V3.drag = null;
+      resizeViewer(false);
+    }));
+  V3.canvas.addEventListener("wheel", e => {
+    e.preventDefault();
+    V3.zoom = Math.max(0.35, Math.min(6, V3.zoom * (e.deltaY > 0 ? 0.92 : 1.08)));
+    drawScene();
+  }, { passive: false });
+  const reset = () => { V3.yaw = -0.7; V3.pitch = 0.42; V3.zoom = 1; V3.sel = -1;
+                        const ob = $("v-only"); if (ob) ob.checked = false;
+                        renderParts(); drawScene(); };
+  V3.canvas.addEventListener("dblclick", reset);
+  const onlyBox = $("v-only");
+  if (onlyBox) onlyBox.addEventListener("change", () => drawScene());
+  const rb = $("v-reset");
+  if (rb) rb.addEventListener("click", reset);
+  if (window.ResizeObserver){
+    new ResizeObserver(() => resizeViewer()).observe(V3.canvas.parentElement);
+  } else {
+    window.addEventListener("resize", resizeViewer);
+  }
+  resizeViewer();
+}
+
+function applyMeshes(meshes, t0){
+  const mat = midx(0);
+  parts = (meshes || []).map((m, i) => {
+    const volCm3 = meshVolume(m) / 1000;
+    const rawName = (m.name === undefined || m.name === null) ? "" : String(m.name).trim();
+    const badName = !rawName || /^[0-9]+$/.test(rawName) || rawName.length > 28
+      || /cascade|translator|step file|iges|brep|open cascade/i.test(rawName);
+    const niceName = badName ? ("实体 " + (i + 1)) : rawName;
+    const pos = m.attributes && m.attributes.position ? m.attributes.position.array : null;
+    const idx = m.index && m.index.array ? m.index.array : null;
+    return { name: niceName, volumeCm3: volCm3, weightG: volCm3 * mat.density,
+             materialIndex: 0, price: mat.price,
+             _mesh: pos ? { pos: pos instanceof Float32Array ? pos : new Float32Array(pos),
+                            idx: idx ? (idx instanceof Uint32Array ? idx : new Uint32Array(idx)) : null } : null };
+  }).filter(p => p.volumeCm3 > 1e-6);
+
+  if (!parts.length){
+    setStatus("解析完成，但没有有效实体体积（文件可能只有曲面）", "err");
+    return;
+  }
+  V3.sel = -1;
+  buildMeshCache();
+  resizeViewer();
+  const _sel = new URLSearchParams(location.search).get("sel");
+  if (_sel !== null && parts.length) V3.sel = Math.min(parts.length - 1, Math.max(0, parseInt(_sel, 10) || 0));
+  if (new URLSearchParams(location.search).get("only")) { const _ob = document.getElementById("v-only"); if (_ob) _ob.checked = true; }
+  renderParts();
+  drawScene();
+  const secs = t0 ? ((performance.now() - t0) / 1000).toFixed(1) : "0.1";
+  setStatus(`解析完成：${parts.length} 个实体 · 用时 ${secs} 秒`, "ok");
+}
+
+async function handleFile(file){
+  if (!file) return;
+  const nm = file.name.toLowerCase();
+  const isStep = /\.(stp|step)$/.test(nm);
+  const isIges = /\.(igs|iges)$/.test(nm);
+  const isBrep = /\.brep$/.test(nm);
+  if (!(isStep || isIges || isBrep)){
+    setStatus("只支持 .stp / .step / .igs / .iges / .brep（STL 这类网格文件没有实体信息）", "err");
+    return;
+  }
+  $("result-card").style.display = "none";
+  setStatus('<span class="spinner"></span>正在解析（首次用需要下载 7MB 的 CAD 内核，大装配体可能要几秒）…');
+  await new Promise(r => setTimeout(r, 60));
+
+  try{
+    const t0 = performance.now();
+    const inst = await getOcct();
+    const buf = new Uint8Array(await file.arrayBuffer());
+    const res = isStep ? inst.ReadStepFile(buf, null)
+              : isIges ? inst.ReadIgesFile(buf, null)
+              : inst.ReadBrepFile(buf, null);
+    if (!res || !res.success || !res.meshes || !res.meshes.length){
+      setStatus("这个文件里没读到实体（可能是曲面片、装配件外壳或不完整的文件）", "err");
+      return;
+    }
+    applyMeshes(res.meshes, t0);
+  }catch(err){
+    console.error(err);
+    setStatus("解析失败：" + (err && err.message ? err.message : err) + "（可以试试用桌面版打开）", "err");
+  }
+}
+
+/* 事件 */
+$("drop").addEventListener("click", () => $("file").click());
+$("file").addEventListener("change", e => handleFile(e.target.files[0]));
+["dragenter","dragover"].forEach(ev => $("drop").addEventListener(ev, e => {
+  e.preventDefault(); $("drop").classList.add("over");
+}));
+["dragleave","drop"].forEach(ev => $("drop").addEventListener(ev, e => {
+  e.preventDefault(); $("drop").classList.remove("over");
+}));
+$("drop").addEventListener("drop", e => {
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) handleFile(f);
+});
+$("again").addEventListener("click", () => {
+  $("result-card").style.display = "none";
+  parts = [];
+  $("file").value = "";
+  setStatus("等待上传…");
+  window.scrollTo({top: 0, behavior: "smooth"});
+});
+$("print").addEventListener("click", () => window.print());
+
+/* 示例模型：优先读 demo.stp；文件方式（file://）下读不到就用内嵌 STEP */
+async function loadDemo(){
+  // 1) 内嵌 STEP（单文件版有）
+  if (typeof DEMO_STEP_B64 !== "undefined" && DEMO_STEP_B64){
+    const bin = atob(DEMO_STEP_B64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    await handleBuffer(arr, "示例模型.stp");
+    return;
+  }
+  // 2) 同目录 demo.stp（在线版/本地服务器）
+  const buf = await (await fetch("./demo.stp")).arrayBuffer();
+  await handleBuffer(new Uint8Array(buf), "示例模型.stp");
+}
+
+/* 把 handleFile 的解析部分抽出来，供 demo 复用 */
+async function handleBuffer(arr, name){
+  $("result-card").style.display = "none";
+  setStatus('<span class="spinner"></span>正在解析（首次用需要下载 7MB 的 CAD 内核）…');
+  await new Promise(r => setTimeout(r, 60));
+  try{
+    const t0 = performance.now();
+    const inst = await getOcct();
+    const res = name.toLowerCase().endsWith(".brep") ? inst.ReadBrepFile(arr, null) : inst.ReadStepFile(arr, null);
+    if (!res || !res.success || !res.meshes || !res.meshes.length){
+      setStatus("这个文件里没读到实体（可能是曲面片、装配件外壳或不完整的文件）", "err");
+      return;
+    }
+    applyMeshes(res.meshes, t0);
+  }catch(err){
+    console.error(err);
+    setStatus("解析失败：" + (err && err.message ? err.message : err), "err");
+  }
+}
+
+$("demo-link").addEventListener("click", async (e) => {
+  e.preventDefault();
+  try{
+    await loadDemo();
+  }catch(err){
+    setStatus("示例模型加载失败：" + (err && err.message ? err.message : err), "err");
+  }
+});
+/* 自动演示：index.html?demo=1 */
+if (new URLSearchParams(location.search).get("demo")){
+  window.addEventListener("load", () => setTimeout(() => $("demo-link").click(), 200));
+}
+
+/* AdSense（可选） */
+function initAdsense(){
+  if (!ADS.adsenseClient) return;
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + ADS.adsenseClient;
+  s.crossOrigin = "anonymous";
+  document.head.appendChild(s);
+}
+initAdsense();
+setupViewer();
+/* 文件方式打开且没有内嵌 WASM → 提示 */
+if (location.protocol === "file:" && typeof OCCT_WASM_BYTES === "undefined"){
+  const w = $("file-warn");
+  if (w) w.style.display = "";
+}
+</script>
+</body>
+</html>

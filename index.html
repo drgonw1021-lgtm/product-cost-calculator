@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>产品成本核算工具 · 导入 STEP，把一件货的钱拆成 14 行算出厂价</title>
+<meta name="description" content="把 STEP 拖进窗口，材料费、机台费、人工、模具摊销、外购件、包材、渠道佣金一路算到出厂价。阶梯报价自动折扣、模具费摊销、实时汇率折算。Windows 桌面版，免费试用 30 天。">
+<meta property="og:title" content="产品成本核算工具 · 导入 STEP，把一件货的钱拆成 14 行算出厂价">
+<meta property="og:description" content="甲方内部核价工具：STEP → 单件成本 → 出厂价，每一分钱都能点开看它怎么来的。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="./assets/app-plastic.png">
+<link rel="stylesheet" href="./styles.css">
+<!-- 早一步把 data-lang 落到 <html> 上，避免英文版面先闪一帧中文布局 -->
+<script>
+(function () {
+  var l = "zh";
+  try {
+    var m = location.search.match(/[?&]lang=(zh|en)/i);
+    if (m) l = m[1].toLowerCase();
+    else {
+      var s = localStorage.getItem("pc_lang");
+      if (s === "zh" || s === "en") l = s;
+      else if (String(navigator.language || "").toLowerCase().indexOf("zh") !== 0) l = "en";
+    }
+  } catch (e) {}
+  document.documentElement.setAttribute("data-lang", l);
+  // 英文模式下先藏住页面，等 i18n.js 的 boot() 替换完文案再显示，避免闪一帧中文
+  if (l === "en") {
+    document.documentElement.classList.add("i18n-boot");
+    setTimeout(function () {
+      document.documentElement.classList.remove("i18n-boot");
+    }, 1200);
+  }
+})();
+</script>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <!-- 复选框必须在菜单之前：CSS 用 :checked ~ 控制移动端展开 -->
+  <input type="checkbox" id="nav-toggle" class="nav-toggle">
+  <a class="nav-brand" href="#top">
+    <span class="nav-mark" aria-hidden="true"></span>
+    <span class="nav-name">产品成本核算工具</span>
+    <span class="nav-ver">v10.2</span>
+  </a>
+  <nav class="nav-links" aria-label="页面导航">
+    <a href="#breakdown">拆解</a>
+    <a href="#insight">占比</a>
+    <a href="#scope">谁该用</a>
+    <a href="#tier">阶梯报价</a>
+    <a href="#mold">模具与包材</a>
+    <a href="#channel">渠道</a>
+    <a href="#price">价格</a>
+  </nav>
+  <div class="lang-switch" role="group" aria-label="语言切换">
+    <button type="button" data-lang-btn="zh">中文</button>
+    <button type="button" data-lang-btn="en">EN</button>
+  </div>
+  <a class="btn btn-ghost nav-cta" href="#get">下载试用</a>
+  <label for="nav-toggle" class="nav-burger" aria-label="展开导航">
+    <span></span><span></span><span></span>
+  </label>
+</header>
+
+<main>
+
+  <!-- ============ 首屏：满版文字（数字即画面） ============ -->
+  <section class="hero" id="top">
+    <div class="hero-eyebrow">
+      <span class="dot" aria-hidden="true"></span>
+      导入 STEP → 自动拆件 → 算出厂价 · 甲方内部核价 · Windows 桌面版
+    </div>
+
+    <div class="hero-figure">
+      <div class="hero-num" data-hero-num>14.361</div>
+      <div class="hero-unit">元 / 件 · 出厂价（不含税）</div>
+    </div>
+
+    <h1 class="hero-h1">
+      <span class="line"><span class="lw" data-i18n-html="hero-h1-1">把 STEP 拖进来，</span></span>
+      <span class="line"><span class="lw" data-i18n-html="hero-h1-2">一件货的钱拆成 <em>14</em> 行算给你看。</span></span>
+    </h1>
+
+    <p class="hero-lead">
+      一个 STEP 文件进去，体积、克重、材料费、机台费、人工、模具摊销、外购件、包材一路摊到单件成本，
+      再加上毛利，出厂价就出来了。每一分钱都能点开看它怎么来的。
+    </p>
+
+    <div class="hero-cta">
+      <a class="btn btn-solid btn-lg" href="https://github.com/drgonw1021-lgtm/product-cost-calculator/releases/latest/download/ProductCost_v10.2.zip" download>下载桌面版 · 免费试用 30 天</a>
+      <a class="btn-text" href="./web/index.html">或先试网页版（只算塑料件材料费，免安装）</a>
+    </div>
+
+    <ul class="hero-meta">
+      <li class="meta-price">399 元 / 台 · 一次买断</li>
+      <li>Windows 10 / 11</li>
+      <li>下载 87 MB</li>
+      <li>离线可用</li>
+      <li>一机一码</li>
+    </ul>
+
+    <div class="hero-strip" aria-label="成本构成摘要">
+      <div class="strip-item"><span>材料费</span><b>0.525</b></div>
+      <div class="strip-item"><span>外购件</span><b>9.106</b></div>
+      <div class="strip-item"><span>模具摊销</span><b>0.500</b></div>
+      <div class="strip-item"><span>单件成本</span><b>11.489</b></div>
+      <div class="strip-item strip-strong"><span>毛利</span><b>2.872</b></div>
+    </div>
+
+    <div class="hero-handoff" aria-hidden="true">
+      <span class="ho-rule"></span>
+      <span class="ho-txt">往下看：这 14 行是怎么加出来的</span>
+    </div>
+  </section>
+
+  <!-- ============ 滑动驱动叙事：14 行拆解 ============ -->
+  <section class="bd" id="breakdown">
+    <div class="bd-pin">
+      <div class="bd-head">
+        <p class="kicker">01 / 拆开看</p>
+        <h2 class="h2">14 行里有 6 行，多数报价表根本没这一栏</h2>
+      </div>
+
+      <div class="bd-stage" data-bd-grand="11.489">
+        <div class="bd-total">
+          <div class="bd-total-num" data-bd-total>11.489</div>
+          <div class="bd-total-cap">单件成本 · 14 行相加</div>
+        </div>
+
+        <div class="bd-main">
+          <div class="bd-rows" role="table" aria-label="成本构成明细">
+          <div class="bd-row bd-hrow" role="row"><span class="bd-n" role="columnheader">科目</span><span class="bar" role="columnheader">占比</span><b role="columnheader">元 / 件</b></div>
+          <div class="bd-row" role="row"><span class="bd-n" role="cell">外购件</span><span class="bar"><i style="--w:79.3%"></i></span><b role="cell">9.106</b></div>
+          <div class="bd-row" role="row"><span class="bd-n" role="cell">管理费用</span><span class="bar"><i style="--w:5.6%"></i></span><b role="cell">0.643</b></div>
+          <div class="bd-row" role="row"><span class="bd-n" role="cell">材料费</span><span class="bar"><i style="--w:4.6%"></i></span><b role="cell">0.525</b></div>
+          <div class="bd-row" role="row"><span class="bd-n" role="cell">模具分摊</span><span class="bar"><i style="--w:4.4%"></i></span><b role="cell">0.500</b></div>
+          <div class="bd-row" role="row"><span class="bd-n" role="cell">物流</span><span class="bar"><i style="--w:2.6%"></i></span><b role="cell">0.300</b></div>
+          <div class="bd-row" role="row"><span class="bd-n" role="cell">成型加工</span><span class="bar"><i style="--w:2.0%"></i></span><b role="cell">0.233</b></div>
+          <div class="bd-row" role="row"><span class="bd-n" role="cell">资金占用</span><span class="bar"><i style="--w:1.1%"></i></span><b role="cell">0.123</b></div>
+          <div class="bd-row" role="row"><span class="bd-n" role="cell">装配人工</span><span class="bar"><i style="--w:0.5%"></i></span><b role="cell">0.058</b></div>
+          <div class="bd-div" role="row"><span>这件货用不上 · 6 项</span></div>
+          <div class="bd-row is-zero" role="row"><span class="bd-n" role="cell">模内五金</span><span class="bar"><i style="--w:0%"></i></span><b role="cell">0.000</b></div>
+          <div class="bd-row is-zero" role="row"><span class="bd-n" role="cell">包装</span><span class="bar"><i style="--w:0%"></i></span><b role="cell">0.000</b></div>
+          <div class="bd-row is-zero" role="row"><span class="bd-n" role="cell">二次加工</span><span class="bar"><i style="--w:0%"></i></span><b role="cell">0.000</b></div>
+          <div class="bd-row is-zero" role="row"><span class="bd-n" role="cell">不良品摊销</span><span class="bar"><i style="--w:0%"></i></span><b role="cell">0.000</b></div>
+          <div class="bd-row is-zero" role="row"><span class="bd-n" role="cell">销售佣金</span><span class="bar"><i style="--w:0%"></i></span><b role="cell">0.000</b></div>
+          <div class="bd-row is-zero" role="row"><span class="bd-n" role="cell">出口费用</span><span class="bar"><i style="--w:0%"></i></span><b role="cell">0.000</b></div>
+          </div>
+
+          <div class="bd-sum">
+            <div class="bd-sum-row"><span>单件成本</span><b>11.489</b></div>
+            <div class="bd-sum-row"><span>毛利 20.0%</span><b>+2.872</b></div>
+            <div class="bd-sum-row is-final"><span>出厂价（不含税）</span><b>14.361</b></div>
+            <div class="bd-sum-row is-tax"><span>含税价 13%</span><b>16.228</b></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="bd-cap">
+        数据来自软件内置示例：ABS 外壳上盖，42 cm³ / 44.1 g，模穴 2，订单 50,000 件。
+        灰色 6 行是这件货这次没用上的科目（不填就是 0），启用后自动加进来——所以是 14 行，不是 8 行。
+        这 14 行里，模具摊销、不良品摊销、资金占用这几栏，Excel 里通常根本不设。
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 洞察：塑料件只是零头 ============ -->
+  <section class="band band-paper" id="insight">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker">02 / 一个反直觉的数字</p>
+        <h2 class="h2">塑料件总共只占 7.1%，剩下 92.9% 在别处</h2>
+        <p class="lead" data-i18n-html="insight-lead">
+          同一件货里，这个塑料件的钱分三笔：材料费 0.525 + 成型加工 0.233 + 装配人工 0.058 = <b>0.816 元</b>，
+          占整件成本 7.1%。而外购件一项就是 9.106 元，占 79.3%。
+          这就是为什么只算材料费的报价表永远对不上账——真正的大头在五金、电子和包材上。
+        </p>
+      </div>
+
+      <div class="split">
+        <div class="split-media">
+          <figure class="shot shot-wipe">
+            <img src="./assets/app-plastic.png" data-src-zh="./assets/app-plastic.png" data-src-en="./assets/en/app-plastic.png" alt="产品成本核算工具 v10.2 塑料件页：零件表与右侧 14 行成本构成、出厂价 14.361 元" loading="lazy" width="1560" height="920">
+            <figcaption>塑料件页：拖入 STEP 后自动出体积、克重、材料费、机台费，右侧是 14 行成本构成</figcaption>
+          </figure>
+        </div>
+        <div class="split-facts">
+          <div class="fact">
+            <div class="fact-num">0.816<span>元/件</span></div>
+            <div class="fact-cap">这个塑料件的单件合计，占整件成本 7.1%</div>
+          </div>
+          <div class="fact">
+            <div class="fact-num">9.106<span>元/件</span></div>
+            <div class="fact-cap">外购件（五金、电子）占 79.3%，这才是报价主体的风险点</div>
+          </div>
+          <div class="fact">
+            <div class="fact-num">0.500<span>元/件</span></div>
+            <div class="fact-cap">模具费按订单量摊销；订单一变，这个数立刻跟着变</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 适合谁 ============ -->
+  <section class="band band-ink" id="scope">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker">03 / 先对齐一件事</p>
+        <h2 class="h2">谁该用，谁别用</h2>
+      </div>
+
+      <div class="scope-grid">
+        <div class="scope-col">
+          <h3 class="scope-h is-yes">适合</h3>
+          <ul class="scope-list">
+            <li>甲方采购、产品经理、硬件创业团队，要判断供应商报价合不合理</li>
+            <li>立项前要估 BOM 成本，手上只有模型和一张外购件清单</li>
+            <li>要一次性出多档数量的价格表，而不是每次重敲一遍 Excel</li>
+            <li>出口或做电商，想知道扣完平台费用还剩多少净利</li>
+          </ul>
+        </div>
+        <div class="scope-col">
+          <h3 class="scope-h is-no">不适合</h3>
+          <ul class="scope-list">
+            <li>模具厂对外报价——这里模具费只是一个摊销项，不是报价主体</li>
+            <li>排产、排机、管车间——它不做 ERP 的活</li>
+            <li>纯外观比价，不上量、不算模具</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="trust-row">
+        <div class="trust"><b>30 天</b><span>免费试用，功能不阉割</span></div>
+        <div class="trust"><b>到期</b><span>变只读预览：能看不给改，也不给导出</span></div>
+        <div class="trust"><b>离线</b><span>一机一码激活，除材料行情与汇率外不联网</span></div>
+        <div class="trust"><b>本地</b><span>报价存成文件放自己电脑，不上传</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 阶梯报价 ============ -->
+  <section class="band" id="tier">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker">04 / 阶梯报价</p>
+        <h2 class="h2">填 5 档数量，材料单价与毛利率自动重算</h2>
+        <p class="lead">
+          你只填数量档位。用料总重量越大，材料单价自动往下调（备注列写明相对基准价涨跌几个点），
+          外购件折扣和毛利率也跟着数量走——不用自己拍脑袋定系数，改一个数量，整张表重算。
+        </p>
+      </div>
+
+      <div class="tier-table" role="table" aria-label="阶梯报价示例">
+        <div class="tier-row tier-head" role="row">
+          <span role="columnheader">数量（件）</span>
+          <span role="columnheader">材料单价变动</span>
+          <span role="columnheader">出厂价</span>
+          <span role="columnheader">降幅</span>
+        </div>
+        <div class="tier-row" role="row"><span role="cell">1,000</span><span role="cell">+8.0%</span><span role="cell" class="tier-price" data-count="44.998">44.998</span><span role="cell" class="dim">—</span></div>
+        <div class="tier-row" role="row"><span role="cell">5,000</span><span role="cell">+5.9%</span><span role="cell" class="tier-price" data-count="19.983">19.983</span><span role="cell" class="dim">−55.6%</span></div>
+        <div class="tier-row" role="row"><span role="cell">10,000</span><span role="cell">+4.2%</span><span role="cell" class="tier-price" data-count="16.846">16.846</span><span role="cell" class="dim">−62.6%</span></div>
+        <div class="tier-row" role="row"><span role="cell">50,000</span><span role="cell">+0.3%</span><span role="cell" class="tier-price" data-count="14.395">14.395</span><span role="cell" class="dim">−68.0%</span></div>
+        <div class="tier-row" role="row"><span role="cell">100,000</span><span role="cell">−0.9%</span><span role="cell" class="tier-price" data-count="13.998">13.998</span><span role="cell" class="dim">−68.9%</span></div>
+      </div>
+
+      <p class="note">
+        材料单价 +8.0% → −0.9%，用料总重 46.3 kg → 4,630.50 kg。降幅里含模具费被摊薄的部分，
+        不是单纯砍材料钱。同是 5 万件：首屏 14.361 元是主报价页口径（模具费按实际批量单列），
+        这里 14.395 元是阶梯页口径（模具费摊进单价），差 0.034 元，两边都算给你看。
+      </p>
+
+      <figure class="shot shot-wide shot-wipe">
+        <img src="./assets/app-tier.png" data-src-zh="./assets/app-tier.png" data-src-en="./assets/en/app-tier.png" alt="阶梯报价页：五档数量自动算出材料折扣、单件成本与出厂价" loading="lazy" width="1560" height="920">
+        <figcaption>阶梯报价页：只有「数量」一列可以改，其余 11 列都是算出来的</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ 模具与包材 ============ -->
+  <section class="band band-paper" id="mold">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker">05 / 模具与包材</p>
+        <h2 class="h2">一套模多少钱，一箱货多少材积</h2>
+        <p class="lead">
+          按投影面积和腔数估模具费，拼模排布后把模具费摊进单件；内盒外箱按模型外形自动算尺寸和克重。
+          报价单里不再漏掉包材，也不再凭记忆填模具价。
+        </p>
+      </div>
+
+      <div class="split split-rev">
+        <div class="split-media">
+          <figure class="shot shot-wipe">
+            <img src="./assets/app-mold.png" data-src-zh="./assets/app-mold.png" data-src-en="./assets/en/app-mold.png" alt="模具方案页：零件投影面积 26.6 cm²、腔数 2、模具工艺要求" loading="lazy" width="1560" height="920">
+            <figcaption>模具方案页：投影面积、腔数、抛光与寿命要求，生成后一键写入报价</figcaption>
+          </figure>
+        </div>
+        <div class="split-facts">
+          <div class="fact">
+            <div class="fact-num" data-i18n-html="mold-num-1">1.8–3.5<span>万元</span></div>
+            <div class="fact-cap">单腔钢模 1.8–3.5 万，2 腔约 2.2 倍；同样一套模摊到 5,000 件是 9.7 元/件，10 万件降到 0.48 元/件</div>
+          </div>
+          <div class="fact">
+            <div class="fact-num">2<span>腔</span></div>
+            <div class="fact-cap">塑料件表、①表、模具费三处腔数联动，改一处其余同步；腔数一变，机台费和人工费跟着摊薄</div>
+          </div>
+          <div class="fact">
+            <div class="fact-num is-text">内盒 + 外箱</div>
+            <div class="fact-cap">按成品外形自动推尺寸与克重，公式取自实际包材报价单，不再漏掉包材这一笔</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 渠道 ============ -->
+  <section class="band" id="channel">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker">06 / 卖出去之后</p>
+        <h2 class="h2">出厂价 14.36 元，在 Amazon 该标 87.30 元</h2>
+        <p class="lead">
+          还是上面那件货（出厂价 14.36 元）。软件内置 10 个平台，这里举 3 个最典型的：
+          佣金、支付、推广、达人、尾程、仓储、退货、关税逐项扣完，反推保本价和目标价；
+          跨境渠道按当地币种标价，汇率自动更新。
+        </p>
+      </div>
+
+      <div class="chen-row">
+        <div class="chen-card">
+          <div class="chen-name">淘宝 / 天猫</div>
+          <div class="chen-price">28.25</div>
+          <div class="chen-sub">净利率 20.0% · 保本价 21.40</div>
+        </div>
+        <div class="chen-card is-hero">
+          <div class="chen-name">Amazon（美国 FBA）</div>
+          <div class="chen-price">US$13.07<em>→ 87.30 元</em></div>
+          <div class="chen-sub">净利 17.46 · ROI 152% · 保本 62.57</div>
+        </div>
+        <div class="chen-card">
+          <div class="chen-name">抖音电商</div>
+          <div class="chen-price">48.41</div>
+          <div class="chen-sub">净利率 20.0% · 保本价 31.65</div>
+        </div>
+      </div>
+
+      <div class="fx-strip" aria-label="实时汇率">
+        <span class="fx-label">1 外币折人民币</span>
+        <span>USD <b>6.6798</b></span>
+        <span>EUR <b>7.4460</b></span>
+        <span>JPY <b>0.0422</b></span>
+        <span>GBP <b>8.9243</b></span>
+        <span class="fx-time">2026-11-09 更新</span>
+      </div>
+
+      <figure class="shot shot-wide shot-wipe">
+        <img src="./assets/app-channel.png" data-src-zh="./assets/app-channel.png" data-src-en="./assets/en/app-channel.png" alt="渠道成本页：三个平台逐项扣费后的净利、保本价与目标价，底部有逐项拆账" loading="lazy" width="1560" height="920">
+        <figcaption>渠道成本页：三个平台同表对比，底部一行写出这个渠道的账是怎么拆的</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ 价格与下载 ============ -->
+  <section class="band band-get" id="get">
+    <div class="wrap wrap-get">
+      <p class="kicker">07 / 价格与下载</p>
+      <h2 class="get-h">现在就能算第一件货</h2>
+      <p class="get-lead">30 天免费试用，功能全开。到期后变成只读预览：报价照常算给你看，但导入模型、改参数、导出 Excel / PDF 都要激活。</p>
+
+      <div class="price-card" id="price">
+        <div class="price-main">
+          <div class="price-num">399<span>元 / 台</span></div>
+          <div class="price-cap">一次买断 · 含 1 年更新 · 一机一码</div>
+        </div>
+        <ul class="price-list">
+          <li>一台电脑一个授权；换电脑重新发码，不额外收费</li>
+          <li>离线激活，不需要联网验证——把机器码发过来，回你一个 16 位激活码</li>
+          <li>多台按台数算，10 台以上可以谈</li>
+        </ul>
+      </div>
+
+      <div class="get-cta">
+        <a class="btn btn-solid btn-lg" href="mailto:871756851@qq.com?subject=%E8%B4%AD%E4%B9%B0%E4%BA%A7%E5%93%81%E6%88%90%E6%9C%AC%E6%A0%B8%E7%AE%97%E5%B7%A5%E5%85%B7" id="buy">立即购买（邮件下单）</a>
+        <a class="btn btn-line btn-lg" href="https://github.com/drgonw1021-lgtm/product-cost-calculator/releases/latest/download/ProductCost_v10.2.zip" download>先下载试用 30 天 · 87 MB</a>
+      </div>
+
+      <p class="get-alt" data-i18n-html="get-alt">
+        只想先算塑料件材料费？<a href="./web/index.html">免费网页版</a>，不用装，浏览器直接开。
+      </p>
+
+      <div class="buy-steps" aria-label="购买流程">
+        <div class="buy-step"><b>1</b><span data-i18n-html="buy-s1">发邮件到下方邮箱，写清<b>台数</b>与<b>发票抬头</b></span></div>
+        <div class="buy-step"><b>2</b><span data-i18n-html="buy-s2">收到收款方式（微信 / 支付宝 / 对公转账），付款后回传凭证</span></div>
+        <div class="buy-step"><b>3</b><span data-i18n-html="buy-s3">装好软件，把「试用 30 天」按钮上的<b>机器码</b>发回来</span></div>
+        <div class="buy-step"><b>4</b><span data-i18n-html="buy-s4">回你 16 位激活码，粘贴即永久激活；电子发票当天发</span></div>
+      </div>
+
+      <p class="get-note">
+        解压即用，不用安装。程序没有买代码签名证书，首次运行 Windows 可能弹
+        「Windows 已保护你的电脑」——点「更多信息 → 仍要运行」即可，这是未签名程序的正常提示。
+      </p>
+
+      <div class="terms-row">
+        <div class="term">
+          <span class="term-k">发票</span>
+          <span class="term-v">可开电子普票或 13% 专票，邮件里注明抬头与税号即可</span>
+        </div>
+        <div class="term">
+          <span class="term-k">退款</span>
+          <span class="term-v">收货 7 天内未激活可全额退；已激活的按未使用天数折算</span>
+        </div>
+        <div class="term">
+          <span class="term-k">授权范围</span>
+          <span class="term-v">一机一码，可用于你自己的商业项目与对客户的报价；不可转售、不可拆包分发</span>
+        </div>
+      </div>
+
+      <div class="contact-row">
+        <div class="contact-item">
+          <span class="contact-k">购买 · 发码 · 下载出问题</span>
+          <a class="contact-v" href="mailto:871756851@qq.com">871756851@qq.com</a>
+        </div>
+        <div class="contact-item">
+          <span class="contact-k">已经装了，想问怎么用</span>
+          <span class="contact-v">点软件右下角「功能说明」，图文步骤都在里面</span>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <b>口径说明（省得后面对不上账）</b>
+        <ul>
+          <li>成本口径：不含税成本 + 毛利 = 出厂价（不含税）；含税价按 13% 增值税另算，不重复加税。</li>
+          <li>材料价：内置默认价可以手动改；「材料行情」联网取自生意社公开报价，抓不到时保留上次价格并标注日期。</li>
+          <li>汇率：取自 open.er-api.com 的公开中间价，软件和本页都显示更新日期；实际结汇以银行牌价为准。</li>
+          <li>本页所有数字来自软件内置示例，可以自己复算；真实报价请用自己的 BOM 与供应商价格。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand">产品成本核算工具 <span>v10.2</span></div>
+    <div class="foot-links">
+      <a href="#breakdown">拆解</a>
+      <a href="#tier">阶梯报价</a>
+      <a href="#channel">渠道</a>
+      <a href="#price">价格</a>
+      <a href="./web/index.html">网页版</a>
+      <a href="mailto:871756851@qq.com">邮箱</a>
+    </div>
+    <div class="foot-note">页面上的数字都来自软件内置示例，可以直接复算 · 联系 871756851@qq.com</div>
+  </div>
+</footer>
+
+<script src="./vendor/gsap.min.js"></script>
+<script src="./vendor/ScrollTrigger.min.js"></script>
+<script src="./vendor/lenis.min.js"></script>
+<!-- 双语：先于 app.js 执行，让 app.js 读到的就是当前语言的文本与断行 -->
+<script src="./i18n.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
