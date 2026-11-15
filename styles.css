@@ -2388,6 +2388,32 @@ html[data-lang="en"] .hero-meta li {
   }
 }
 
+/* 英文价格：等宽字体把小数点撑成一整格（US$59.9 看起来像 US$59 . 9），
+   英文态改用无衬线 + 等宽数字；购买四步英文句子更长，改成 2×2 更好读 */
+html[data-lang="en"] .price-num {
+  font-family: var(--f-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.035em;
+}
+
+/* 英文 "US$59.9" 比 "399" 宽一倍，单位必然换行：干脆让它独占一行、贴左对齐 */
+html[data-lang="en"] .price-num span {
+  display: block;
+  margin: 10px 0 0;
+  font-size: 15px;
+  letter-spacing: 0;
+}
+
+html[data-lang="en"] .buy-steps {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 620px) {
+  html[data-lang="en"] .buy-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* 英文模式启动遮挡：i18n.js 替换文案前不显示中文，避免闪一帧 */
 html.i18n-boot body {
   visibility: hidden;
