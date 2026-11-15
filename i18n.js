@@ -39,7 +39,7 @@
     "下载桌面版 · 免费试用 30 天": "Download for Windows · 30-day free trial",
     "或先试网页版（只算塑料件材料费，免安装）":
       "Or try the web version first (plastics material only, no install)",
-    "399 元 / 台 · 一次买断": "¥399 / seat · one-time purchase",
+    "399 元 / 台 · 一次买断": "US$59.9 / seat · one-time purchase (≈ ¥399)",
     "下载 87 MB": "87 MB download",
     "离线可用": "Works offline",
     "一机一码": "One machine, one code",
@@ -184,8 +184,8 @@
     "可开电子普票或 13% 专票，邮件里注明抬头与税号即可":
       "E-invoice available, standard or 13% VAT special — just include the title and tax ID",
     "退款": "Refund",
-    "收货 7 天内未激活可全额退；已激活的按未使用天数折算":
-      "Full refund within 7 days if not activated; if activated, prorated by unused days",
+    "先试后买：30 天试用期内功能全开，试过再决定。付款后未发码前可随时全额退；激活码一经发出不退——电子码无法回收，我方也无法核实是否已使用。重复付款或码无法激活，换码或全额退款。":
+      "Try before you buy — the 30-day trial is fully functional. Full refund any time before we issue your activation code. Once the code is issued we cannot refund it: an e-code cannot be recalled, and we have no way to verify whether it has been used. Duplicate payment or a code that will not activate: we reissue it or refund in full.",
     "授权范围": "License",
     "一机一码，可用于你自己的商业项目与对客户的报价；不可转售、不可拆包分发":
       "One machine, one code. Use it on your own projects and customer quotes; no resale or repackaging.",
@@ -241,6 +241,7 @@
     "hero-h1-2": "and it splits into <em>14</em> lines.",
     "insight-lead":
       "In this product the plastic part's money comes in three pieces: material 0.525 + molding 0.233 + assembly 0.058 = <b>¥0.816</b>, or 7.1% of the whole unit cost. Purchased parts alone are 9.106, or 79.3%. That's why a material-only quote sheet never reconciles — the real weight sits in hardware, electronics and packaging.",
+    "price-num": "US$59.9<span> / seat</span>",
     "mold-num-1": "18–35<span>k ¥</span>",
     "get-alt":
       "Only need the plastics material cost? The <a href=\"./web/index.html\">free web version</a> runs in your browser — no install.",
