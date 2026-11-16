@@ -173,8 +173,6 @@
       "One-time purchase · 1 year of updates · one machine, one code",
     "一台电脑一个授权；换电脑重新发码，不额外收费":
       "One license per PC; move to another machine and we reissue the code free",
-    "离线激活，不需要联网验证——把机器码发过来，回你一个 16 位激活码":
-      "Activation is offline — send the machine code and we return a 16-character code",
     "多台按台数算，10 台以上可以谈": "Priced per seat; volume pricing from 10 seats up",
     "立即购买（邮件下单）": "Buy now (order by email)",
     "先下载试用 30 天 · 87 MB": "Download the 30-day trial · 87 MB",
@@ -249,9 +247,11 @@
     "buy-s2":
       "You get payment options (WeChat / Alipay / bank transfer) — send the receipt once paid",
     "buy-s3":
-      "Install the app and send the <b>machine code</b> shown on the “Trial 30 days” button",
+      "Install the app, click “Trial 30 days” at the bottom right, then “Copy” to grab the <b>machine code</b>",
     "buy-s4":
-      "We return a 16-character activation code — paste it to activate permanently; the e-invoice goes out the same day"
+      "After payment you get a voucher — open the <a href=\"https://product-cost-calculator.pages.dev/claim\">claim page</a>, enter voucher + machine code, and the 16-character activation code shows up on the spot; the e-invoice goes out the same day",
+    "price-li-offline":
+      "Offline activation, no internet check — after payment you receive a voucher; enter it plus your machine code on the <a href=\"https://product-cost-calculator.pages.dev/claim\">claim page</a> and the activation code appears on the spot."
   };
 
   var CJK = /[\u3400-\u9fff\uff08\uff09\u3001\u3002\uff0c\uff1a\uff1b\u201c\u201d\u300c\u300d\uff01\uff1f]/;
