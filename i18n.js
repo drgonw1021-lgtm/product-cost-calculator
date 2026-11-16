@@ -201,6 +201,7 @@
     "本页所有数字来自软件内置示例，可以自己复算；真实报价请用自己的 BOM 与供应商价格。":
       "Every number here comes from the app's built-in example and can be recomputed; for real quotes use your own BOM and supplier prices.",
 
+    "隐私政策": "Privacy",
     "网页版": "Web version",
     "邮箱": "Email",
     "页面上的数字都来自软件内置示例，可以直接复算 · 联系 871756851@qq.com":
