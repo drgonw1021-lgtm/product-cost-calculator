@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>隐私政策 · 产品成本核算工具</title>
+<meta name="description" content="产品成本核算工具的隐私政策：落地页收集什么、免费网页版为什么不传模型、领码页为什么需要机器码与 IP、桌面版只有哪几处联网、数据留多久、怎么要求删除。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="隐私政策 · 产品成本核算工具">
+<meta property="og:description" content="我们收集什么、为什么、存在哪里、留多久、怎么删除。">
+<meta property="og:url" content="https://product-cost-calculator.pages.dev/privacy">
+<meta property="og:site_name" content="产品成本核算工具">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://product-cost-calculator.pages.dev/privacy">
+<link rel="alternate" hreflang="zh-Hans" href="https://product-cost-calculator.pages.dev/privacy">
+<link rel="alternate" hreflang="en" href="https://product-cost-calculator.pages.dev/privacy?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://product-cost-calculator.pages.dev/privacy">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./assets/app-plastic.png">
+<meta name="theme-color" content="#08182A">
+<link rel="stylesheet" href="./styles.css">
+<script>
+(function () {
+  var l = "zh";
+  try {
+    var m = location.search.match(/[?&]lang=(zh|en)/i);
+    if (m) l = m[1].toLowerCase();
+    else {
+      var s = localStorage.getItem("pc_lang");
+      if (s === "zh" || s === "en") l = s;
+      else if (String(navigator.language || "").toLowerCase().indexOf("zh") !== 0) l = "en";
+    }
+  } catch (e) {}
+  document.documentElement.setAttribute("data-lang", l);
+  document.documentElement.setAttribute("lang", l === "en" ? "en" : "zh-CN");
+  if (l === "en") document.title = "Privacy Policy · Product Cost Calculator";
+})();
+</script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6fc5a35c37040679558732a27f0181a"}'></script><!-- End Cloudflare Web Analytics -->
+<style>
+  /* 只在法律文本页用的排版，不动 landing 的样式表 */
+  [data-zh], [data-en] { display: none; }
+  html[data-lang="en"] [data-en] { display: block; }
+  html[data-lang="en"] .pn-links [data-en],
+  html[data-lang="en"] .pn-brand [data-en],
+  html[data-lang="en"] .doc-h [data-en] { display: inline; }
+  html:not([data-lang="en"]) [data-zh] { display: block; }
+  html:not([data-lang="en"]) .pn-links [data-zh],
+  html:not([data-lang="en"]) .pn-brand [data-zh],
+  html:not([data-lang="en"]) .doc-h [data-zh] { display: inline; }
+
+  .pn {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .pn-in {
+    display: flex; align-items: center; gap: 12px 26px;
+    flex-wrap: wrap;
+    min-height: 62px; padding-top: 10px; padding-bottom: 10px;
+  }
+  .pn-brand {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-weight: 600; font-size: 14.5px; color: var(--ink);
+  }
+  .pn-brand .mark {
+    width: 15px; height: 15px; border: 2px solid var(--ink); border-radius: 4px;
+    display: inline-block; position: relative;
+  }
+  .pn-brand .mark::after {
+    content: ""; position: absolute; left: 2.5px; right: 2.5px; bottom: 2.5px;
+    height: 2px; background: var(--accent-cyan); border-radius: 1px;
+  }
+  .pn-links { display: flex; gap: 4px 20px; flex-wrap: wrap; font-size: var(--t-sm); color: var(--muted); }
+  .pn-links a:hover { color: var(--ink); }
+  .pn .lang-switch {
+    margin-left: auto; display: inline-flex; padding: 3px;
+    background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--r-pill);
+  }
+  .pn .lang-switch button {
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    font: inherit; font-size: var(--t-xs); font-weight: 600; color: var(--muted);
+    padding: 5px 12px; border-radius: var(--r-pill); line-height: 1.4;
+  }
+  .pn .lang-switch button.is-on { background: var(--accent-blue); color: #fff; }
+
+  /* 左右留白交给 .wrap 的 --gut，这里只补上下；max-width 把 gutter 加回来，
+     宽屏正文净宽仍是 860px（860 + 2×56），窄屏就不会顶到屏幕边 */
+  .doc {
+    padding-top: clamp(38px, 6vh, 64px);
+    padding-bottom: clamp(56px, 8vh, 92px);
+    max-width: calc(860px + 2 * var(--gut));
+  }
+  .doc .kicker { margin-bottom: 12px; }
+  .doc h1 {
+    margin: 0 0 14px; font-size: clamp(28px, 4vw, 40px);
+    letter-spacing: -0.026em; line-height: 1.24; color: var(--ink-2);
+  }
+  .doc-meta {
+    margin: 0 0 8px; font-size: var(--t-sm); color: var(--muted-2);
+    font-family: var(--f-num); letter-spacing: 0.01em;
+  }
+  .doc-sum {
+    margin: 0 0 clamp(30px, 5vh, 46px); padding: 16px 20px;
+    background: var(--accent-soft); border-radius: var(--r-md);
+    font-size: var(--t-sm); color: var(--text-2); line-height: 1.8;
+  }
+  .doc h2 {
+    margin: clamp(34px, 5vh, 48px) 0 14px; font-size: var(--t-h3);
+    letter-spacing: -0.01em; color: var(--ink-2);
+    padding-left: 12px; border-left: 3px solid var(--accent-blue); line-height: 1.45;
+  }
+  .doc h2:first-of-type { margin-top: 0; }
+  .doc p, .doc li { font-size: 15px; line-height: 1.86; color: var(--text-2); }
+  .doc p { margin: 0 0 12px; }
+  .doc ul { margin: 0 0 16px; padding-left: 20px; }
+  .doc li { margin-bottom: 7px; }
+  .doc strong { color: var(--ink); font-weight: 600; }
+  .doc code {
+    font-family: var(--f-num); font-size: 12.5px;
+    background: var(--paper-2); border-radius: 5px; padding: 1.5px 6px; color: var(--ink-2);
+  }
+  .doc a { color: var(--accent-blue); text-decoration: underline; text-underline-offset: 3px; }
+  .doc table {
+    width: 100%; border-collapse: collapse; margin: 6px 0 20px;
+    font-size: 13.5px; line-height: 1.7;
+  }
+  .doc th, .doc td {
+    text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line);
+    vertical-align: top; color: var(--text-2);
+  }
+  .doc th {
+    background: var(--paper-2); color: var(--ink-2); font-weight: 600;
+    font-size: 12.5px; letter-spacing: 0.02em; white-space: nowrap;
+  }
+  .doc tbody tr:last-child td { border-bottom: 1px solid var(--line-2); }
+  .doc-scroll { overflow-x: auto; margin: 0 0 20px; }
+  .doc-foot {
+    margin: clamp(34px, 5vh, 48px) 0 0; padding-top: 22px;
+    border-top: 1px solid var(--line); font-size: var(--t-sm); color: var(--muted);
+  }
+  /* ≤640px：四列表格横排必然把文字挤成竖条，改成一行一张卡 */
+  @media (max-width: 640px) {
+    .doc-scroll { overflow-x: visible; }
+    .doc table,
+    .doc tbody,
+    .doc tr,
+    .doc td { display: block; width: auto; }
+    .doc thead {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .doc tbody tr {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 13px 15px 4px;
+      margin-bottom: 11px;
+    }
+    .doc tbody td {
+      border: 0;
+      padding: 0 0 11px;
+      font-size: 13.5px;
+      line-height: 1.75;
+    }
+    .doc tbody td::before {
+      content: attr(data-label);
+      display: block;
+      margin-bottom: 2px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--muted-2);
+    }
+    .doc tbody tr:last-child td { border: 0; }
+    .doc .doc-scroll { margin-bottom: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="pn">
+  <div class="wrap pn-in">
+    <a class="pn-brand" href="./index.html">
+      <span class="mark" aria-hidden="true"></span>
+      <span data-zh>产品成本核算工具</span><span data-en>Product Cost Calculator</span>
+    </a>
+    <nav class="pn-links" aria-label="页面导航">
+      <a href="./index.html"><span data-zh>首页</span><span data-en>Home</span></a>
+      <a href="./index.html#price"><span data-zh>价格</span><span data-en>Pricing</span></a>
+      <a href="./web/index.html"><span data-zh>网页版</span><span data-en>Web app</span></a>
+      <a href="https://product-cost-calculator.pages.dev/claim"><span data-zh>领激活码</span><span data-en>Claim code</span></a>
+    </nav>
+    <div class="lang-switch" role="group" aria-label="语言切换">
+      <button type="button" data-lang-btn="zh">中文</button>
+      <button type="button" data-lang-btn="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap doc" id="top">
+
+<section data-zh>
+  <p class="kicker">Privacy · 隐私</p>
+  <h1>隐私政策</h1>
+  <p class="doc-meta">更新日期 2026-11-16 · 版本 v1.0 · 适用：落地页、领码页、免费网页版、Windows 桌面版</p>
+  <p class="doc-sum">
+    <strong>一句话：</strong>报价数据不出你的电脑；免费网页版不传模型；只有「领激活码」这一步会把机器码和一次访问记录发到服务器，因为它必须在服务器上算码。没有广告画像，没有出卖数据，没有追踪像素——除了 Cloudflare 那个不用 cookie 的访问计数。
+  </p>
+
+  <h2>一、这一页管什么</h2>
+  <p>本政策适用于以下四处，它们的处理方式不一样，下面分开写清楚：</p>
+  <ul>
+    <li><strong>落地页</strong>（<code>product-cost-calculator.pages.dev</code>）：看介绍、看价格、点下载。</li>
+    <li><strong>领码页</strong>（同一站点的 <code>/claim</code>）：填兑换券和机器码，换激活码。</li>
+    <li><strong>免费网页版</strong>（<code>/web/</code>）：拖 STEP 进去，只算塑料件材料费。</li>
+    <li><strong>Windows 桌面版</strong>：装在你电脑上的 <code>ProductCost.exe</code>。</li>
+  </ul>
+
+  <h2>二、我们收什么、为什么收</h2>
+  <div class="doc-scroll">
+  <table>
+    <thead>
+      <tr><th>在哪</th><th>收什么</th><th>为什么</th><th>存在哪里</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-label="在哪">落地页</td>
+        <td data-label="收什么">页面浏览、来源域名、粗略地区（国家/省级）、浏览器与系统的大类。</td>
+        <td data-label="为什么">知道有没有人看、从哪来、哪一页留不住人。</td>
+        <td data-label="存在哪里">Cloudflare Web Analytics。不用 cookie、不做设备指纹，只出汇总数，我们看不到单个访客。</td>
+      </tr>
+      <tr>
+        <td data-label="在哪">领码页</td>
+        <td data-label="收什么">兑换券号或订单号、机器码、算出来的激活码、领取时间、IP 地址、浏览器 User-Agent。</td>
+        <td data-label="为什么">算激活码必须在服务器上做；IP 与时间用来拦批量薅羊毛（同一 IP 十分钟超过 12 次会被限流），也用来在你要换机、重装时帮你查回原来的码。</td>
+        <td data-label="存在哪里">Cloudflare D1 数据库，只有我们能读。</td>
+      </tr>
+      <tr>
+        <td data-label="在哪">免费网页版</td>
+        <td data-label="收什么"><strong>什么都不发。</strong>你拖进去的 STEP 文件在你自己的浏览器里解析（WebAssembly 版 OpenCASCADE），没有上传接口。</td>
+        <td data-label="为什么">—</td>
+        <td data-label="存在哪里">只在你本机内存里，关掉页面就没了。</td>
+      </tr>
+      <tr>
+        <td data-label="在哪">桌面版</td>
+        <td data-label="收什么">报价数据、零件、BOM、方案对比：全部只在本机。</td>
+        <td data-label="为什么">—</td>
+        <td data-label="存在哪里">你选择的保存文件（<code>.pquote</code> / Excel），我们碰不到。</td>
+      </tr>
+      <tr>
+        <td data-label="在哪">桌面版 · 授权</td>
+        <td data-label="收什么">机器码、激活码、到期日。</td>
+        <td data-label="为什么">每次启动在本地重算一遍校验，不需要联网。</td>
+        <td data-label="存在哪里"><code>%LOCALAPPDATA%\ProductCost\activate.dat</code>；试用记录另存一份影子副本（<code>%APPDATA%</code> 与注册表 <code>HKCU\Software\ProductCost</code>），防止删文件重置试用。</td>
+      </tr>
+      <tr>
+        <td data-label="在哪">邮件、微信</td>
+        <td data-label="收什么">你主动写来的内容：邮箱、称呼、发票信息、问题描述。</td>
+        <td data-label="为什么">回你、开票、排错。</td>
+        <td data-label="存在哪里">QQ 邮箱。你不要求删除就留着，方便下次对得上。</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>三、桌面版只有三处会联网</h2>
+  <p>软件是离线的。明确列出来，免得你担心它在后台偷偷做什么：</p>
+  <ul>
+    <li><strong>实时汇率</strong>：向 <code>open.er-api.com</code> 请求币种汇率表，只带币种代码，不带你的任何数据。汇率结果会缓存到本机，一天内不重复请求。</li>
+    <li><strong>材料参考价</strong>：向 <code>100ppi.com</code> 取公开的原料价格页面。只发页码，不发你的零件或报价。</li>
+    <li><strong>AI 助手</strong>：<strong>只有你自己在设置里填了 API Key 才会工作。</strong>没填就完全不联网。填了以后，你发给它的文字会送到你指定的那个服务商（默认 DeepSeek），去哪个地址、用哪个模型都由你决定。</li>
+  </ul>
+
+  <h2>四、我们不做什么</h2>
+  <ul>
+    <li>不出卖、出租、交换任何数据。</li>
+    <li>不做广告画像，不接第三方广告或追踪脚本。</li>
+    <li>不收集通讯录、短信、相册、精确位置、键盘记录。</li>
+    <li>不读你的文件。唯一一次读剪贴板，是你自己点「从剪贴板粘贴机器码」那一下。</li>
+    <li>不上传你的 STEP、BOM、报价表——桌面版和网页版都没有这个能力。</li>
+  </ul>
+
+  <h2>五、机器码是什么</h2>
+  <p>机器码是把「系统安装 GUID + 系统盘序列号 + CPU 型号」拼起来做一次 SHA-256 摘要，再转成 20 位字符（形如 <code>XXXXX-XXXXX-XXXXX-XXXXX</code>）。它<strong>不可逆</strong>——从这 20 位推不回你的 GUID 或序列号，也不含文件名、用户名、路径。它的用途只有一个：让一个激活码只能在一台机器上生效。</p>
+
+  <h2>六、留多久</h2>
+  <ul>
+    <li><strong>订单与领码记录</strong>：保留到你不需要售后为止（换机、重装、重发码都要靠它）。你随时可以要求删除，删除后我们无法再帮你找回或补发激活码。</li>
+    <li><strong>访问统计</strong>：Cloudflare 侧只保留汇总计数，不保存个人级明细。</li>
+    <li><strong>邮件往来</strong>：保留到你要求删除。</li>
+  </ul>
+
+  <h2>七、你的权利</h2>
+  <p>查询、更正、删除、导出——写邮件到 <a href="mailto:871756851@qq.com">871756851@qq.com</a>，说明你要处理的邮箱或订单号即可，7 个工作日内回复。删掉记录后，那张激活码在系统里就查不到了，但不影响已经激活的软件继续用。</p>
+
+  <h2>八、第三方</h2>
+  <ul>
+    <li><strong>Cloudflare</strong>：托管站点与数据库、访问统计。</li>
+    <li><strong>支付渠道</strong>：你选的那家（发卡平台 / 虎皮椒 / Paddle 等）。付款信息在他们那边，我们只收到「已付款、金额、订单号」，<strong>拿不到你的卡号</strong>。</li>
+    <li><strong>QQ 邮箱</strong>：收发邮件。</li>
+    <li><strong>AI 服务商</strong>：只有你自己配了 Key 才会涉及。</li>
+  </ul>
+
+  <h2>九、数据在境外</h2>
+  <p>Cloudflare 的节点遍布全球，你提交的领码记录可能被存到中国大陆以外的机房。付款信息由支付渠道按其所在地的规则处理。</p>
+
+  <h2>十、未成年人</h2>
+  <p>这是给工厂、贸易公司、设计公司的成本核算工具，不面向 14 岁以下的孩子，我们也不会主动收集他们的信息。</p>
+
+  <h2>十一、改这一页</h2>
+  <p>政策变了就改这一页并更新上面的日期；涉及收集范围扩大的重大变更，会在首页提示一次。</p>
+
+  <h2>十二、联系我们</h2>
+  <p>邮箱 <a href="mailto:871756851@qq.com">871756851@qq.com</a>。有任何一处写得不清、或者你觉得不该收的，直接写信问。</p>
+
+  <p class="doc-foot">本页是政策的说明，不构成对其他条款的替代。购买与授权相关约定见<a href="./index.html#price">价格与购买</a>一节的退款与授权范围说明。</p>
+</section>
+
+<section data-en>
+  <p class="kicker">Privacy</p>
+  <h1>Privacy Policy</h1>
+  <p class="doc-meta">Updated 2026-11-16 · v1.0 · Covers: landing site, claim page, free web app, Windows desktop app</p>
+  <p class="doc-sum">
+    <strong>In one line:</strong> your costing data never leaves your machine; the free web app never uploads a model; only the “claim activation code” step sends a machine code and one access record to a server, because the code has to be computed there. No ad profiling, no selling data, no tracking pixels — apart from Cloudflare’s cookie-free visit counter.
+  </p>
+
+  <h2>1. What this policy covers</h2>
+  <p>Four places, each handled differently:</p>
+  <ul>
+    <li><strong>Landing site</strong> (<code>product-cost-calculator.pages.dev</code>): read the intro, check the price, download.</li>
+    <li><strong>Claim page</strong> (<code>/claim</code> on the same site): enter a voucher and machine code, get the activation code.</li>
+    <li><strong>Free web app</strong> (<code>/web/</code>): drop in a STEP file, get plastic-part material cost.</li>
+    <li><strong>Windows desktop app</strong>: <code>ProductCost.exe</code>, installed on your own PC.</li>
+  </ul>
+
+  <h2>2. What we collect and why</h2>
+  <div class="doc-scroll">
+  <table>
+    <thead>
+      <tr><th>Where</th><th>What</th><th>Why</th><th>Stored where</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-label="Where">Landing site</td>
+        <td data-label="What">Page views, referring domain, coarse region (country / province), broad browser and OS class.</td>
+        <td data-label="Why">To know whether anyone reads it, where they come from, and which page loses them.</td>
+        <td data-label="Stored where">Cloudflare Web Analytics. No cookies, no device fingerprinting, aggregate numbers only — we cannot see an individual visitor.</td>
+      </tr>
+      <tr>
+        <td data-label="Where">Claim page</td>
+        <td data-label="What">Voucher or order number, machine code, the resulting activation code, claim time, IP address, browser User-Agent.</td>
+        <td data-label="Why">The activation code must be computed server-side; IP and time block bulk abuse (more than 12 claims per IP in 10 minutes is rate-limited) and let us find your earlier code when you change machines or reinstall.</td>
+        <td data-label="Stored where">Cloudflare D1 database, readable only by us.</td>
+      </tr>
+      <tr>
+        <td data-label="Where">Free web app</td>
+        <td data-label="What"><strong>Nothing.</strong> The STEP file you drop is parsed in your browser (OpenCASCADE compiled to WebAssembly). There is no upload endpoint.</td>
+        <td data-label="Why">—</td>
+        <td data-label="Stored where">Your machine’s memory only; gone when you close the tab.</td>
+      </tr>
+      <tr>
+        <td data-label="Where">Desktop app</td>
+        <td data-label="What">Your quotes, parts, BOM, scenarios: local only.</td>
+        <td data-label="Why">—</td>
+        <td data-label="Stored where">The file you choose to save (<code>.pquote</code> / Excel). We never see it.</td>
+      </tr>
+      <tr>
+        <td data-label="Where">Desktop app · license</td>
+        <td data-label="What">Machine code, activation code, expiry date.</td>
+        <td data-label="Why">Re-verified locally on every launch — no internet needed.</td>
+        <td data-label="Stored where"><code>%LOCALAPPDATA%\ProductCost\activate.dat</code>; the trial record is also mirrored to <code>%APPDATA%</code> and the registry key <code>HKCU\Software\ProductCost</code> so deleting a file cannot reset the trial.</td>
+      </tr>
+      <tr>
+        <td data-label="Where">Email / WeChat</td>
+        <td data-label="What">Whatever you choose to send: email address, name, invoice details, problem description.</td>
+        <td data-label="Why">To reply, invoice, and troubleshoot.</td>
+        <td data-label="Stored where">QQ Mail. Kept unless you ask us to delete it, so the next conversation has context.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>3. The desktop app goes online in exactly three places</h2>
+  <p>The software is offline. Listed explicitly so you do not have to wonder:</p>
+  <ul>
+    <li><strong>Live FX rates</strong>: requests a CNY rate table from <code>open.er-api.com</code>. Currency codes only, none of your data. Rates are cached locally; no repeat requests within a day.</li>
+    <li><strong>Material reference prices</strong>: fetches a public raw-material price page from <code>100ppi.com</code>. Page numbers only — never your parts or quotes.</li>
+    <li><strong>AI assistant</strong>: works <strong>only if you enter an API key yourself</strong>. Without a key it never goes online. With one, the text you send goes to the provider you configured (DeepSeek by default); the endpoint and model are your choice.</li>
+  </ul>
+
+  <h2>4. What we never do</h2>
+  <ul>
+    <li>Never sell, rent, or trade data.</li>
+    <li>No ad profiling, no third-party ad or tracking scripts.</li>
+    <li>No contacts, SMS, photos, precise location, or keystroke logging.</li>
+    <li>We do not read your files. The single clipboard read happens when you click “paste machine code” yourself.</li>
+    <li>We never upload your STEP, BOM, or quote sheet — neither the desktop nor the web app can do it.</li>
+  </ul>
+
+  <h2>5. What a machine code is</h2>
+  <p>The machine code joins the OS installation GUID, the system volume serial number, and the CPU model, runs one SHA-256 digest, and renders 20 characters (like <code>XXXXX-XXXXX-XXXXX-XXXXX</code>). It is <strong>one-way</strong>: those 20 characters cannot be turned back into your GUID or serial, and contain no file name, user name, or path. Its only job is to bind one activation code to one machine.</p>
+
+  <h2>6. How long we keep it</h2>
+  <ul>
+    <li><strong>Order and claim records</strong>: until you no longer need support (machine change, reinstall, code reissue all depend on them). You can ask us to delete them at any time — after which we can no longer recover or reissue your activation code.</li>
+    <li><strong>Visit statistics</strong>: aggregate counts only on the Cloudflare side, no per-visitor detail.</li>
+    <li><strong>Email threads</strong>: until you ask us to delete them.</li>
+  </ul>
+
+  <h2>7. Your rights</h2>
+  <p>Access, correct, delete, export — email <a href="mailto:871756851@qq.com">871756851@qq.com</a> with the address or order number to act on, and we reply within 7 business days. Deleting a record removes that activation code from our system, but does not stop software that is already activated from running.</p>
+
+  <h2>8. Third parties</h2>
+  <ul>
+    <li><strong>Cloudflare</strong>: hosting, database, visit analytics.</li>
+    <li><strong>Payment channel</strong>: whichever you pick (a card-key marketplace, Xunhupay, Paddle, …). Payment details stay with them; we receive only “paid, amount, order number” — <strong>never your card number</strong>.</li>
+    <li><strong>QQ Mail</strong>: sending and receiving email.</li>
+    <li><strong>AI provider</strong>: only if you configure a key yourself.</li>
+  </ul>
+
+  <h2>9. Data outside mainland China</h2>
+  <p>Cloudflare operates globally, so a claim record you submit may be stored in a data centre outside mainland China. Payment details are handled by the payment channel under its own jurisdiction’s rules.</p>
+
+  <h2>10. Minors</h2>
+  <p>This is a costing tool for factories, trading companies, and design studios. It is not aimed at children under 14, and we do not knowingly collect their information.</p>
+
+  <h2>11. Changes to this page</h2>
+  <p>If the policy changes we update this page and the date above. A material expansion of what we collect gets a one-time notice on the home page.</p>
+
+  <h2>12. Contact</h2>
+  <p>Email <a href="mailto:871756851@qq.com">871756851@qq.com</a>. If anything here reads unclear, or you think we should not be collecting something, just write.</p>
+
+  <p class="doc-foot">This page explains our policy; it does not replace the other terms. Refund and license scope are described in <a href="./index.html#price">Pricing &amp; purchase</a>.</p>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      <span data-zh>产品成本核算工具</span><span data-en>Product Cost Calculator</span>
+    </div>
+    <div class="foot-links">
+      <a href="./index.html"><span data-zh>首页</span><span data-en>Home</span></a>
+      <a href="./privacy"><span data-zh>隐私政策</span><span data-en>Privacy</span></a>
+      <a href="./web/index.html"><span data-zh>网页版</span><span data-en>Web app</span></a>
+      <a href="mailto:871756851@qq.com"><span data-zh>邮箱</span><span data-en>Email</span></a>
+    </div>
+    <div class="foot-note">
+      <span data-zh>联系 871756851@qq.com</span><span data-en>Contact 871756851@qq.com</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  function cur() {
+    return document.documentElement.getAttribute("data-lang") === "en" ? "en" : "zh";
+  }
+  function apply(lang) {
+    var en = lang === "en";
+    document.documentElement.setAttribute("data-lang", en ? "en" : "zh");
+    document.documentElement.setAttribute("lang", en ? "en" : "zh-CN");
+    document.title = en ? "Privacy Policy · Product Cost Calculator" : "隐私政策 · 产品成本核算工具";
+    try { localStorage.setItem("pc_lang", en ? "en" : "zh"); } catch (e) {}
+    document.querySelectorAll("[data-lang-btn]").forEach(function (b) {
+      var on = b.getAttribute("data-lang-btn") === (en ? "en" : "zh");
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.classList.toggle("is-on", on);
+    });
+  }
+  document.querySelectorAll("[data-lang-btn]").forEach(function (b) {
+    b.addEventListener("click", function () { apply(b.getAttribute("data-lang-btn")); });
+  });
+  apply(cur());
+})();
+</script>
+</body>
+</html>
