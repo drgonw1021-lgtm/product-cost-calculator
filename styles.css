@@ -2414,6 +2414,22 @@ html[data-lang="en"] .buy-steps {
   }
 }
 
+/* 价格说明与购买步骤里的行内链接（领码页入口）
+   这两块原本只放纯文本，<a> 会继承正文色、无下划线，看着不像能点 */
+.price-list a,
+.buy-step span a {
+  color: var(--accent-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--accent-blue) 45%, transparent);
+}
+
+.price-list a:hover,
+.buy-step span a:hover {
+  text-decoration-color: var(--accent-blue);
+}
+
 /* 英文模式启动遮挡：i18n.js 替换文案前不显示中文，避免闪一帧 */
 html.i18n-boot body {
   visibility: hidden;
