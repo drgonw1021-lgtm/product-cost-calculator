@@ -175,6 +175,7 @@
       "One license per PC; move to another machine and we reissue the code free",
     "多台按台数算，10 台以上可以谈": "Priced per seat; volume pricing from 10 seats up",
     "立即购买（邮件下单）": "Buy now (order by email)",
+    "立即购买（自助下单）": "Buy now (self-service checkout)",
     "先下载试用 30 天 · 87 MB": "Download the 30-day trial · 87 MB",
     "解压即用，不用安装。程序没有买代码签名证书，首次运行 Windows 可能弹 「Windows 已保护你的电脑」——点「更多信息 → 仍要运行」即可，这是未签名程序的正常提示。":
       "Unzip and run — no installer. The app carries no code-signing certificate, so Windows may show “Windows protected your PC” on first launch: click “More info → Run anyway”. That's normal for unsigned software.",
@@ -225,7 +226,7 @@
       "Product Cost Calculator — drop in a STEP, get 14 cost lines and an ex-works price",
     "甲方内部核价工具：STEP → 单件成本 → 出厂价，每一分钱都能点开看它怎么来的。":
       "A buyer-side costing tool: STEP → unit cost → ex-works price. Every cent opens up to show where it came from.",
-    "产品成本核算工具 v10.2 塑料件页：零件表与右侧 14 行成本构成、出厂价 14.361 元":      "Product Cost Calculator v10.2, plastic parts page: parts table and the 14-line cost breakdown showing an ex-works price of ¥14.361",
+    "产品成本核算工具 v10.2 塑料件页：零件表与右侧 14 行成本构成、出厂价 14.361 元":      "Product Cost Calculator v10.3, plastic parts page: parts table and the 14-line cost breakdown showing an ex-works price of ¥14.361",
     "阶梯报价页：五档数量自动算出材料折扣、单件成本与出厂价":
       "Tier pricing page: five quantities with auto-computed material discount, unit cost and ex-works price",
     "模具方案页：零件投影面积 26.6 cm²、腔数 2、模具工艺要求":
@@ -244,9 +245,10 @@
     "mold-num-1": "18–35<span>k ¥</span>",
     "get-alt":
       "Only need the plastics material cost? The <a href=\"./web/index.html\">free web version</a> runs in your browser — no install.",
-    "buy-s1": "Email us at the address below with the <b>number of seats</b> and the <b>invoice title</b>",
+    "buy-s1":
+      "Click “Buy now”, pick the <b>number of seats</b>; the page gives you an order ID and a payment QR",
     "buy-s2":
-      "You get payment options (WeChat / Alipay / bank transfer) — send the receipt once paid",
+      "Pay by <b>WeChat / Alipay QR</b> and put the order ID in the note — the voucher shows up on the same page once confirmed",
     "buy-s3":
       "Install the app, click “Trial 30 days” at the bottom right, then “Copy” to grab the <b>machine code</b>",
     "buy-s4":
@@ -313,7 +315,7 @@
 
     // 版本号：写死在 HTML 里，字典抓不到，这里统一覆盖
     root.querySelectorAll(".nav-ver, .foot-brand span").forEach(function (el) {
-      el.textContent = "v10.2";
+      el.textContent = "v10.3";
     });
   }
 
