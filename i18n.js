@@ -332,6 +332,7 @@
     var root = document.documentElement;
     root.setAttribute("data-lang", _lang);
     root.setAttribute("lang", en ? "en" : "zh-CN");
+    retarget(_lang);
 
     _nodes.forEach(function (o) {
       o.node.nodeValue = pad(o.zh, en ? o.en : norm(o.zh));
@@ -401,6 +402,28 @@
         e.preventDefault();
         set(b.getAttribute("data-lang-btn"));
       });
+    });
+  }
+
+  /* ------------------------------------------------- 把语言带给下一站 */
+  /* 理由：/store 与 /claim 也支持 ?lang=，显式带上比只靠 localStorage 稳。
+     首次访问（无 storage）、或用户从邮件/微信里点开的是别人转的链接时，
+     storage 里什么都没有，只能靠 URL。 */
+  function retarget(lang) {
+    var qs = lang === "en" ? "?lang=en" : "?lang=zh";
+    var bases = [
+      "https://product-cost-calculator.pages.dev/store",
+      "https://product-cost-calculator.pages.dev/claim"
+    ];
+    document.querySelectorAll('a[href]').forEach(function (a) {
+      var h = a.getAttribute("href") || "";
+      for (var i = 0; i < bases.length; i++) {
+        if (h.indexOf(bases[i]) !== 0) continue;
+        var tail = h.slice(bases[i].length);
+        if (tail.indexOf("?") === 0) tail = tail.replace(/^\?lang=(zh|en)/i, "");
+        a.setAttribute("href", bases[i] + qs + tail);
+        break;
+      }
     });
   }
 
