@@ -477,6 +477,9 @@
     "材料费合计 元": "Material cost ¥",
     " 元": " CNY",
     "解析完成": "Parsed:",
+    "（首次用需要下载 7MB 的 CAD 内核，大装配体可能要几秒）": " (first run downloads a 7 MB CAD kernel; large assemblies take a few seconds)",
+    "正在解析（首次用需要下载 7MB 的 CAD 内核）": "Parsing (first run downloads a 7 MB CAD kernel)",
+    "等待上传…": "Waiting for a file…",
     "；": "; ",
   };
   var H = {
@@ -1010,7 +1013,7 @@ async function handleFiles(list){
     const head = ok.length > 1
       ? T("正在解析") + " " + (k + 1) + "/" + ok.length + " · " + f.name
       : T("正在解析");
-    setStatus(`<span class="spinner"></span>${head}（首次用需要下载 7MB 的 CAD 内核，大装配体可能要几秒）…`);
+    setStatus(`<span class="spinner"></span>${head}${T("（首次用需要下载 7MB 的 CAD 内核，大装配体可能要几秒）")}…`);
     await new Promise(r => setTimeout(r, 60));
     try{
       const inst = await getOcct();
@@ -1060,7 +1063,7 @@ $("again").addEventListener("click", () => {
   const fl = $("filelist");
   if (fl) { fl.style.display = "none"; fl.innerHTML = ""; }
   $("file").value = "";
-  setStatus("等待上传…");
+  setStatus(T("等待上传…"));
   window.scrollTo({top: 0, behavior: "smooth"});
 });
 $("print").addEventListener("click", () => window.print());
@@ -1091,7 +1094,7 @@ async function loadDemo(){
 /* 把 handleFile 的解析部分抽出来，供 demo 复用 */
 async function handleBuffer(arr, name){
   $("result-card").style.display = "none";
-  setStatus('<span class="spinner"></span>正在解析（首次用需要下载 7MB 的 CAD 内核）…');
+  setStatus('<span class="spinner"></span>' + T("正在解析（首次用需要下载 7MB 的 CAD 内核）") + '…');
   await new Promise(r => setTimeout(r, 60));
   try{
     const t0 = performance.now();
