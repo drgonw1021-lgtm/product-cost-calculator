@@ -107,6 +107,19 @@
     border-bottom:none;background:var(--paper)}
   .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
 
+  /* 多文件：按来源文件分组的小计 */
+  .filelist{margin-top:12px;border:1px solid var(--line);border-radius:var(--r-md);
+    background:var(--card);overflow:hidden}
+  .filelist .fr{display:flex;gap:12px;align-items:baseline;padding:9px 14px;
+    border-bottom:1px solid var(--line);font-size:13px}
+  .filelist .fr:last-child{border-bottom:none}
+  .filelist .fr .fn{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap;color:var(--text);font-weight:600}
+  .filelist .fr .fv{color:var(--muted);font-size:12px;white-space:nowrap}
+  .filelist .fr b{font-family:var(--f-num);white-space:nowrap;color:var(--ink)}
+  .fname{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;font-weight:400}
+  @media print{.filelist{border-color:#ccc}}
+
   /* 表单控件 */
   select,input{width:100%;padding:7px 10px;border:1px solid var(--line-2);border-radius:var(--r-xs);
     background:var(--card);color:var(--text);font-size:13px;font-family:inherit;outline:none;
@@ -216,11 +229,19 @@
   /* 顶栏返回条：细发丝边 */
   .backbar{border:1px solid rgba(10,107,196,.14)}
 
+  /* 语言切换：与落地页同一套胶囊 */
+  .langs{display:flex;gap:6px;align-items:center;flex:none}
+  .wl{cursor:pointer;border:1px solid var(--line-2);background:var(--card);color:var(--muted);
+    padding:4px 11px;border-radius:var(--r-pill);font-size:12px;font-weight:600;
+    font-family:inherit;white-space:nowrap;transition:all .15s}
+  .wl:hover{border-color:var(--teal);color:var(--teal)}
+  .wl.on{background:var(--ink);border-color:var(--ink);color:#fff}
+  @media print{.langs{display:none!important}}
+
   @media (max-width:640px){
     body::before{background-size:44px 44px}
   }
 </style>
-<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6fc5a35c37040679558732a27f0181a"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
 <body>
 <div class="wrap">
@@ -229,6 +250,10 @@
       <span class="mark" aria-hidden="true"></span>
       <h1>塑料件材料费计算器</h1>
       <span class="tag">免费 · 在线</span>
+      <span class="langs">
+        <button type="button" class="wl" data-wlang="zh">中文</button>
+        <button type="button" class="wl" data-wlang="en">EN</button>
+      </span>
     </div>
     <p class="sub">上传 STEP / IGES 模型，自动识别每个零件、算出体积和克重，选好材料就能看到每个零件和总的材料费。全部在你的浏览器里计算，模型不上传服务器。</p>
     <div id="file-warn" style="display:none;margin:10px 0;padding:10px 14px;border-radius:12px;
@@ -241,7 +266,7 @@
     </div>
   </header>
 
-  <div class="backbar">
+  <div class="backbar" data-wi18n-html="backbar">
     <a href="../index.html">← 返回产品介绍</a>
     <span>这里是免费网页版，只算材料费；完整成本与报价在桌面版。</span>
   </div>
@@ -252,9 +277,9 @@
         <h2>① 上传模型</h2>
         <div class="drop" id="drop">
           <div class="icon">📦</div>
-          <b>把 STEP / IGES 文件拖到这里，或点击选择</b>
-          <span>支持 .stp / .step / .igs / .iges / .brep，建议单个文件 &lt; 50 MB</span>
-          <input type="file" id="file" accept=".stp,.step,.igs,.iges,.brep">
+          <b>把 STEP / IGES 文件拖到这里，或点击选择（可一次选多个）</b>
+          <span>支持 .stp / .step / .igs / .iges / .brep，建议单个文件 &lt; 50 MB；多个文件会分别计算再合计</span>
+          <input type="file" id="file" accept=".stp,.step,.igs,.iges,.brep" multiple>
         </div>
         <div class="status" id="status">等待上传…</div>
         <p class="hint">没有模型？<a href="#" id="demo-link">用示例模型试试</a>（一个 40×30×10mm 的方块，12 cm³）</p>
@@ -288,6 +313,7 @@
             </tfoot>
           </table>
         </div>
+        <div class="filelist" id="filelist" style="display:none"></div>
         <div class="btns">
           <button type="button" class="primary" id="again">换一个模型</button>
           <button type="button" id="print">打印 / 存 PDF</button>
@@ -325,17 +351,232 @@
       <li><b>支持什么格式？</b> .stp / .step / .igs / .iges / .brep。STL 这类网格文件没有实体信息，暂不支持。</li>
       <li><b>为什么体积和 CAD 里差一点？</b> 用三角面近似积分，曲面越多误差越大，通常 &lt;1%，报价够用。</li>
       <li><b>一个装配体会怎样？</b> 按实体拆成多行，每个零件单独选材料、单独算材料费。</li>
+      <li><b>能一次算多个零件吗？</b> 能。选文件时可以多选（或一次拖进好几个），每个文件单独解析、零件名下面标出来源文件，表格下方会按文件给一行小计；总计仍是全部文件的合计。</li>
     </ul>
     <p style="color:var(--muted);font-size:12px">说明：结果为估算值，用于内部核算和报价参考，最终以实际工艺和供应商报价为准。</p>
   </section>
 
-  <footer>
+  <footer data-wi18n-html="foot">
     <div>塑料件材料费计算器（免费网页版）· 模型与数据只在本机浏览器计算</div>
     <div>免费网页版 · 完整成本核算见 <a href="../index.html">桌面版介绍</a></div>
   </footer>
 </div>
 
 <script src="./vendor/occt-import-js.js"></script>
+<script>
+/* ==== 网页版双语（key = 中文原文，空白折叠） ==== */
+(function(){
+  var D = {
+    "塑料件材料费计算器（免费网页版）— 上传 STEP 自动列出每个零件的体积、克重和材料费":
+      "Plastic part material cost calculator (free web version) — drop in a STEP, get each part's volume, weight and material cost",
+    "塑料件材料费计算器": "Plastic Part Material Cost",
+    "免费 · 在线": "Free · online",
+    "上传 STEP / IGES 模型，自动识别每个零件、算出体积和克重，选好材料就能看到每个零件和总的材料费。全部在你的浏览器里计算，模型不上传服务器。":
+      "Drop in a STEP / IGES model; every part is detected, its volume and weight computed, and you pick a material to see per-part and total material cost. Everything runs in your browser — the model is never uploaded.",
+    "你是在用「文件方式」直接打开本页：浏览器会禁止读取本地 WASM，上传可能失败。":
+      "You opened this page as a plain file: the browser blocks local WASM, so uploads may fail.",
+    "请用本地服务器打开（例如在本目录运行": "Serve it locally instead (for example run",
+    "，或直接": ", or just",
+    "下载桌面版": "download the desktop app",
+    "← 返回产品介绍": "← Back to product page",
+    "这里是免费网页版，只算材料费；完整成本与报价在桌面版。":
+      "This is the free web version: material cost only. Full costing and quoting live in the desktop app.",
+    "① 上传模型": "① Upload a model",
+    "把 STEP / IGES 文件拖到这里，或点击选择（可一次选多个）":
+      "Drop a STEP / IGES file here, or click to choose (multiple files allowed)",
+    "支持 .stp / .step / .igs / .iges / .brep，建议单个文件 < 50 MB；多个文件会分别计算再合计":
+      "Supports .stp / .step / .igs / .iges / .brep, ideally under 50 MB each; several files are computed separately and then totalled",
+    "等待上传…": "Waiting for a file…",
+    "没有模型？": "No model? ",
+    "用示例模型试试": "Try the sample model",
+    "（一个 40×30×10mm 的方块，12 cm³）": " (a 40×30×10 mm block, 12 cm³)",
+    "② 零件与材料费": "② Parts and material cost",
+    "拖动旋转 · 滚轮缩放 · 双击复位 · 点表格行高亮零件":
+      "Drag to rotate · scroll to zoom · double-click to reset · click a table row to highlight the part",
+    "只看选中": "Selected only",
+    "复位视角": "Reset view",
+    "零件（实体）": "Part (solid)",
+    "体积 cm³": "Volume cm³",
+    "克重 g": "Weight g",
+    "材料": "Material",
+    "单价 元/kg": "Unit price ¥/kg",
+    "材料费 元": "Material cost ¥",
+    "合计": "Total",
+    "换一个模型": "Load another model",
+    "打印 / 存 PDF": "Print / save PDF",
+    "材料费 = 克重 ÷ 1000 × 单价（未计损耗、成型、人工、模具等；这些在桌面完整版里算）。":
+      "Material cost = weight ÷ 1000 × unit price (no scrap, moulding, labour or tooling — the desktop app covers those).",
+    "要算完整成本？": "Need the full cost?",
+    "这里只算材料费。桌面完整版能算：成型费、机台费、人工、二次加工、外购件、包装、模具摊销、管理费用、利润和税，直接出含税出厂价，还能导出 Excel 和 PDF 报价单。":
+      "This page stops at material cost. The desktop app also does moulding, machine rate, labour, secondary ops, bought-in parts, packaging, tooling amortisation, overhead, margin and tax — straight to an ex-works price, with Excel and PDF quotes.",
+    "下载桌面版（Windows）": "Download for Windows",
+    "30 天试用，装好就能用；也可以先看": "30-day trial, works right after install — or take a look at the ",
+    "完整功能介绍": "full feature list",
+    "怎么算的": "How it is calculated",
+    "体积由模型三角面积分得到（曲面有不到 1% 的离散误差）；":
+      "Volume comes from integrating the mesh (curved faces carry under 1% discretisation error);",
+    "克重 = 体积 × 材料密度；": "weight = volume × density;",
+    "材料费 = 克重 ÷ 1000 × 单价。": "material cost = weight ÷ 1000 × unit price.",
+    "这个工具能做什么": "What this tool does",
+    "做塑料件报价、核价时，第一步就是算材料费：需要知道零件体积、克重和材料单价。以前要开 CAD 量体积、手算克重； 现在把 3D 模型拖进来，自动列出每个零件（装配体会逐个拆开），选好材料立刻看到每个零件和总的材料费。":
+      "Quoting a plastic part starts with material cost, which needs the part's volume, weight and material price. That used to mean opening CAD and doing the arithmetic by hand; now you drop in a 3D model, every part is listed (assemblies are split up), and picking a material shows per-part and total cost immediately.",
+    "常见问题": "Frequently asked",
+    "模型会上传吗？": "Is my model uploaded?",
+    "不会。STEP 解析和计算全部在你电脑的浏览器里完成，没有服务器接收文件。":
+      "No. STEP parsing and all maths happen in your browser; no server ever receives the file.",
+    "支持什么格式？": "Which formats are supported?",
+    ".stp / .step / .igs / .iges / .brep。STL 这类网格文件没有实体信息，暂不支持。":
+      ".stp / .step / .igs / .iges / .brep. Mesh-only formats such as STL carry no solid data and are not supported.",
+    "为什么体积和 CAD 里差一点？": "Why does the volume differ slightly from CAD?",
+    "用三角面近似积分，曲面越多误差越大，通常 <1%，报价够用。":
+      "The volume is integrated over triangles, so the more curved faces the larger the error — usually under 1%, fine for quoting.",
+    "一个装配体会怎样？": "What happens with an assembly?",
+    "按实体拆成多行，每个零件单独选材料、单独算材料费。":
+      "Each solid becomes its own row, with its own material and material cost.",
+    "能一次算多个零件吗？": "Can I calculate several parts at once?",
+    "能。选文件时可以多选（或一次拖进好几个），每个文件单独解析、零件名下面标出来源文件，表格下方会按文件给一行小计；总计仍是全部文件的合计。":
+      "Yes. Select or drop several files at once; each is parsed separately, the source file is shown under the part name, and a per-file subtotal appears below the table. The grand total still covers every file.",
+    "说明：结果为估算值，用于内部核算和报价参考，最终以实际工艺和供应商报价为准。":
+      "Note: these are estimates for internal costing and quote reference; actual process and supplier quotes prevail.",
+    "塑料件材料费计算器（免费网页版）· 模型与数据只在本机浏览器计算":
+      "Plastic Part Material Cost (free web version) · models and data stay in your browser",
+    "免费网页版 · 完整成本核算见": "Free web version · full costing in the ",
+    "桌面版介绍": "desktop app",
+    "中文": "中文",
+    /* 脚本里的动态文案 */
+    "自定义": "Custom",
+    "CAD 内核脚本没加载（如果是双击打开的文件方式，浏览器会禁止读取本地 WASM，请改用单文件版）":
+      "The CAD kernel script did not load (opened as a plain file, browsers block local WASM — use the single-file build instead)",
+    "文件 ": "File ",
+    "上传模型后这里显示 3D": "The 3D view appears here once a model is loaded",
+    "实体 ": "Solid ",
+    "解析完成，但没有有效实体体积（文件可能只有曲面）":
+      "Parsed, but no valid solid volume found (the file may contain surfaces only)",
+    "只支持 .stp / .step / .igs / .iges / .brep（STL 这类网格文件没有实体信息）":
+      "Only .stp / .step / .igs / .iges / .brep are supported (mesh files such as STL carry no solid data)",
+    "正在解析": "Parsing",
+    " 没读到实体": " — no solids found",
+    " 格式不支持": " — unsupported format",
+    "这些文件里没读到实体（可能是曲面片、装配件外壳或不完整的文件）：":
+      "No solids were found in these files (they may be surface patches, shells, or incomplete files): ",
+    "示例模型_": "sample_",
+    "示例模型.stp": "sample.stp",
+    "这个文件里没读到实体（可能是曲面片、装配件外壳或不完整的文件）":
+      "No solids were found in this file (it may be surface patches, a shell, or incomplete)",
+    "解析失败：": "Parse failed: ",
+    "示例模型加载失败：": "The sample model failed to load: ",
+    "件 · ": " part(s) · ",
+    " 个实体 · 用时 ": " solid(s) · ",
+    " 秒": " s",
+    " 个文件 · ": " file(s) · ",
+    " · 跳过 ": " · skipped ",
+    " 个（": " (",
+    "零件数": "Parts",
+    "总体积 cm³": "Total volume cm³",
+    "总克重 g": "Total weight g",
+    "材料费合计 元": "Material cost ¥",
+    " 元": " CNY",
+    "解析完成": "Parsed:",
+    "；": "; ",
+  };
+  var H = {
+    "backbar": '<a href="../index.html">← Back to product page</a><span>This is the free web version: material cost only. Full costing and quoting live in the desktop app.</span>',
+    "foot": 'Plastic Part Material Cost (free web version) · models and data stay in your browser<br>Free web version · full costing in the <a href="../index.html">desktop app</a>'
+  };
+  var CJK = /[\u4e00-\u9fff]/;
+  var L = "zh";
+  var norm = function(s){ return String(s).replace(/\s+/g, " ").trim(); };
+  function t(zh){
+    var args = Array.prototype.slice.call(arguments, 1);
+    /* 先按原文精确查（"实体 " / "件 · " / " 元" 这类带首尾空格的键），
+       查不到再按空白折叠后的形式查；都没有就用原文。 */
+    var k = (D[zh] !== undefined) ? zh : norm(zh);
+    var v = (L === "en") ? D[k] : zh;
+    if (v === undefined) v = zh;
+    for (var i = 0; i < args.length; i++) v = v.split("{" + i + "}").join(args[i]);
+    return v;
+  }
+  function apply(root){
+    root = root || document.body;
+    if (L === "en"){
+      if (document.title && window.__wzhTitle === undefined){
+        window.__wzhTitle = document.title; document.title = t(document.title);
+      }
+      var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      var n, list = [];
+      while ((n = w.nextNode())){
+        if (n.parentNode && /^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName)) continue;
+        if (CJK.test(n.nodeValue) || n.__wzh !== undefined) list.push(n);
+      }
+      list.forEach(function(node){
+        if (node.__wzh === undefined) node.__wzh = node.nodeValue;
+        var k = norm(node.__wzh), v = D[k];
+        if (v === undefined) return;
+        var lead = node.__wzh.match(/^\s*/)[0], tail = node.__wzh.match(/\s*$/)[0];
+        node.nodeValue = lead + v + tail;
+      });
+      ["placeholder","title","alt","aria-label"].forEach(function(a){
+        root.querySelectorAll("[" + a + "]").forEach(function(el){
+          var key = "__wzh_" + a, cur = el.getAttribute(a);
+          if (!(CJK.test(cur) || el[key] !== undefined)) return;
+          if (el[key] === undefined) el[key] = cur;
+          var v = D[norm(el[key])];
+          if (v !== undefined) el.setAttribute(a, v);
+        });
+      });
+      root.querySelectorAll("[data-wi18n-html]").forEach(function(el){
+        if (el.__wzhHtml === undefined) el.__wzhHtml = el.innerHTML;
+        var v = H[el.getAttribute("data-wi18n-html")];
+        if (v !== undefined) el.innerHTML = v;
+      });
+    } else {
+      if (window.__wzhTitle !== undefined){ document.title = window.__wzhTitle; }
+      var w2 = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      var m, back = [];
+      while ((m = w2.nextNode())){ if (m.__wzh !== undefined) back.push(m); }
+      back.forEach(function(node){ node.nodeValue = node.__wzh; });
+      ["placeholder","title","alt","aria-label"].forEach(function(a){
+        root.querySelectorAll("[" + a + "]").forEach(function(el){
+          var key = "__wzh_" + a;
+          if (el[key] !== undefined) el.setAttribute(a, el[key]);
+        });
+      });
+      root.querySelectorAll("[data-wi18n-html]").forEach(function(el){
+        if (el.__wzhHtml !== undefined) el.innerHTML = el.__wzhHtml;
+      });
+    }
+    document.documentElement.lang = L === "en" ? "en" : "zh-CN";
+    document.documentElement.setAttribute("data-lang", L);
+    document.querySelectorAll("[data-wlang]").forEach(function(b){
+      var on = b.getAttribute("data-wlang") === L;
+      b.className = "wl" + (on ? " on" : "");
+      b.onclick = function(e){ e.preventDefault(); set(b.getAttribute("data-wlang")); };
+    });
+  }
+  function set(lang){
+    var next = lang === "en" ? "en" : "zh";
+    try { localStorage.setItem("pc_lang", next); } catch (e) {}
+    if (next === L) return;
+    L = next;
+    apply(document.body);
+  }
+  function boot(){
+    var m = null;
+    try { m = location.search.match(/[?&]lang=(zh|en)/i); } catch (e) {}
+    var lang = m ? m[1].toLowerCase() : null;
+    if (!lang){ try { var s = localStorage.getItem("pc_lang"); if (s === "zh" || s === "en") lang = s; } catch (e) {} }
+    if (!lang){
+      var nav = String(navigator.language || "").toLowerCase();
+      lang = nav.indexOf("zh") === 0 ? "zh" : (nav ? "en" : "zh");
+    }
+    L = lang;
+    apply(document.body);
+  }
+  window.WEBL = { t: t, apply: apply, set: set, lang: function(){ return L; } };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+})();
+</script>
 <script>
 /* ================= 配置区 ================= */
 const ADS = { adsenseClient: "", slots: { top: "", mid: "", bottom: "" } };
@@ -361,6 +602,7 @@ const MATERIALS = [
   {name:"自定义", density:1.00, price:12.0}
 ];
 
+const T = (x, ...a) => (window.WEBL ? window.WEBL.t(x, ...a) : x);
 const $ = (id) => document.getElementById(id);
 const money = (v) => (isFinite(v) ? v : 0).toFixed(3);
 const fmt = (v, d) => (isFinite(v) ? v : 0).toFixed(d === undefined ? 2 : d);
@@ -413,16 +655,17 @@ function total(){
 }
 
 function renderParts(){
+  const multi = new Set(parts.map(p => p.file || "")).size > 1;
   const body = $("rows");
   body.innerHTML = "";
   parts.forEach((p, i) => {
     const tr = document.createElement("tr");
     const opts = MATERIALS.map((m, mi) =>
-      `<option value="${mi}"${mi===p.materialIndex?" selected":""}>${m.name}</option>`).join("");
+      `<option value="${mi}"${mi===p.materialIndex?" selected":""}>${T(m.name)}</option>`).join("");
     tr.className = "row" + (i === V3.sel ? " sel" : "");
     tr.dataset.i = i;
     tr.innerHTML = `<td><span class="dot" style="background:${partColor(i)}"></span>${i+1}</td>
-      <td title="${(p.name||"").replace(/"/g,"&quot;")}">${p.name || ("实体 " + (i+1))}</td>
+      <td title="${((p.name||"") + (multi ? " · " + (p.file||"") : "")).replace(/"/g,"&quot;")}">${p.name || (T("实体 ") + (i+1))}${multi && p.file ? '<span class="fname">' + p.file + '</span>' : ""}</td>
       <td>${p.volumeCm3 < 0.01 ? p.volumeCm3.toFixed(3) : fmt(p.volumeCm3,2)}</td>
       <td>${fmt(p.weightG,2)}</td>
       <td><select data-i="${i}" data-k="mat">${opts}</select></td>
@@ -461,17 +704,37 @@ function renderParts(){
 function renderTotals(){
   const t = total();
   $("summary").innerHTML = `
-    <div><b>${parts.length}</b><span>零件数</span></div>
-    <div><b>${fmt(t.vol,2)}</b><span>总体积 cm³</span></div>
-    <div><b>${fmt(t.w,1)}</b><span>总克重 g</span></div>
-    <div><b>${money(t.c)}</b><span>材料费合计 元</span></div>`;
+    <div><b>${parts.length}</b><span>${T("零件数")}</span></div>
+    <div><b>${fmt(t.vol,2)}</b><span>${T("总体积 cm³")}</span></div>
+    <div><b>${fmt(t.w,1)}</b><span>${T("总克重 g")}</span></div>
+    <div><b>${money(t.c)}</b><span>${T("材料费合计 元")}</span></div>`;
   $("t-vol").textContent = fmt(t.vol,2);
   $("t-weight").textContent = fmt(t.w,1);
   $("t-cost").textContent = money(t.c);
+  renderFileList();
   parts.forEach((p, i) => {
     const cell = document.querySelector(`b[data-cost="${i}"]`);
     if (cell) cell.textContent = money(p.weightG/1000*p.price);
   });
+}
+
+/* 多文件时：每份文件一行小计，一眼看出哪个模型占大头 */
+function renderFileList(){
+  const box = $("filelist");
+  if (!box) return;
+  const names = [...new Set(parts.map(p => p.file || ""))];
+  if (names.length < 2){ box.style.display = "none"; box.innerHTML = ""; return; }
+  box.innerHTML = names.map((n, k) => {
+    const ps = parts.filter(p => (p.file || "") === n);
+    const v = ps.reduce((a, p) => a + p.volumeCm3, 0);
+    const w = ps.reduce((a, p) => a + p.weightG, 0);
+    const c = ps.reduce((a, p) => a + p.weightG / 1000 * p.price, 0);
+    const label = n || (T("文件 ") + (k + 1));
+    return `<div class="fr"><span class="fn">${label}</span>` +
+      `<span class="fv">${ps.length}${T("件 · ")}${fmt(v, 2)} cm³ · ${fmt(w, 1)} g</span>` +
+      `<b>${money(c)}${T(" 元")}</b></div>`;
+  }).join("");
+  box.style.display = "";
 }
 
 /* ================= 3D 预览：纯 Canvas 软件渲染 ================= */
@@ -681,24 +944,26 @@ function setupViewer(){
   resizeViewer();
 }
 
-function applyMeshes(meshes, t0){
+function meshesToParts(meshes, file){
   const mat = midx(0);
-  parts = (meshes || []).map((m, i) => {
+  return (meshes || []).map((m, i) => {
     const volCm3 = meshVolume(m) / 1000;
     const rawName = (m.name === undefined || m.name === null) ? "" : String(m.name).trim();
     const badName = !rawName || /^[0-9]+$/.test(rawName) || rawName.length > 28
       || /cascade|translator|step file|iges|brep|open cascade/i.test(rawName);
-    const niceName = badName ? ("实体 " + (i + 1)) : rawName;
+    const niceName = badName ? (T("实体 ") + (i + 1)) : rawName;
     const pos = m.attributes && m.attributes.position ? m.attributes.position.array : null;
     const idx = m.index && m.index.array ? m.index.array : null;
-    return { name: niceName, volumeCm3: volCm3, weightG: volCm3 * mat.density,
+    return { name: niceName, file: file || "", volumeCm3: volCm3, weightG: volCm3 * mat.density,
              materialIndex: 0, price: mat.price,
              _mesh: pos ? { pos: pos instanceof Float32Array ? pos : new Float32Array(pos),
                             idx: idx ? (idx instanceof Uint32Array ? idx : new Uint32Array(idx)) : null } : null };
   }).filter(p => p.volumeCm3 > 1e-6);
+}
 
+function finishLoad(t0, files, failed){
   if (!parts.length){
-    setStatus("解析完成，但没有有效实体体积（文件可能只有曲面）", "err");
+    setStatus(T("解析完成，但没有有效实体体积（文件可能只有曲面）"), "err");
     return;
   }
   V3.sel = -1;
@@ -710,44 +975,75 @@ function applyMeshes(meshes, t0){
   renderParts();
   drawScene();
   const secs = t0 ? ((performance.now() - t0) / 1000).toFixed(1) : "0.1";
-  setStatus(`解析完成：${parts.length} 个实体 · 用时 ${secs} 秒`, "ok");
+  const nf = files || (parts[0].file ? [...new Set(parts.map(p => p.file))].length : 1);
+  let msg = T("解析完成") + (window.WEBL && WEBL.lang() === "en" ? " " : "：") + parts.length + T(" 个实体 · 用时 ") + secs + T(" 秒");
+  if (nf > 1) msg = T("解析完成") + (window.WEBL && WEBL.lang() === "en" ? " " : "：") + nf + T(" 个文件 · ") + parts.length + T(" 个实体 · 用时 ") + secs + T(" 秒");
+  if (failed && failed.length) msg += T(" · 跳过 ") + failed.length + T(" 个（") + failed.join("；") + "）";
+  setStatus(msg, "ok");
+}
+
+/* 兼容旧调用：单个文件解析完直接铺到表格 */
+function applyMeshes(meshes, t0, file){
+  parts = meshesToParts(meshes, file);
+  finishLoad(t0, 1);
+}
+
+/* 多文件：逐个解析、累加，最后统一渲染 */
+async function handleFiles(list){
+  const files = Array.from(list || []).filter(f => f);
+  if (!files.length) return;
+  const okName = /\.(stp|step|igs|iges|brep)$/;
+  const ok = files.filter(f => okName.test(f.name.toLowerCase()));
+  const bad = files.filter(f => !okName.test(f.name.toLowerCase())).map(f => f.name);
+  if (!ok.length){
+    setStatus(T("只支持 .stp / .step / .igs / .iges / .brep（STL 这类网格文件没有实体信息）"), "err");
+    return;
+  }
+  const input = $("file");
+  if (input) input.value = "";
+  $("result-card").style.display = "none";
+  parts = [];
+  const t0 = performance.now();
+  const failed = [];
+  for (let k = 0; k < ok.length; k++){
+    const f = ok[k];
+    const head = ok.length > 1
+      ? T("正在解析") + " " + (k + 1) + "/" + ok.length + " · " + f.name
+      : T("正在解析");
+    setStatus(`<span class="spinner"></span>${head}（首次用需要下载 7MB 的 CAD 内核，大装配体可能要几秒）…`);
+    await new Promise(r => setTimeout(r, 60));
+    try{
+      const inst = await getOcct();
+      const buf = new Uint8Array(await f.arrayBuffer());
+      const nm = f.name.toLowerCase();
+      const res = /\.(stp|step)$/.test(nm) ? inst.ReadStepFile(buf, null)
+                : /\.(igs|iges)$/.test(nm) ? inst.ReadIgesFile(buf, null)
+                : inst.ReadBrepFile(buf, null);
+      if (!res || !res.success || !res.meshes || !res.meshes.length){
+        failed.push(f.name + T(" 没读到实体"));
+        continue;
+      }
+      parts = parts.concat(meshesToParts(res.meshes, f.name));
+    }catch(err){
+      console.error(err);
+      failed.push(f.name + " " + ((err && err.message) ? err.message : String(err)));
+    }
+  }
+  bad.forEach(n => failed.push(n + T(" 格式不支持")));
+  if (!parts.length){
+    setStatus(T("这些文件里没读到实体（可能是曲面片、装配件外壳或不完整的文件）：") + failed.join("；"), "err");
+    return;
+  }
+  finishLoad(t0, ok.length, failed);
 }
 
 async function handleFile(file){
-  if (!file) return;
-  const nm = file.name.toLowerCase();
-  const isStep = /\.(stp|step)$/.test(nm);
-  const isIges = /\.(igs|iges)$/.test(nm);
-  const isBrep = /\.brep$/.test(nm);
-  if (!(isStep || isIges || isBrep)){
-    setStatus("只支持 .stp / .step / .igs / .iges / .brep（STL 这类网格文件没有实体信息）", "err");
-    return;
-  }
-  $("result-card").style.display = "none";
-  setStatus('<span class="spinner"></span>正在解析（首次用需要下载 7MB 的 CAD 内核，大装配体可能要几秒）…');
-  await new Promise(r => setTimeout(r, 60));
-
-  try{
-    const t0 = performance.now();
-    const inst = await getOcct();
-    const buf = new Uint8Array(await file.arrayBuffer());
-    const res = isStep ? inst.ReadStepFile(buf, null)
-              : isIges ? inst.ReadIgesFile(buf, null)
-              : inst.ReadBrepFile(buf, null);
-    if (!res || !res.success || !res.meshes || !res.meshes.length){
-      setStatus("这个文件里没读到实体（可能是曲面片、装配件外壳或不完整的文件）", "err");
-      return;
-    }
-    applyMeshes(res.meshes, t0);
-  }catch(err){
-    console.error(err);
-    setStatus("解析失败：" + (err && err.message ? err.message : err) + "（可以试试用桌面版打开）", "err");
-  }
+  return handleFiles([file]);
 }
 
 /* 事件 */
 $("drop").addEventListener("click", () => $("file").click());
-$("file").addEventListener("change", e => handleFile(e.target.files[0]));
+$("file").addEventListener("change", e => handleFiles(e.target.files));
 ["dragenter","dragover"].forEach(ev => $("drop").addEventListener(ev, e => {
   e.preventDefault(); $("drop").classList.add("over");
 }));
@@ -755,12 +1051,14 @@ $("file").addEventListener("change", e => handleFile(e.target.files[0]));
   e.preventDefault(); $("drop").classList.remove("over");
 }));
 $("drop").addEventListener("drop", e => {
-  const f = e.dataTransfer.files && e.dataTransfer.files[0];
-  if (f) handleFile(f);
+  const fs = e.dataTransfer.files;
+  if (fs && fs.length) handleFiles(fs);
 });
 $("again").addEventListener("click", () => {
   $("result-card").style.display = "none";
   parts = [];
+  const fl = $("filelist");
+  if (fl) { fl.style.display = "none"; fl.innerHTML = ""; }
   $("file").value = "";
   setStatus("等待上传…");
   window.scrollTo({top: 0, behavior: "smooth"});
@@ -769,17 +1067,25 @@ $("print").addEventListener("click", () => window.print());
 
 /* 示例模型：优先读 demo.stp；文件方式（file://）下读不到就用内嵌 STEP */
 async function loadDemo(){
+  const times = Math.min(6, Math.max(1, parseInt(new URLSearchParams(location.search).get("demo"), 10) || 1));
+  let arr = null;
   // 1) 内嵌 STEP（单文件版有）
   if (typeof DEMO_STEP_B64 !== "undefined" && DEMO_STEP_B64){
     const bin = atob(DEMO_STEP_B64);
-    const arr = new Uint8Array(bin.length);
+    arr = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-    await handleBuffer(arr, "示例模型.stp");
+  } else {
+    // 2) 同目录 demo.stp（在线版/本地服务器）
+    arr = new Uint8Array(await (await fetch("./demo.stp")).arrayBuffer());
+  }
+  if (times > 1){
+    // 自测多文件：同一份模型铺成 N 个文件（文件名不同，便于看分组小计）
+    const fs = [];
+    for (let k = 1; k <= times; k++) fs.push(new File([arr], T("示例模型_") + k + ".stp"));
+    await handleFiles(fs);
     return;
   }
-  // 2) 同目录 demo.stp（在线版/本地服务器）
-  const buf = await (await fetch("./demo.stp")).arrayBuffer();
-  await handleBuffer(new Uint8Array(buf), "示例模型.stp");
+  await handleBuffer(arr, T("示例模型.stp"));
 }
 
 /* 把 handleFile 的解析部分抽出来，供 demo 复用 */
@@ -792,13 +1098,13 @@ async function handleBuffer(arr, name){
     const inst = await getOcct();
     const res = name.toLowerCase().endsWith(".brep") ? inst.ReadBrepFile(arr, null) : inst.ReadStepFile(arr, null);
     if (!res || !res.success || !res.meshes || !res.meshes.length){
-      setStatus("这个文件里没读到实体（可能是曲面片、装配件外壳或不完整的文件）", "err");
+      setStatus(T("这个文件里没读到实体（可能是曲面片、装配件外壳或不完整的文件）"), "err");
       return;
     }
     applyMeshes(res.meshes, t0);
   }catch(err){
     console.error(err);
-    setStatus("解析失败：" + (err && err.message ? err.message : err), "err");
+    setStatus(T("解析失败：") + (err && err.message ? err.message : err), "err");
   }
 }
 
@@ -807,7 +1113,7 @@ $("demo-link").addEventListener("click", async (e) => {
   try{
     await loadDemo();
   }catch(err){
-    setStatus("示例模型加载失败：" + (err && err.message ? err.message : err), "err");
+    setStatus(T("示例模型加载失败：") + (err && err.message ? err.message : err), "err");
   }
 });
 /* 自动演示：index.html?demo=1 */
@@ -832,5 +1138,6 @@ if (location.protocol === "file:" && typeof OCCT_WASM_BYTES === "undefined"){
   if (w) w.style.display = "";
 }
 </script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6fc5a35c37040679558732a27f0181a"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
