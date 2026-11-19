@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>阶梯报价计算器 · 按数量自动递降的单价</title>
+<meta name="description" content="输入基准单价和数量档位，按真实采购逻辑自动算出各档的折扣与价格：材料按总用量让价、外购件按批量让价、毛利率随量下调。">
+<meta name="keywords" content="阶梯报价计算器,阶梯价格怎么算,批量报价,数量折扣,阶梯单价">
+<link rel="canonical" href="https://product-cost-calculator.pages.dev/tools/tier-pricing">
+<meta property="og:title" content="阶梯报价计算器 · 按数量自动递降的单价">
+<meta property="og:description" content="输入基准单价和数量档位，按真实采购逻辑自动算出各档的折扣与价格：材料按总用量让价、外购件按批量让价、毛利率随量下调。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://product-cost-calculator.pages.dev/tools/tier-pricing">
+<meta property="og:site_name" content="产品成本核算工具">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#08182A">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./tools.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "阶梯报价计算器",
+  "url": "https://product-cost-calculator.pages.dev/tools/tier-pricing",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "description": "输入基准单价和数量档位，按真实采购逻辑自动算出各档的折扣与价格：材料按总用量让价、外购件按批量让价、毛利率随量下调。",
+  "isPartOf": { "@type": "WebSite", "name": "产品成本核算工具", "url": "https://product-cost-calculator.pages.dev/" }
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "为什么我的件不能按件数给折扣？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "因为材料折扣看的是总用米重量，不是件数。一个 15 g 的小件做 10 万件才 1.5 吨，根本进不了大批量档位。工具里改一下克重就能看到差别。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "毛利率基准怎么定？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "基准档（最小批量）的毛利率应该覆盖：管理费 5%~8% + 资金占用 2%~4% + 风险准备 2%~3% + 净利 8%~15%，合计 17%~30%。低于 15% 的基准毛利很危险。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "客户要求每一档都报，但只下一档怎么办？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "报价单上写明“各档价格对应各自的订单量，不可跨档使用”。或者要求客户承诺年度总量，按总量给价、按批次交货。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "能不能算出每档的利润总额？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "可以：单价 − 成本 = 单件利润，再乘以数量。通常大单的单件利润低但总额高，这就是为什么要接大单——前提是产能吃得下。"
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>产品成本核算工具</a>
+    <span class="top-sp"></span>
+    <a class="top-link" href="./">全部在线计算器</a>
+    <a class="top-cta" href="../">下载桌面版</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <nav class="crumb"><a href="../">首页</a><span>/</span><a href="./">在线计算器</a><span>/</span>阶梯报价计算器</nav>
+    <h1>阶梯报价计算器：数量上去，价格应该降多少</h1>
+    <p class="lead">客户问“做 10 万个多少钱”，你不能凭空让 10 个点。真实的降本来自三处：材料按总用量谈价、外购件按批量让价、毛利率随量收窄。下面三档都按这个逻辑自动出，不用你填系数。</p>
+  </div>
+  <div class="calc">
+    <div class="calc-grid">
+      <div class="calc-in">
+<div class="field"><label class="lab" for="base">基准单价（1000 件档）<span class="hint">按最小批量的成本＋正常利润算出</span></label><div class="inrow"><input type="number" id="base" value="8.5" min="0" max="99999999" step="0.01"><span class="unit">元/件</span></div></div>
+<div class="field"><label class="lab" for="cost">基准单件成本<span class="hint">材料＋机台＋人工＋模具摊销，不含利润</span></label><div class="inrow"><input type="number" id="cost" value="6.2" min="0" max="99999999" step="0.01"><span class="unit">元/件</span></div></div>
+<div class="field"><label class="lab" for="kg">单件克重<span class="hint">用来算总用米重量，决定材料折扣</span></label><div class="inrow"><input type="number" id="kg" value="126" min="0" max="99999999" step="1"><span class="unit">g</span></div></div>
+<div class="field"><label class="lab" for="t1">档位 1</label><div class="inrow"><input type="number" id="t1" value="1000" min="0" max="99999999" step="100"><span class="unit">件</span></div></div>
+<div class="field"><label class="lab" for="t2">档位 2</label><div class="inrow"><input type="number" id="t2" value="5000" min="0" max="99999999" step="500"><span class="unit">件</span></div></div>
+<div class="field"><label class="lab" for="t3">档位 3</label><div class="inrow"><input type="number" id="t3" value="20000" min="0" max="99999999" step="1000"><span class="unit">件</span></div></div>
+<div class="field"><label class="lab" for="t4">档位 4</label><div class="inrow"><input type="number" id="t4" value="100000" min="0" max="99999999" step="5000"><span class="unit">件</span></div></div>
+      </div>
+      <div class="calc-out">
+        <p class="res-cap">各档单价</p>
+        <div class="res-main" id="out">—</div>
+        <p class="res-sub" id="outs">&nbsp;</p>
+        <div class="rows" id="outr"></div>
+
+      </div>
+    </div>
+  </div>
+
+<article class="doc">
+
+<h2>阶梯价不是"拍脑袋让几个点"</h2>
+<p>最常见的错误做法是：1 万件让 3%，5 万件让 6%，10 万件让 10%。这样做有两个问题——让多了自己亏，让少了客户跑了，而且<strong>你没法解释为什么是这个数</strong>。</p>
+<p>真实的降本只来自三个地方，每一处都可以算：</p>
+
+<h3>1. 材料：按总用量谈价</h3>
+<p>原料是阶梯定价的。一年用 5 吨和用 50 吨，供应商给的价差 3%~6% 很正常。关键是<strong>用米总重量</strong>，不是件数：</p>
+<div class="formula">总用米重量 (t) = 件数 × 单件克重 ÷ 1,000,000</div>
+<p>同样 10 万件，120 g 的件是 12 吨，20 g 的小件只有 2 吨——后者根本拿不到大批量折扣。这就是为什么小件不能按件数给折扣。</p>
+<div class="tbl-wrap"><table>
+<tr><th>总用米重量</th><th>材料让价</th><th>典型场景</th></tr>
+<tr><td>&lt; 0.1 t</td><td class="n">+8.0%</td><td>打样、极小单，买零售价</td></tr>
+<tr><td>0.5 t</td><td class="n">+4.0%</td><td>几百件</td></tr>
+<tr><td>1.5 t</td><td class="n">+1.0%</td><td>基准</td></tr>
+<tr><td>5 t</td><td class="n">−1.0%</td><td>整包采购</td></tr>
+<tr><td>15 t</td><td class="n">−3.0%</td><td>季度框架</td></tr>
+<tr><td>40 t</td><td class="n">−5.0%</td><td>年度长约</td></tr>
+</table></div>
+
+<h3>2. 外购件：按批量让价</h3>
+<p>螺丝、磁铁、弹簧、五金件，供应商也是按批量报价的：</p>
+<div class="tbl-wrap"><table>
+<tr><th>数量</th><th>外购件让价</th></tr>
+<tr><td>1,000</td><td class="n">+12%</td><td>（小批量要加价）</td></tr>
+<tr><td>3,000</td><td class="n">+8%</td></tr>
+<tr><td>5,000</td><td class="n">+4%</td></tr>
+<tr><td>20,000</td><td class="n">0%</td><td>（基准）</td></tr>
+<tr><td>50,000</td><td class="n">−2%</td></tr>
+<tr><td>100,000</td><td class="n">−4%</td></tr>
+<tr><td>300,000</td><td class="n">−5.5%</td></tr>
+</table></div>
+
+<h3>3. 毛利率：随量收窄</h3>
+<p>这是最容易被忽略的一项。小单要覆盖换模、调机、试产、沟通成本，毛利必须高；大单可以薄利多销，因为单位管理成本低、资金周转快。</p>
+<div class="tbl-wrap"><table>
+<tr><th>数量</th><th>毛利率调整</th></tr>
+<tr><td>2,000</td><td class="n">+8 个点</td></tr>
+<tr><td>5,000</td><td class="n">+5 个点</td></tr>
+<tr><td>20,000</td><td class="n">0（基准）</td></tr>
+<tr><td>50,000</td><td class="n">−2 个点</td></tr>
+<tr><td>100,000</td><td class="n">−4 个点</td></tr>
+<tr><td>300,000</td><td class="n">−6 个点</td></tr>
+</table></div>
+<p>注意是"个点"不是"百分比"：毛利 25% 降到 19%，不是降 6%，是降 6 个百分点。</p>
+
+<h2>三档怎么合成一个价</h2>
+<div class="formula">新成本 = 材料部分 × (1 − 材料让价) + 外购件部分 × (1 − 外购件让价) + 其他部分
+新单价 = 新成本 ÷ (1 − 新毛利率)</div>
+<p>本工具默认按成本构成 材料 60% / 外购件 15% / 其他 25% 拆分。真实产品的构成不同，结果会有差异，但趋势是对的。<a href="../">桌面版</a>会按你实际填的每一项成本精确分摊。</p>
+
+<h2>什么时候不该给阶梯价</h2>
+<ul>
+  <li><strong>模具费没摊完</strong>：小单本来就在亏，再给折扣是雪上加霜。</li>
+  <li><strong>材料占比高且用量小</strong>：让不出空间，硬让就是自己吃。</li>
+  <li><strong>客户只是拿你的价去压别人</strong>：阶梯价要绑定实际订单量，否则等于把最低价给了最大客户之外的所有人。</li>
+  <li><strong>工艺复杂、良率不稳</strong>：大单的良率风险更高，不该降价反该加价。</li>
+</ul>
+<p>经验法则：<strong>最低一档的毛利率不要低于 12%</strong>。低于这个数，一次质量事故就能吃掉全年利润。</p>
+
+</article>
+  <h2>常见问题</h2>
+  <div class="faq">
+    <details>
+      <summary>为什么我的件不能按件数给折扣？</summary>
+      <div class="ans"><p>因为材料折扣看的是<strong>总用米重量</strong>，不是件数。一个 15 g 的小件做 10 万件才 1.5 吨，根本进不了大批量档位。工具里改一下克重就能看到差别。</p></div>
+    </details>
+    <details>
+      <summary>毛利率基准怎么定？</summary>
+      <div class="ans"><p>基准档（最小批量）的毛利率应该覆盖：管理费 5%~8% + 资金占用 2%~4% + 风险准备 2%~3% + 净利 8%~15%，合计 17%~30%。低于 15% 的基准毛利很危险。</p></div>
+    </details>
+    <details>
+      <summary>客户要求每一档都报，但只下一档怎么办？</summary>
+      <div class="ans"><p>报价单上写明<strong>“各档价格对应各自的订单量，不可跨档使用”</strong>。或者要求客户承诺年度总量，按总量给价、按批次交货。</p></div>
+    </details>
+    <details>
+      <summary>能不能算出每档的利润总额？</summary>
+      <div class="ans"><p>可以：单价 − 成本 = 单件利润，再乘以数量。通常大单的单件利润低但总额高，这就是为什么要接大单——前提是产能吃得下。</p></div>
+    </details>
+  </div>
+
+  <section class="cta">
+    <h2>这只是单件材料费，出厂价还有 13 项</h2>
+    <p>机台费、人工、模具摊销、外购件、包材、物流、损耗、管理费、资金占用、销售佣金——桌面版把这些全算进去，一路算到含税出厂价，还能做阶梯报价和方案对比。</p>
+    <a class="btn" href="../">下载桌面版 · 免费试用 30 天</a>
+    <a class="btn btn-ghost" href="../web/">先用网页版算材料费</a>
+  </section>
+  <section class="related">
+    <h2>相关计算器</h2>
+    <div class="rel-grid">
+      <a class="rel-card" href="./injection-cost.html"><span class="rel-t">注塑件成本计算器</span><span class="rel-d">单件材料费+机台费+人工，一次算清</span></a>
+      <a class="rel-card" href="./material-cost.html"><span class="rel-t">塑料件材料费计算器</span><span class="rel-d">克重×单价，含损耗与水口</span></a>
+      <a class="rel-card" href="./weight-price.html"><span class="rel-t">克重单价换算器</span><span class="rel-d">元/kg ↔ 元/g ↔ 每件成本</span></a>
+      <a class="rel-card" href="./mold-amortization.html"><span class="rel-t">模具摊销计算器</span><span class="rel-d">模具费摊到每件是多少</span></a>
+      <a class="rel-card" href="./regrind.html"><span class="rel-t">水口回用抵扣计算器</span><span class="rel-d">回用料能省多少钱</span></a>
+      <a class="rel-card" href="./carton-size.html"><span class="rel-t">纸箱尺寸与材积计算器</span><span class="rel-d">内箱/外箱/材积重一次出</span></a>
+      <a class="rel-card" href="./step-weight.html"><span class="rel-t">STEP 体积克重估算</span><span class="rel-d">没有三维软件也能估</span></a>
+      <a class="rel-card" href="./machine-rate.html"><span class="rel-t">注塑机台费计算器</span><span class="rel-d">吨位→台时费→单件</span></a>
+      <a class="rel-card" href="./labor-cost.html"><span class="rel-t">注塑人工费计算器</span><span class="rel-d">人数×时薪÷产出</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>© 2026 产品成本核算工具</span>
+    <span class="foot-sp"></span>
+    <a href="../">产品首页</a>
+    <a href="./">全部计算器</a>
+    <a href="../web/">网页版</a>
+    <a href="../privacy">隐私政策</a>
+  </div>
+</footer>
+
+</body>
+</html>
+
+<script type="module">
+import * as C from "./calc.js";
+const $ = id => document.getElementById(id);
+const n = C.num, f = C.fmt;
+function rows(list) {
+  return list.filter(Boolean).map(r =>
+    '<div class="row' + (r[2] ? ' sum' : '') + '"><span class="row-k">' + r[0] +
+    '</span><span class="row-v">' + r[1] + '</span></div>').join("");
+}
+function put(v, sub, data) {
+  $("out").textContent = v;
+  if (sub !== undefined) $("outs").innerHTML = sub || "&nbsp;";
+  if (typeof data === "string") $("outr").innerHTML = data;
+  else if (data) $("outr").innerHTML = rows(data);
+}
+
+// 与桌面版 pricing.py 同一套档位表：材料按总吨位、外购件按批量、毛利按数量
+const MAT = [[0.1, 8.0], [0.5, 4.0], [1.5, 1.0], [5.0, -1.0], [15.0, -3.0], [40.0, -5.0]];
+const BOM = [[1000, 12], [3000, 8], [5000, 4], [20000, 0], [50000, -2], [100000, -4], [300000, -5.5]];
+const MAR = [[2000, 8], [5000, 5], [20000, 0], [50000, -2], [100000, -4], [300000, -6]];
+
+function interp(tbl, x) {
+  if (x <= tbl[0][0]) return tbl[0][1];
+  const last = tbl[tbl.length - 1];
+  if (x >= last[0]) return last[1];
+  for (let i = 0; i < tbl.length - 1; i++) {
+    const a = tbl[i], b = tbl[i + 1];
+    if (x <= b[0]) {
+      const t = (Math.log(x) - Math.log(a[0])) / (Math.log(b[0]) - Math.log(a[0]));
+      return a[1] + (b[1] - a[1]) * t;
+    }
+  }
+  return last[1];
+}
+
+function calc() {
+  const base = n($("base").value), cost = n($("cost").value);
+  const kg = n($("kg").value) / 1000;
+  const qtys = [n($("t1").value), n($("t2").value), n($("t3").value), n($("t4").value)]
+    .filter(v => v > 0).sort((a, b) => a - b);
+
+  const baseQty = qtys[0] || 1000;
+  const baseMatPct = interp(MAT, baseQty * kg / 1000);
+  const baseMargin = (base - cost) / Math.max(0.01, base) * 100;
+
+  let html = "";
+  let prev = null;
+  qtys.forEach(q => {
+    const ton = q * kg / 1000;
+    const matPct = interp(MAT, ton);
+    // 外购件折扣也要相对基准档归一，否则基准档的价格对不上用户填的基准单价
+    const bomPct = interp(BOM, q) - interp(BOM, baseQty);
+    const dm = interp(MAR, q) - interp(MAR, baseQty);
+    const margin = Math.max(0, baseMargin + dm);
+    // 材料与外购件折扣只影响各自那部分成本；这里按成本构成 60/15 拆分
+    const matPart = cost * 0.60, bomPart = cost * 0.15, otherPart = cost * 0.25;
+    const newCost = matPart * (1 - (matPct - baseMatPct) / 100) +
+                    bomPart * (1 - bomPct / 100) + otherPart;
+    const price = newCost / (1 - margin / 100);
+    const vs = prev === null ? "—" : ((price / prev - 1) * 100).toFixed(1) + "%";
+    html += '<div class="row"><span class="row-k">' + f(q, 0) + ' 件</span>' +
+            '<span class="row-v">¥ ' + f(price, 3) + '</span></div>' +
+            '<div class="row"><span class="row-k">&nbsp;&nbsp;用米 ' + f(ton, 2) + ' t · 毛利 ' +
+            f(margin, 1) + '%</span><span class="row-v">' + vs + '</span></div>';
+    prev = price;
+  });
+  const first = qtys[0] || 1, lastQ = qtys[qtys.length - 1] || 1;
+  put(qtys.length + " 档", "从 " + f(first, 0) + " 到 " + f(lastQ, 0) + " 件", null);
+  $("outr").innerHTML = html;
+  C.syncUrl({ b: $("base").value, c: $("cost").value, k: $("kg").value,
+              t1: $("t1").value, t2: $("t2").value, t3: $("t3").value, t4: $("t4").value });
+}
+["base","cost","kg","t1","t2","t3","t4"].forEach(i => C.on($(i), calc));
+calc();
+
+</script>
