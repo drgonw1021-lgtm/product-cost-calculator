@@ -288,6 +288,11 @@ main > section {
   will-change: transform;
 }
 
+/* 落地页「在线计算器」区块的按钮间距 */
+.tools-cta {
+  margin: 22px 0 0;
+}
+
 .btn:active {
   transform: scale(0.985);
 }
