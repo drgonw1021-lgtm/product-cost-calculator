@@ -40,7 +40,7 @@
     "或先试网页版（只算塑料件材料费，免安装）":
       "Or try the web version first (plastics material only, no install)",
     "399 元 / 台 · 一次买断": "US$59.9 / seat · one-time purchase (≈ ¥399)",
-    "下载 91 MB": "91 MB download",
+    "下载 89 MB": "89 MB download",
     "离线可用": "Works offline",
     "一机一码": "One machine, one code",
 
@@ -176,7 +176,7 @@
     "多台按台数算，10 台以上可以谈": "Priced per seat; volume pricing from 10 seats up",
     "立即购买（邮件下单）": "Buy now (order by email)",
     "立即购买（自助下单）": "Buy now (self-service checkout)",
-    "先下载试用 30 天 · 91 MB": "Download the 30-day trial · 91 MB",
+    "先下载试用 30 天 · 89 MB": "Download the 30-day trial · 89 MB",
     "解压即用，不用安装。程序没有买代码签名证书，首次运行 Windows 可能弹 「Windows 已保护你的电脑」——点「更多信息 → 仍要运行」即可，这是未签名程序的正常提示。":
       "Unzip and run — no installer. The app carries no code-signing certificate, so Windows may show “Windows protected your PC” on first launch: click “More info → Run anyway”. That's normal for unsigned software.",
     "发票": "Invoice",
@@ -226,7 +226,7 @@
       "Product Cost Calculator — drop in a STEP, get 14 cost lines and an ex-works price",
     "甲方内部核价工具：STEP → 单件成本 → 出厂价，每一分钱都能点开看它怎么来的。":
       "A buyer-side costing tool: STEP → unit cost → ex-works price. Every cent opens up to show where it came from.",
-    "产品成本核算工具 v10.2 塑料件页：零件表与右侧 14 行成本构成、出厂价 14.361 元":      "Product Cost Calculator v10.3, plastic parts page: parts table and the 14-line cost breakdown showing an ex-works price of ¥14.361",
+    "产品成本核算工具 v10.2 塑料件页：零件表与右侧 14 行成本构成、出厂价 14.361 元":      "Product Cost Calculator v10.4, plastic parts page: parts table and the 14-line cost breakdown showing an ex-works price of ¥14.361",
     "阶梯报价页：五档数量自动算出材料折扣、单件成本与出厂价":
       "Tier pricing page: five quantities with auto-computed material discount, unit cost and ex-works price",
     "模具方案页：零件投影面积 26.6 cm²、腔数 2、模具工艺要求":
@@ -315,7 +315,7 @@
 
     // 版本号：写死在 HTML 里，字典抓不到，这里统一覆盖
     root.querySelectorAll(".nav-ver, .foot-brand span").forEach(function (el) {
-      el.textContent = "v10.3";
+      el.textContent = "v10.4";
     });
   }
 
