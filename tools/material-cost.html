@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>塑料件材料费计算器 · 克重×单价，含损耗与水口回用</title>
+<meta name="description" content="输入零件克重（或体积+材料）和材料单价，算出单件材料费，含注塑损耗、水口（流道）料和回用抵扣。">
+<meta name="keywords" content="塑料件材料费计算器,材料费怎么算,克重单价,水口回用,注塑损耗">
+<link rel="canonical" href="https://product-cost-calculator.pages.dev/tools/material-cost">
+<meta property="og:title" content="塑料件材料费计算器 · 克重×单价，含损耗与水口回用">
+<meta property="og:description" content="输入零件克重（或体积+材料）和材料单价，算出单件材料费，含注塑损耗、水口（流道）料和回用抵扣。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://product-cost-calculator.pages.dev/tools/material-cost">
+<meta property="og:site_name" content="产品成本核算工具">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#08182A">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./tools.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "塑料件材料费计算器",
+  "url": "https://product-cost-calculator.pages.dev/tools/material-cost",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "description": "输入零件克重（或体积+材料）和材料单价，算出单件材料费，含注塑损耗、水口（流道）料和回用抵扣。",
+  "isPartOf": { "@type": "WebSite", "name": "产品成本核算工具", "url": "https://product-cost-calculator.pages.dev/" }
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "为什么算出来比“克重×单价”低？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "因为你勾了“有增值税专用发票”。不含税单价是含税价除以 1.13，所以结果更低——这才是你能抵扣后的真实成本。取消勾选就回到含税口径。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "水口料重量怎么填？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "填一啤的总水口重量，不是单件的。程序会除以腔数摊到每件。热流道没有水口，填 0。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "回用比例填多少合适？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "常规件 20%~30% 是安全区间。透明件、食品级、受力件建议 0。超过 50% 通常会出质量问题。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "整件不良率要不要算进去？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "这里不算。不良率是另一层：不良率 3% 意味着每 100 件要投 103 件的成本，相当于所有成本乘以 1.031。桌面版有单独的损耗/不良率字段。"
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>产品成本核算工具</a>
+    <span class="top-sp"></span>
+    <a class="top-link" href="./">全部在线计算器</a>
+    <a class="top-cta" href="../">下载桌面版</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <nav class="crumb"><a href="../">首页</a><span>/</span><a href="./">在线计算器</a><span>/</span>塑料件材料费计算器</nav>
+    <h1>塑料件材料费计算器</h1>
+    <p class="lead">材料费 = 克重 × 单价，但真正下单时还有两件事：注塑损耗，和水口料能不能回用。这三项一起算，才是你实际掏的钱。</p>
+  </div>
+  <div class="calc">
+    <div class="calc-grid">
+      <div class="calc-in">
+<div class="field"><label class="lab" for="vol">单件体积</label><div class="inrow"><input type="number" id="vol" value="120" min="0" max="99999999" step="any"><span class="unit">cm³</span></div></div>
+<div class="field"><label class="lab" for="mat">材料</label><select id="mat"><option value="ABS" selected>ABS（1.05 g/cm³）</option><option value="HIPS">HIPS（1.05 g/cm³）</option><option value="PS">PS（1.05 g/cm³）</option><option value="AS/SAN">AS/SAN（1.08 g/cm³）</option><option value="PP">PP（0.91 g/cm³）</option><option value="PE">PE（0.95 g/cm³）</option><option value="PVC">PVC（1.38 g/cm³）</option><option value="PMMA">PMMA（1.19 g/cm³）</option><option value="PC">PC（1.20 g/cm³）</option><option value="PC/ABS">PC/ABS（1.13 g/cm³）</option><option value="PC/GF10">PC/GF10（1.27 g/cm³）</option><option value="PA6">PA6（1.14 g/cm³）</option><option value="PA66">PA66（1.15 g/cm³）</option><option value="PA6/GF30">PA6/GF30（1.36 g/cm³）</option><option value="POM">POM（1.41 g/cm³）</option><option value="PBT">PBT（1.31 g/cm³）</option><option value="PET">PET（1.34 g/cm³）</option><option value="PPS">PPS（1.35 g/cm³）</option><option value="TPU">TPU（1.14 g/cm³）</option><option value="TPE">TPE（1.10 g/cm³）</option></select></div>
+<div class="field"><label class="lab" for="price">材料单价（含税）</label><div class="inrow"><input type="number" id="price" value="12.8" min="0" max="99999999" step="0.1"><span class="unit">元/kg</span></div></div>
+<div class="field"><label class="chk"><input type="checkbox" id="vat" checked><span>有增值税专用发票（进项可抵扣）</span></label></div>
+<div class="field"><label class="lab" for="scrap">注塑损耗<span class="hint">回料、清机、试模的损耗</span></label><div class="inrow"><input type="number" id="scrap" value="5" min="0" max="99999999" step="any"><span class="unit">%</span></div></div>
+<div class="field"><label class="lab" for="runner">水口料重量<span class="hint">冷流道才有，热流道填 0</span></label><div class="inrow"><input type="number" id="runner" value="0" min="0" max="99999999" step="any"><span class="unit">g/啤</span></div></div>
+<div class="field"><label class="lab" for="cav">模穴数</label><div class="inrow"><input type="number" id="cav" value="1" min="1" max="128" step="1"><span class="unit">腔</span></div></div>
+<div class="field"><label class="lab" for="regrind">水口回用比例<span class="hint">回料按新料 50% 折价</span></label><div class="inrow"><input type="number" id="regrind" value="0" min="0" max="100" step="5"><span class="unit">%</span></div></div>
+      </div>
+      <div class="calc-out">
+        <p class="res-cap">单件材料费</p>
+        <div class="res-main" id="out">—</div>
+        <p class="res-sub" id="outs">&nbsp;</p>
+        <div class="rows" id="outr"></div>
+
+      </div>
+    </div>
+  </div>
+
+<article class="doc">
+
+<h2>材料费的完整公式</h2>
+<p>很多人只算"克重 × 单价"，结果比实际低 5%~15%。真实的材料成本是：</p>
+<div class="formula">材料费 = (净重 + 水口摊每件) ÷ 1000 × 不含税单价 × (1 + 损耗%) − 回用抵扣</div>
+<p>例：净重 126 g，水口 24 g/啤、1 腔，单价 12.8 元/kg（含税），损耗 5%：</p>
+<div class="formula">不含税单价 = 12.8 ÷ 1.13 = 11.33 元/kg
+投料 = (126 + 24) ÷ 1000 × 11.33 × 1.05 = 1.784 元
+不回用时材料费 = 1.784 元</div>
+
+<h2>水口料到底算不算钱</h2>
+<p>这是注塑成本里最容易扯皮的一项。分三种情况：</p>
+<div class="tbl-wrap"><table>
+<tr><th>情况</th><th>怎么算</th><th>影响</th></tr>
+<tr><td>全部当废料卖</td><td>水口重量全额计入材料费</td><td>成本最高</td></tr>
+<tr><td>部分回用（最常见）</td><td>回用部分按新料 50% 折价抵扣</td><td>省 3%~8%</td></tr>
+<tr><td>热流道、无水口</td><td>水口 = 0，不用算</td><td>材料费最低，但模具有热流道成本</td></tr>
+</table></div>
+<p>回用比例有上限：透明件、食品接触件、高强件通常不允许回用，或者限制在 20% 以内。回用多了会出现黑点、色差、强度下降。</p>
+<div class="formula">回用抵扣 = 水口摊每件 ÷ 1000 × 不含税单价 × 回用% × (1 − 50%)</div>
+
+<h2>损耗率取多少</h2>
+<ul>
+  <li><strong>5%</strong>：常规件，有回料系统的工厂。</li>
+  <li><strong>8%~10%</strong>：小批量、频繁换色、试模多。</li>
+  <li><strong>2%~3%</strong>：热流道、大批量、单一颜色。</li>
+</ul>
+<p>损耗是<strong>投料</strong>层面的，不是不良率。不良率是整件报废，那部分要按整件成本算。</p>
+
+<h2>为什么必须区分含税/不含税</h2>
+<p>塑料原料的增值税率是 13%。含税 12.8 元/kg 的料：</p>
+<div class="formula">能抵扣（专票）：实际成本 11.33 元/kg
+不能抵扣（普票/无票）：实际成本 12.80 元/kg
+差额 1.47 元/kg —— 相当于 11.5%</div>
+<p>一个小件用料 150 g，一年 100 万件就是 15 万 kg，这个差额是 22 万。<strong>能不能拿到专票，比讨价还价重要得多。</strong></p>
+
+</article>
+  <h2>常见问题</h2>
+  <div class="faq">
+    <details>
+      <summary>为什么算出来比“克重×单价”低？</summary>
+      <div class="ans"><p>因为你勾了“有增值税专用发票”。不含税单价是含税价除以 1.13，所以结果更低——这才是你能抵扣后的真实成本。取消勾选就回到含税口径。</p></div>
+    </details>
+    <details>
+      <summary>水口料重量怎么填？</summary>
+      <div class="ans"><p>填<strong>一啤</strong>的总水口重量，不是单件的。程序会除以腔数摊到每件。热流道没有水口，填 0。</p></div>
+    </details>
+    <details>
+      <summary>回用比例填多少合适？</summary>
+      <div class="ans"><p>常规件 20%~30% 是安全区间。透明件、食品级、受力件建议 0。超过 50% 通常会出质量问题。</p></div>
+    </details>
+    <details>
+      <summary>整件不良率要不要算进去？</summary>
+      <div class="ans"><p>这里不算。不良率是另一层：不良率 3% 意味着每 100 件要投 103 件的成本，相当于所有成本乘以 1.031。桌面版有单独的损耗/不良率字段。</p></div>
+    </details>
+  </div>
+
+  <section class="cta">
+    <h2>这只是单件材料费，出厂价还有 13 项</h2>
+    <p>机台费、人工、模具摊销、外购件、包材、物流、损耗、管理费、资金占用、销售佣金——桌面版把这些全算进去，一路算到含税出厂价，还能做阶梯报价和方案对比。</p>
+    <a class="btn" href="../">下载桌面版 · 免费试用 30 天</a>
+    <a class="btn btn-ghost" href="../web/">先用网页版算材料费</a>
+  </section>
+  <section class="related">
+    <h2>相关计算器</h2>
+    <div class="rel-grid">
+      <a class="rel-card" href="./injection-cost.html"><span class="rel-t">注塑件成本计算器</span><span class="rel-d">单件材料费+机台费+人工，一次算清</span></a>
+      <a class="rel-card" href="./weight-price.html"><span class="rel-t">克重单价换算器</span><span class="rel-d">元/kg ↔ 元/g ↔ 每件成本</span></a>
+      <a class="rel-card" href="./mold-amortization.html"><span class="rel-t">模具摊销计算器</span><span class="rel-d">模具费摊到每件是多少</span></a>
+      <a class="rel-card" href="./regrind.html"><span class="rel-t">水口回用抵扣计算器</span><span class="rel-d">回用料能省多少钱</span></a>
+      <a class="rel-card" href="./carton-size.html"><span class="rel-t">纸箱尺寸与材积计算器</span><span class="rel-d">内箱/外箱/材积重一次出</span></a>
+      <a class="rel-card" href="./tier-pricing.html"><span class="rel-t">阶梯报价计算器</span><span class="rel-d">按数量自动递降的单价</span></a>
+      <a class="rel-card" href="./step-weight.html"><span class="rel-t">STEP 体积克重估算</span><span class="rel-d">没有三维软件也能估</span></a>
+      <a class="rel-card" href="./machine-rate.html"><span class="rel-t">注塑机台费计算器</span><span class="rel-d">吨位→台时费→单件</span></a>
+      <a class="rel-card" href="./labor-cost.html"><span class="rel-t">注塑人工费计算器</span><span class="rel-d">人数×时薪÷产出</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>© 2026 产品成本核算工具</span>
+    <span class="foot-sp"></span>
+    <a href="../">产品首页</a>
+    <a href="./">全部计算器</a>
+    <a href="../web/">网页版</a>
+    <a href="../privacy">隐私政策</a>
+  </div>
+</footer>
+
+</body>
+</html>
+
+<script type="module">
+import * as C from "./calc.js";
+const $ = id => document.getElementById(id);
+const n = C.num, f = C.fmt;
+function rows(list) {
+  return list.filter(Boolean).map(r =>
+    '<div class="row' + (r[2] ? ' sum' : '') + '"><span class="row-k">' + r[0] +
+    '</span><span class="row-v">' + r[1] + '</span></div>').join("");
+}
+function put(v, sub, data) {
+  $("out").textContent = v;
+  if (sub !== undefined) $("outs").innerHTML = sub || "&nbsp;";
+  if (typeof data === "string") $("outr").innerHTML = data;
+  else if (data) $("outr").innerHTML = rows(data);
+}
+
+const M = C.MATERIALS;
+function calc() {
+  const m = M[$("mat").value] || M["ABS"];
+  const r = C.materialCost({
+    volume_cm3: n($("vol").value), density: m.density,
+    price_per_kg: n($("price").value), vat_pct: 13,
+    vat_deductible: $("vat").checked, scrap_pct: n($("scrap").value),
+    runner_g: n($("runner").value), cavities: n($("cav").value, 1),
+    regrind_pct: n($("regrind").value),
+  });
+  put("¥ " + f(r.material_cost, 3),
+      "克重 " + C.fmtG(r.weight_g) + (r.runner_per_piece_g > 0 ? " + 水口 " + C.fmtG(r.runner_per_piece_g) : ""),
+      rows([
+        ["净重", C.fmtG(r.weight_g)],
+        r.runner_per_piece_g > 0 ? ["水口（摊每件）", C.fmtG(r.runner_per_piece_g)] : null,
+        ["实际投料", C.fmtG(r.gross_g)],
+        ["不含税单价", "¥ " + f(r.net_price_per_kg, 2) + " /kg"],
+        ["含损耗投料费", "¥ " + f(r.spend, 3)],
+        r.regrind_credit > 0 ? ["回用抵扣", "− ¥ " + f(r.regrind_credit, 3)] : null,
+        ["材料费", "¥ " + f(r.material_cost, 3), 1],
+        ["千件用米", f(C.kgPerThousand(r.weight_g, r.runner_per_piece_g, n($("scrap").value)), 1) + " kg"],
+      ]));
+  C.syncUrl({ v: $("vol").value, m: $("mat").value, p: $("price").value,
+              s: $("scrap").value, g: $("runner").value, c: $("cav").value, r: $("regrind").value });
+}
+["vol","price","scrap","runner","cav","regrind"].forEach(i => C.on($(i), calc));
+["mat","vat"].forEach(i => C.on($(i), calc));
+calc();
+
+</script>
