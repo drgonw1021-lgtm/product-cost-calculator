@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>注塑件成本计算器 · 单件材料费+机台费+人工，一次算清</title>
+<meta name="description" content="输入体积、材料、机台、周期和腔数，立刻算出注塑件单件成本（材料费+机台费+人工），含损耗、水口回用和含税/不含税换算。">
+<meta name="keywords" content="注塑件成本计算器,注塑成本核算,塑料件成本计算,单件成本,机台费,人工费">
+<link rel="canonical" href="https://product-cost-calculator.pages.dev/tools/injection-cost">
+<meta property="og:title" content="注塑件成本计算器 · 单件材料费+机台费+人工，一次算清">
+<meta property="og:description" content="输入体积、材料、机台、周期和腔数，立刻算出注塑件单件成本（材料费+机台费+人工），含损耗、水口回用和含税/不含税换算。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://product-cost-calculator.pages.dev/tools/injection-cost">
+<meta property="og:site_name" content="产品成本核算工具">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#08182A">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./tools.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "注塑件成本计算器",
+  "url": "https://product-cost-calculator.pages.dev/tools/injection-cost",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "description": "输入体积、材料、机台、周期和腔数，立刻算出注塑件单件成本（材料费+机台费+人工），含损耗、水口回用和含税/不含税换算。",
+  "isPartOf": { "@type": "WebSite", "name": "产品成本核算工具", "url": "https://product-cost-calculator.pages.dev/" }
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "为什么我算出来比供应商报价低很多？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "因为你算的是成本，供应商报的是售价。中间还差模具摊销、包材、管理费、资金占用、利润和税。正常情况售价是成本的 1.3~1.8 倍。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "损耗 5% 够吗？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "材料损耗 5% 是注塑的常见值（回料、清机、试模）。整件不良率另算，一般 1%~3%，高要求件可能到 5%。两者不是一回事。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "腔数越多越便宜吗？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "摊到单件的机台费和人工会下降，但模具费会上升，而且腔数受锁模力和产品尺寸限制。用模具摊销计算器一起看才准确。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "能不能算多腔不同产品？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "可以，但每个产品的克重和周期可能不同，要分开算。桌面版支持一模多件（拼模），会把模具费和机台费按各自的克重分摊。"
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>产品成本核算工具</a>
+    <span class="top-sp"></span>
+    <a class="top-link" href="./">全部在线计算器</a>
+    <a class="top-cta" href="../">下载桌面版</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <nav class="crumb"><a href="../">首页</a><span>/</span><a href="./">在线计算器</a><span>/</span>注塑件成本计算器</nav>
+    <h1>注塑件成本计算器：材料费 + 机台费 + 人工，一屏算完</h1>
+    <p class="lead">注塑件的成本就是三件事：用了多少料、占了多久机台、几个人看着。下面填 6 个数，右边直接出单件成本——不含模具摊销、包装和物流（那些在桌面版里）。</p>
+  </div>
+  <div class="calc">
+    <div class="calc-grid">
+      <div class="calc-in">
+<div class="field"><label class="lab" for="vol">单件体积<span class="hint">STEP 里能直接读；没有就用长×宽×高×0.6 估</span></label><div class="inrow"><input type="number" id="vol" value="120" min="0" max="99999999" step="any"><span class="unit">cm³</span></div></div>
+<div class="field"><label class="lab" for="mat">材料</label><select id="mat"><option value="ABS" selected>ABS（1.05 g/cm³ · 参考 12.8 元/kg）</option><option value="HIPS">HIPS（1.05 g/cm³ · 参考 10.3 元/kg）</option><option value="PS">PS（1.05 g/cm³ · 参考 10.0 元/kg）</option><option value="AS/SAN">AS/SAN（1.08 g/cm³ · 参考 12.6 元/kg）</option><option value="PP">PP（0.91 g/cm³ · 参考 9.8 元/kg）</option><option value="PE">PE（0.95 g/cm³ · 参考 9.4 元/kg）</option><option value="PVC">PVC（1.38 g/cm³ · 参考 9.4 元/kg）</option><option value="PMMA">PMMA（1.19 g/cm³ · 参考 16.0 元/kg）</option><option value="PC">PC（1.20 g/cm³ · 参考 24.0 元/kg）</option><option value="PC/ABS">PC/ABS（1.13 g/cm³ · 参考 22.0 元/kg）</option><option value="PC/GF10">PC/GF10（1.27 g/cm³ · 参考 26.0 元/kg）</option><option value="PA6">PA6（1.14 g/cm³ · 参考 26.0 元/kg）</option><option value="PA66">PA66（1.15 g/cm³ · 参考 30.0 元/kg）</option><option value="PA6/GF30">PA6/GF30（1.36 g/cm³ · 参考 30.0 元/kg）</option><option value="POM">POM（1.41 g/cm³ · 参考 22.0 元/kg）</option><option value="PBT">PBT（1.31 g/cm³ · 参考 22.0 元/kg）</option><option value="PET">PET（1.34 g/cm³ · 参考 23.0 元/kg）</option><option value="PPS">PPS（1.35 g/cm³ · 参考 55.0 元/kg）</option><option value="TPU">TPU（1.14 g/cm³ · 参考 32.0 元/kg）</option><option value="TPE">TPE（1.10 g/cm³ · 参考 28.0 元/kg）</option></select></div>
+<div class="field"><label class="lab" for="cav">模穴数</label><div class="inrow"><input type="number" id="cav" value="1" min="1" max="128" step="1"><span class="unit">腔</span></div></div>
+<div class="field"><label class="lab" for="cycle">成型周期<span class="hint">含开合模、保压、冷却、取件</span></label><div class="inrow"><input type="number" id="cycle" value="30" min="0" max="99999999" step="any"><span class="unit">秒/啤</span></div></div>
+<div class="field"><label class="lab" for="rate">机台费率<span class="hint">含电费折旧，不含人工</span></label><div class="inrow"><input type="number" id="rate" value="60" min="0" max="99999999" step="any"><span class="unit">元/小时</span></div></div>
+<div class="field"><label class="lab" for="ops">操作人数<span class="hint">时薪按 15 元算</span></label><div class="inrow"><input type="number" id="ops" value="1" min="0" max="20" step="1"><span class="unit">人/台</span></div></div>
+      </div>
+      <div class="calc-out">
+        <p class="res-cap">单件制造成本</p>
+        <div class="res-main" id="out">—</div>
+        <p class="res-sub" id="outs">&nbsp;</p>
+        <div class="rows" id="outr"></div>
+
+      </div>
+    </div>
+  </div>
+
+<article class="doc">
+
+<h2>这个数为什么不是"报价"</h2>
+<p>算出来的是<strong>制造成本</strong>，也就是工厂自己花的钱。它不含：</p>
+<ul>
+  <li><strong>模具摊销</strong>：模具是一次性投入，要按订单量摊到每件上。<a href="./mold-amortization.html">模具摊销计算器</a></li>
+  <li><strong>包材</strong>：内盒、外箱、说明书、贴纸，通常 0.1~1 元/件。</li>
+  <li><strong>损耗与不良</strong>：这里只算了 5% 材料损耗，没算整件报废。</li>
+  <li><strong>管理费、资金占用、利润、税</strong>：这些是把成本变成价格的部分。</li>
+</ul>
+<p>把这些叠加起来才是出厂价。桌面版做了完整的一串：材料 → 机台 → 人工 → 模具摊销 → 外购件 → 包材 → 物流 → 损耗 → 管理 → 资金 → 佣金 → 利润 → 税，每一行都能点开看是怎么来的。</p>
+
+<h2>三个最容易算错的地方</h2>
+<h3>1. 体积不是克重</h3>
+<p>体积 × 密度才是克重。ABS 密度 1.05 g/cm³，120 cm³ 就是 126 g。这一步错了，后面全错。</p>
+<div class="formula">克重 (g) = 体积 (cm³) × 密度 (g/cm³)
+例：120 cm³ × 1.05 = 126 g</div>
+
+<h3>2. 材料单价要分含税和不含税</h3>
+<p>供应商报的 12.8 元/kg 通常是<strong>含税价</strong>。如果你能拿到增值税专用发票，进项税可以抵扣，真实成本是不含税价：</p>
+<div class="formula">不含税单价 = 含税单价 ÷ (1 + 13%) = 12.8 ÷ 1.13 = 11.33 元/kg</div>
+<p>只拿到普通发票（小规模供应商、散户）时不能抵扣，含税全额才是真成本。这一项差额接近 12%。</p>
+
+<h3>3. 机台费要除以腔数</h3>
+<p>一台机一小时 60 元，30 秒一啤，一小时出 120 啤。如果一啤出 2 个件：</p>
+<div class="formula">单件机台费 = 周期(秒) ÷ 3600 × 台时费 ÷ 腔数
+          = 30 ÷ 3600 × 60 ÷ 2 = 0.25 元/件</div>
+<p>忘了除腔数，成本会直接翻倍。</p>
+
+<h2>机台费率怎么取</h2>
+<p>下面是华东地区常见吨位的综合台时费（含电费、折旧、维修，不含人工），可以直接对照：</p>
+<div class="tbl-wrap"><table>
+<tr><th>吨位</th><th>元/小时</th><th>典型产品</th></tr>
+<tr><td>立式 60T</td><td class="n">35</td><td>嵌件、小件</td></tr>
+<tr><td>海天 100T</td><td class="n">40</td><td>手机壳、小外壳</td></tr>
+<tr><td>海天 160T</td><td class="n">52</td><td>家电外壳</td></tr>
+<tr><td>海天 250T</td><td class="n">68</td><td>大外壳、周转箱</td></tr>
+<tr><td>海天 450T</td><td class="n">105</td><td>汽车件、大箱体</td></tr>
+<tr><td>海天 530T</td><td class="n">125</td><td>超大件</td></tr>
+</table></div>
+<p>实际数字跟工厂规模、订单饱满度、电费峰谷都有关系，差 20% 很正常。这里给的是"够用"的参考值，不是标准答案。</p>
+
+</article>
+  <h2>常见问题</h2>
+  <div class="faq">
+    <details>
+      <summary>为什么我算出来比供应商报价低很多？</summary>
+      <div class="ans"><p>因为你算的是成本，供应商报的是售价。中间还差模具摊销、包材、管理费、资金占用、利润和税。正常情况售价是成本的 1.3~1.8 倍。</p></div>
+    </details>
+    <details>
+      <summary>损耗 5% 够吗？</summary>
+      <div class="ans"><p>材料损耗 5% 是注塑的常见值（回料、清机、试模）。整件不良率另算，一般 1%~3%，高要求件可能到 5%。两者不是一回事。</p></div>
+    </details>
+    <details>
+      <summary>腔数越多越便宜吗？</summary>
+      <div class="ans"><p>摊到单件的机台费和人工会下降，但模具费会上升，而且腔数受锁模力和产品尺寸限制。用<a href='./mold-amortization'>模具摊销计算器</a>一起看才准确。</p></div>
+    </details>
+    <details>
+      <summary>能不能算多腔不同产品？</summary>
+      <div class="ans"><p>可以，但每个产品的克重和周期可能不同，要分开算。桌面版支持一模多件（拼模），会把模具费和机台费按各自的克重分摊。</p></div>
+    </details>
+  </div>
+
+  <section class="cta">
+    <h2>这只是单件材料费，出厂价还有 13 项</h2>
+    <p>机台费、人工、模具摊销、外购件、包材、物流、损耗、管理费、资金占用、销售佣金——桌面版把这些全算进去，一路算到含税出厂价，还能做阶梯报价和方案对比。</p>
+    <a class="btn" href="../">下载桌面版 · 免费试用 30 天</a>
+    <a class="btn btn-ghost" href="../web/">先用网页版算材料费</a>
+  </section>
+  <section class="related">
+    <h2>相关计算器</h2>
+    <div class="rel-grid">
+      <a class="rel-card" href="./material-cost.html"><span class="rel-t">塑料件材料费计算器</span><span class="rel-d">克重×单价，含损耗与水口</span></a>
+      <a class="rel-card" href="./weight-price.html"><span class="rel-t">克重单价换算器</span><span class="rel-d">元/kg ↔ 元/g ↔ 每件成本</span></a>
+      <a class="rel-card" href="./mold-amortization.html"><span class="rel-t">模具摊销计算器</span><span class="rel-d">模具费摊到每件是多少</span></a>
+      <a class="rel-card" href="./regrind.html"><span class="rel-t">水口回用抵扣计算器</span><span class="rel-d">回用料能省多少钱</span></a>
+      <a class="rel-card" href="./carton-size.html"><span class="rel-t">纸箱尺寸与材积计算器</span><span class="rel-d">内箱/外箱/材积重一次出</span></a>
+      <a class="rel-card" href="./tier-pricing.html"><span class="rel-t">阶梯报价计算器</span><span class="rel-d">按数量自动递降的单价</span></a>
+      <a class="rel-card" href="./step-weight.html"><span class="rel-t">STEP 体积克重估算</span><span class="rel-d">没有三维软件也能估</span></a>
+      <a class="rel-card" href="./machine-rate.html"><span class="rel-t">注塑机台费计算器</span><span class="rel-d">吨位→台时费→单件</span></a>
+      <a class="rel-card" href="./labor-cost.html"><span class="rel-t">注塑人工费计算器</span><span class="rel-d">人数×时薪÷产出</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>© 2026 产品成本核算工具</span>
+    <span class="foot-sp"></span>
+    <a href="../">产品首页</a>
+    <a href="./">全部计算器</a>
+    <a href="../web/">网页版</a>
+    <a href="../privacy">隐私政策</a>
+  </div>
+</footer>
+
+</body>
+</html>
+
+<script type="module">
+import * as C from "./calc.js";
+const $ = id => document.getElementById(id);
+const n = C.num, f = C.fmt;
+function rows(list) {
+  return list.filter(Boolean).map(r =>
+    '<div class="row' + (r[2] ? ' sum' : '') + '"><span class="row-k">' + r[0] +
+    '</span><span class="row-v">' + r[1] + '</span></div>').join("");
+}
+function put(v, sub, data) {
+  $("out").textContent = v;
+  if (sub !== undefined) $("outs").innerHTML = sub || "&nbsp;";
+  if (typeof data === "string") $("outr").innerHTML = data;
+  else if (data) $("outr").innerHTML = rows(data);
+}
+
+const M = C.MATERIALS;
+function calc() {
+  const m = M[$("mat").value] || M["ABS"];
+  const r = C.materialCost({
+    volume_cm3: n($("vol").value), density: m.density, price_per_kg: m.price,
+    vat_pct: 13, vat_deductible: true, scrap_pct: 5,
+    runner_g: 0, cavities: n($("cav").value, 1), regrind_pct: 0,
+  });
+  const mc = C.machineCost({ cavities: n($("cav").value,1), cycle_s: n($("cycle").value), machine_rate: n($("rate").value) });
+  const lc = C.laborCost({ cavities: n($("cav").value,1), cycle_s: n($("cycle").value), operators: n($("ops").value) });
+  const total = r.material_cost + mc + lc;
+  put("¥ " + f(total, 3),
+      "克重 " + C.fmtG(r.weight_g) + " · 每啤 " + f(n($("cycle").value)) + " 秒 · 每腔 " + n($("cav").value,1) + " 腔",
+      rows([
+        ["材料费（含 5% 损耗）", "¥ " + f(r.material_cost, 3)],
+        ["机台费", "¥ " + f(mc, 3)],
+        ["人工费", "¥ " + f(lc, 3)],
+        ["单件制造成本", "¥ " + f(total, 3), 1],
+        ["千件材料用量", f(C.kgPerThousand(r.weight_g, 0, 5), 1) + " kg"],
+        ["每小时产出", f(3600 / Math.max(1, n($("cycle").value)) * n($("cav").value, 1), 0) + " 件"],
+      ]));
+  C.syncUrl({ v: $("vol").value, m: $("mat").value, c: $("cav").value,
+              t: $("cycle").value, r: $("rate").value, o: $("ops").value });
+}
+[["vol"],["cav"],["cycle"],["rate"],["ops"]].forEach(([i]) => C.on($(i), calc));
+C.on($("mat"), calc);
+calc();
+
+</script>
