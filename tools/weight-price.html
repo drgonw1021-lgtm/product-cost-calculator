@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>克重单价换算器 · 元/kg ↔ 元/g ↔ 每件成本</title>
+<meta name="description" content="材料单价在元/kg、元/g、每件成本之间来回换算。输入克重和单价，立刻知道一件料值多少钱。">
+<meta name="keywords" content="克重单价换算,元每公斤换算,塑料件单件材料成本,克重算钱">
+<link rel="canonical" href="https://product-cost-calculator.pages.dev/tools/weight-price">
+<meta property="og:title" content="克重单价换算器 · 元/kg ↔ 元/g ↔ 每件成本">
+<meta property="og:description" content="材料单价在元/kg、元/g、每件成本之间来回换算。输入克重和单价，立刻知道一件料值多少钱。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://product-cost-calculator.pages.dev/tools/weight-price">
+<meta property="og:site_name" content="产品成本核算工具">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#08182A">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./tools.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "克重单价换算器",
+  "url": "https://product-cost-calculator.pages.dev/tools/weight-price",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "description": "材料单价在元/kg、元/g、每件成本之间来回换算。输入克重和单价，立刻知道一件料值多少钱。",
+  "isPartOf": { "@type": "WebSite", "name": "产品成本核算工具", "url": "https://product-cost-calculator.pages.dev/" }
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "克重是净重还是毛重？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "这里是净重（成品重量）。如果要算含损耗和水口的实际投料，用材料费计算器，那里有损耗和水口字段。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "为什么每件成本要保留 4 位小数？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "因为单价敏感。126 g 的件，单价从 12.80 变到 12.85，单件成本变 0.006 元；10 万件就是 630 元。小数位少了看不出差别。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "元/吨怎么换？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "除以 1000 就是元/kg。12800 元/吨 = 12.8 元/kg。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "含运费的价格怎么统一口径？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "把运费摊进单价再比：运费总额 ÷ 总公斤数 = 每公斤运费，加到单价上。别拿“含运费的价”直接比“不含运费的价”。"
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>产品成本核算工具</a>
+    <span class="top-sp"></span>
+    <a class="top-link" href="./">全部在线计算器</a>
+    <a class="top-cta" href="../">下载桌面版</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <nav class="crumb"><a href="../">首页</a><span>/</span><a href="./">在线计算器</a><span>/</span>克重单价换算</nav>
+    <h1>克重单价换算：一件料到底值多少钱</h1>
+    <p class="lead">供应商报 12.8 元/kg，你的件重 126 g——很多人要在计算器上按半天。这里三个方向一起换：元/kg ↔ 元/g ↔ 每件。</p>
+  </div>
+  <div class="calc">
+    <div class="calc-grid">
+      <div class="calc-in">
+<div class="field"><label class="lab" for="w">单件克重</label><div class="inrow"><input type="number" id="w" value="126" min="0" max="99999999" step="any"><span class="unit">g</span></div></div>
+<div class="field"><label class="lab" for="p">材料单价</label><div class="inrow"><input type="number" id="p" value="12.8" min="0" max="99999999" step="0.01"><span class="unit">元/kg</span></div></div>
+<div class="field"><label class="lab" for="qty">数量<span class="hint">用来看总金额</span></label><div class="inrow"><input type="number" id="qty" value="10000" min="0" max="99999999" step="any"><span class="unit">件</span></div></div>
+      </div>
+      <div class="calc-out">
+        <p class="res-cap">每件材料成本</p>
+        <div class="res-main" id="out">—</div>
+        <p class="res-sub" id="outs">&nbsp;</p>
+        <div class="rows" id="outr"></div>
+
+      </div>
+    </div>
+  </div>
+
+<article class="doc">
+
+<h2>三个方向，一个公式</h2>
+<div class="formula">每件成本 (元) = 克重 (g) ÷ 1000 × 单价 (元/kg)
+每克单价 (元/g) = 单价 (元/kg) ÷ 1000
+每公斤件数 = 1000 ÷ 克重 (g)</div>
+<p>看起来简单，但实际报价时天天要用，而且要跟不同口径的供应商对齐：有的报元/kg，有的报元/吨，有的直接报每件。</p>
+
+<h2>常见口径对照</h2>
+<div class="tbl-wrap"><table>
+<tr><th>供应商说</th><th>换成元/kg</th><th>126 g 件的材料费</th></tr>
+<tr><td>12.8 元/kg</td><td class="n">12.80</td><td class="n">1.613 元</td></tr>
+<tr><td>12800 元/吨</td><td class="n">12.80</td><td class="n">1.613 元</td></tr>
+<tr><td>0.0128 元/g</td><td class="n">12.80</td><td class="n">1.613 元</td></tr>
+<tr><td>1.62 元/件（含料）</td><td class="n">12.86</td><td class="n">1.620 元</td></tr>
+<tr><td>13.5 元/kg（含运费）</td><td class="n">13.50</td><td class="n">1.701 元</td></tr>
+</table></div>
+
+<h2>单价里通常含什么、不含什么</h2>
+<ul>
+  <li><strong>含税</strong>：塑料原料标准增值税 13%。报价一定要问清"含税还是不含税"。</li>
+  <li><strong>含运费</strong>：25 kg 一包，本地送货常含；跨省通常另算，或者摊到单价里加 0.3~0.8 元/kg。</li>
+  <li><strong>含改性/配色</strong>：抽粒、加色母、加助剂都会加价，色母通常加 0.5~2 元/kg。</li>
+  <li><strong>不含</strong>：回料折价、干燥费（部分吸湿材料要烘料，PA/PC 尤其）。</li>
+</ul>
+
+<h2>为什么要算"每公斤能做几件"</h2>
+<p>这个数直接决定<strong>最小起订量</strong>和<strong>库存周转</strong>：</p>
+<div class="formula">每公斤件数 = 1000 ÷ 126 = 7.9 件
+一包 25 kg = 198 件
+10 万件需要 12,658 kg ≈ 506 包</div>
+<p>低于 500 件的小单，原料往往是"整包起订"，实际材料成本会比理论值高一截——因为余料压在仓库里。</p>
+
+<h2>反算：给定单件材料预算，能买多贵的料</h2>
+<p>反过来用也常见。假设单件材料预算 1.2 元，件重 126 g：</p>
+<div class="formula">可承受单价 = 1.2 ÷ 126 × 1000 = 9.52 元/kg</div>
+<p>这就把"要用什么材料"变成了"能用什么材料"——ABS 12.8 元超了，PP 9.8 元刚好，HIPS 10.3 元接近上限。</p>
+
+</article>
+  <h2>常见问题</h2>
+  <div class="faq">
+    <details>
+      <summary>克重是净重还是毛重？</summary>
+      <div class="ans"><p>这里是净重（成品重量）。如果要算含损耗和水口的实际投料，用<a href='./material-cost'>材料费计算器</a>，那里有损耗和水口字段。</p></div>
+    </details>
+    <details>
+      <summary>为什么每件成本要保留 4 位小数？</summary>
+      <div class="ans"><p>因为单价敏感。126 g 的件，单价从 12.80 变到 12.85，单件成本变 0.006 元；10 万件就是 630 元。小数位少了看不出差别。</p></div>
+    </details>
+    <details>
+      <summary>元/吨怎么换？</summary>
+      <div class="ans"><p>除以 1000 就是元/kg。12800 元/吨 = 12.8 元/kg。</p></div>
+    </details>
+    <details>
+      <summary>含运费的价格怎么统一口径？</summary>
+      <div class="ans"><p>把运费摊进单价再比：运费总额 ÷ 总公斤数 = 每公斤运费，加到单价上。别拿“含运费的价”直接比“不含运费的价”。</p></div>
+    </details>
+  </div>
+
+  <section class="cta">
+    <h2>这只是单件材料费，出厂价还有 13 项</h2>
+    <p>机台费、人工、模具摊销、外购件、包材、物流、损耗、管理费、资金占用、销售佣金——桌面版把这些全算进去，一路算到含税出厂价，还能做阶梯报价和方案对比。</p>
+    <a class="btn" href="../">下载桌面版 · 免费试用 30 天</a>
+    <a class="btn btn-ghost" href="../web/">先用网页版算材料费</a>
+  </section>
+  <section class="related">
+    <h2>相关计算器</h2>
+    <div class="rel-grid">
+      <a class="rel-card" href="./injection-cost.html"><span class="rel-t">注塑件成本计算器</span><span class="rel-d">单件材料费+机台费+人工，一次算清</span></a>
+      <a class="rel-card" href="./material-cost.html"><span class="rel-t">塑料件材料费计算器</span><span class="rel-d">克重×单价，含损耗与水口</span></a>
+      <a class="rel-card" href="./mold-amortization.html"><span class="rel-t">模具摊销计算器</span><span class="rel-d">模具费摊到每件是多少</span></a>
+      <a class="rel-card" href="./regrind.html"><span class="rel-t">水口回用抵扣计算器</span><span class="rel-d">回用料能省多少钱</span></a>
+      <a class="rel-card" href="./carton-size.html"><span class="rel-t">纸箱尺寸与材积计算器</span><span class="rel-d">内箱/外箱/材积重一次出</span></a>
+      <a class="rel-card" href="./tier-pricing.html"><span class="rel-t">阶梯报价计算器</span><span class="rel-d">按数量自动递降的单价</span></a>
+      <a class="rel-card" href="./step-weight.html"><span class="rel-t">STEP 体积克重估算</span><span class="rel-d">没有三维软件也能估</span></a>
+      <a class="rel-card" href="./machine-rate.html"><span class="rel-t">注塑机台费计算器</span><span class="rel-d">吨位→台时费→单件</span></a>
+      <a class="rel-card" href="./labor-cost.html"><span class="rel-t">注塑人工费计算器</span><span class="rel-d">人数×时薪÷产出</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>© 2026 产品成本核算工具</span>
+    <span class="foot-sp"></span>
+    <a href="../">产品首页</a>
+    <a href="./">全部计算器</a>
+    <a href="../web/">网页版</a>
+    <a href="../privacy">隐私政策</a>
+  </div>
+</footer>
+
+</body>
+</html>
+
+<script type="module">
+import * as C from "./calc.js";
+const $ = id => document.getElementById(id);
+const n = C.num, f = C.fmt;
+function rows(list) {
+  return list.filter(Boolean).map(r =>
+    '<div class="row' + (r[2] ? ' sum' : '') + '"><span class="row-k">' + r[0] +
+    '</span><span class="row-v">' + r[1] + '</span></div>').join("");
+}
+function put(v, sub, data) {
+  $("out").textContent = v;
+  if (sub !== undefined) $("outs").innerHTML = sub || "&nbsp;";
+  if (typeof data === "string") $("outr").innerHTML = data;
+  else if (data) $("outr").innerHTML = rows(data);
+}
+
+function calc() {
+  const w = n($("w").value), p = n($("p").value), q = n($("qty").value);
+  const perG = p / 1000;
+  const perPc = w * perG;
+  const total = perPc * q;
+  const kg = w * q / 1000;
+  put("¥ " + f(perPc, 4),
+      f(w) + " g × " + f(p, 2) + " 元/kg",
+      rows([
+        ["每克单价", "¥ " + f(perG, 5) + " /g"],
+        ["每公斤可做", f(1000 / Math.max(0.0001, w), 1) + " 件"],
+        ["每件成本", "¥ " + f(perPc, 4)],
+        [f(q, 0) + " 件材料费", "¥ " + f(total, 2), 1],
+        [f(q, 0) + " 件用米", f(kg, 1) + " kg"],
+        ["整包 25kg 可做", f(25000 / Math.max(0.0001, w), 0) + " 件"],
+      ]));
+  C.syncUrl({ w: $("w").value, p: $("p").value, q: $("qty").value });
+}
+["w","p","qty"].forEach(i => C.on($(i), calc));
+calc();
+
+</script>
