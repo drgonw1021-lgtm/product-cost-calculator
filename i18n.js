@@ -29,6 +29,12 @@
     "模具与包材": "Mold & packaging",
     "渠道": "Channels",
     "价格": "Pricing",
+    "免费 · 免登录 · 不上传数据": "Free · no sign-up · nothing uploaded",
+    "10 个免费计算器，先算一个数": "10 free calculators — run one number first",
+    "注塑件成本、材料费、克重单价、模具摊销、水口回用、纸箱尺寸、阶梯报价、STEP 体积、机台费、人工费。免登录、不上传数据，口径和桌面版完全一致——先算一个，对得上再下载。":
+      "Injection-moulded part cost, material cost, gram price, mold amortisation, regrind credit, carton size, tier pricing, STEP volume, machine rate, labour cost. No sign-up, nothing uploaded, and the same formulas the desktop app uses — check one number before you download.",
+    "打开在线计算器": "Open the calculators",
+    "在线计算器": "Online calculators",
     "下载试用": "Download trial",
 
     "导入 STEP → 自动拆件 → 算出厂价 · 甲方内部核价 · Windows 桌面版":
@@ -165,7 +171,8 @@
     "渠道成本页：三个平台同表对比，底部一行写出这个渠道的账是怎么拆的":
       "Channel cost page: three platforms side by side, with a line underneath showing how that channel's numbers break down",
 
-    "07 / 价格与下载": "07 / Price & download",
+    "08 / 价格与下载": "08 / Price & download",
+    "07 / 在线计算器": "07 / Online calculators",
     "现在就能算第一件货": "Cost your first product today",
     "30 天免费试用，功能全开。到期后变成只读预览：报价照常算给你看，但导入模型、改参数、导出 Excel / PDF 都要激活。":
         "30-day free trial with everything unlocked. After it ends the app becomes a read-only preview: the quote is still calculated, but importing models, editing values and exporting Excel / PDF all require activation.",
