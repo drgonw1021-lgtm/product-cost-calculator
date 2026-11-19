@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STEP 文件体积克重估算 · 没有三维软件也能估</title>
+<meta name="description" content="没有装 SolidWorks/UG 也能估：用尺寸公式算体积，或用排水法实测。附常见塑料密度表和体积→克重→材料费一条龙。">
+<meta name="keywords" content="STEP体积估算,塑料件克重计算,体积算重量,产品克重怎么算,塑料密度表">
+<link rel="canonical" href="https://product-cost-calculator.pages.dev/tools/step-weight">
+<meta property="og:title" content="STEP 文件体积克重估算 · 没有三维软件也能估">
+<meta property="og:description" content="没有装 SolidWorks/UG 也能估：用尺寸公式算体积，或用排水法实测。附常见塑料密度表和体积→克重→材料费一条龙。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://product-cost-calculator.pages.dev/tools/step-weight">
+<meta property="og:site_name" content="产品成本核算工具">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#08182A">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./tools.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "STEP 文件体积克重估算",
+  "url": "https://product-cost-calculator.pages.dev/tools/step-weight",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "description": "没有装 SolidWorks/UG 也能估：用尺寸公式算体积，或用排水法实测。附常见塑料密度表和体积→克重→材料费一条龙。",
+  "isPartOf": { "@type": "WebSite", "name": "产品成本核算工具", "url": "https://product-cost-calculator.pages.dev/" }
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "网页版能直接读 STEP 吗？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "能。免费网页版支持拖入 STEP/STP，在浏览器里直接算出每个零件的体积、克重和材料费，不用装任何东西，文件也不上传（全在本地算）。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "填充系数有没有通用值？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "没有。同一类产品的填充系数可以复用，跨类就不行。最可靠的办法是拿一个已知重量的老产品反算一次，本页正文有校准示例。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "STEP 里读出的体积和自己算的差很多？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "大概率是单位问题。有的 STEP 用 mm，有的用 inch 或 m。另外装配体里如果包含多个实体，体积是累加的，要按零件拆开看。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "加玻纤的材料密度怎么定？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "按重量比例估：PA6 1.14 + 30% 玻纤（2.54）≈ 1.14×0.7 + 2.54×0.3 = 1.56？不对，实际只有 1.36。因为玻纤填充后体积不是简单相加，请以供应商 TDS 为准。"
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>产品成本核算工具</a>
+    <span class="top-sp"></span>
+    <a class="top-link" href="./">全部在线计算器</a>
+    <a class="top-cta" href="../">下载桌面版</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <nav class="crumb"><a href="../">首页</a><span>/</span><a href="./">在线计算器</a><span>/</span>STEP 体积克重估算</nav>
+    <h1>STEP 体积克重估算：没有三维软件也能算</h1>
+    <p class="lead">拿到一个 STEP 文件，但手边没有三维软件；或者只有一个样品，连图都没有。下面两种估法，误差能控制在 10% 以内——足够报价用。</p>
+  </div>
+  <div class="calc">
+    <div class="calc-grid">
+      <div class="calc-in">
+<div class="field"><label class="lab" for="mode">估算方式</label><select id="mode"><option value="box" selected>包围盒 × 填充系数</option><option value="direct">直接输入体积</option><option value="weigh">称重反算体积</option></select></div>
+<div class="field"><label class="lab" for="l">长</label><div class="inrow"><input type="number" id="l" value="200" min="0" max="99999999" step="0.5"><span class="unit">mm</span></div></div>
+<div class="field"><label class="lab" for="w">宽</label><div class="inrow"><input type="number" id="w" value="120" min="0" max="99999999" step="0.5"><span class="unit">mm</span></div></div>
+<div class="field"><label class="lab" for="h">高</label><div class="inrow"><input type="number" id="h" value="60" min="0" max="99999999" step="0.5"><span class="unit">mm</span></div></div>
+<div class="field"><label class="lab" for="fill">填充系数<span class="hint">实心方块 1.0；薄壁外壳 0.3~0.5；带筋结构 0.5~0.7</span></label><input type="number" id="fill" value="0.55" min="0.05" max="1" step="0.05"></div>
+<div class="field"><label class="lab" for="vol2">直接输入体积</label><div class="inrow"><input type="number" id="vol2" value="120" min="0" max="99999999" step="0.1"><span class="unit">cm³</span></div></div>
+<div class="field"><label class="lab" for="gram">实测重量</label><div class="inrow"><input type="number" id="gram" value="126" min="0" max="99999999" step="0.1"><span class="unit">g</span></div></div>
+<div class="field"><label class="lab" for="mat">材料</label><select id="mat"><option value="ABS" selected>ABS（1.05 g/cm³ · 12.8 元/kg）</option><option value="HIPS">HIPS（1.05 g/cm³ · 10.3 元/kg）</option><option value="PS">PS（1.05 g/cm³ · 10.0 元/kg）</option><option value="AS/SAN">AS/SAN（1.08 g/cm³ · 12.6 元/kg）</option><option value="PP">PP（0.91 g/cm³ · 9.8 元/kg）</option><option value="PE">PE（0.95 g/cm³ · 9.4 元/kg）</option><option value="PVC">PVC（1.38 g/cm³ · 9.4 元/kg）</option><option value="PMMA">PMMA（1.19 g/cm³ · 16.0 元/kg）</option><option value="PC">PC（1.20 g/cm³ · 24.0 元/kg）</option><option value="PC/ABS">PC/ABS（1.13 g/cm³ · 22.0 元/kg）</option><option value="PC/GF10">PC/GF10（1.27 g/cm³ · 26.0 元/kg）</option><option value="PA6">PA6（1.14 g/cm³ · 26.0 元/kg）</option><option value="PA66">PA66（1.15 g/cm³ · 30.0 元/kg）</option><option value="PA6/GF30">PA6/GF30（1.36 g/cm³ · 30.0 元/kg）</option><option value="POM">POM（1.41 g/cm³ · 22.0 元/kg）</option><option value="PBT">PBT（1.31 g/cm³ · 22.0 元/kg）</option><option value="PET">PET（1.34 g/cm³ · 23.0 元/kg）</option><option value="PPS">PPS（1.35 g/cm³ · 55.0 元/kg）</option><option value="TPU">TPU（1.14 g/cm³ · 32.0 元/kg）</option><option value="TPE">TPE（1.10 g/cm³ · 28.0 元/kg）</option></select></div>
+      </div>
+      <div class="calc-out">
+        <p class="res-cap">估算克重</p>
+        <div class="res-main" id="out">—</div>
+        <p class="res-sub" id="outs">&nbsp;</p>
+        <div class="rows" id="outr"></div>
+
+      </div>
+    </div>
+  </div>
+
+<article class="doc">
+
+<h2>三种估法，什么时候用哪个</h2>
+<div class="tbl-wrap"><table>
+<tr><th>方法</th><th>精度</th><th>需要什么</th><th>适用</th></tr>
+<tr><td><strong>包围盒 × 填充系数</strong></td><td class="n">±15%</td><td>只有长宽高</td><td>早期报价、无图纸</td></tr>
+<tr><td><strong>直接输入体积</strong></td><td class="n">±1%</td><td>三维软件或 STEP</td><td>有图，最准</td></tr>
+<tr><td><strong>称重反算</strong></td><td class="n">±2%</td><td>一个实物样品</td><td>有样品没图</td></tr>
+</table></div>
+<p>顺序建议：有 STEP 就用 STEP（<a href="./../web/">网页版能直接拖进去读</a>），有实物就称重，什么都没有才用包围盒估。</p>
+
+<h2>填充系数怎么定</h2>
+<p>这是包围盒法唯一的经验值，也是最容易错的地方：</p>
+<div class="tbl-wrap"><table>
+<tr><th>产品类型</th><th>填充系数</th><th>例子</th></tr>
+<tr><td>实心块、厚壁件</td><td class="n">0.90~1.00</td><td>垫块、配重</td></tr>
+<tr><td>厚壁壳体</td><td class="n">0.60~0.75</td><td>电钻外壳、大箱体</td></tr>
+<tr><td>常规薄壁外壳</td><td class="n">0.40~0.55</td><td>家电外壳、机顶盒</td></tr>
+<tr><td>薄壁 + 深腔</td><td class="n">0.25~0.40</td><td>托盘、深盒</td></tr>
+<tr><td>框类、支架</td><td class="n">0.10~0.25</td><td>骨架、网框</td></tr>
+<tr><td>片类、薄板</td><td class="n">0.02~0.10</td><td>面板、视窗</td></tr>
+</table></div>
+<p><strong>一个简单校准法</strong>：拿同类的老产品，量它的长宽高、称它的重量，反算填充系数。以后同类产品直接用这个数，误差会小很多。</p>
+<div class="formula">校准：某外壳 200×120×60 mm，实称 126 g，ABS
+包围盒 = 200×120×60 = 1440 cm³
+实际体积 = 126 ÷ 1.05 = 120 cm³
+填充系数 = 120 ÷ 1440 = 0.083  ← 实际是薄壁件</div>
+<p>上面这个例子说明：<strong>凭感觉填 0.55 会高估 6 倍</strong>。薄壁外壳的填充系数远比你想象的低。所以第一次一定要校准。</p>
+
+<h2>常见塑料密度表</h2>
+<div class="tbl-wrap"><table>
+<tr><th>材料</th><th>密度 g/cm³</th><th>材料</th><th>密度 g/cm³</th></tr>
+<tr><td>PP</td><td class="n">0.91</td><td>PC</td><td class="n">1.20</td></tr>
+<tr><td>PE</td><td class="n">0.95</td><td>PC/ABS</td><td class="n">1.13</td></tr>
+<tr><td>ABS</td><td class="n">1.05</td><td>PMMA</td><td class="n">1.19</td></tr>
+<tr><td>HIPS</td><td class="n">1.05</td><td>PA6</td><td class="n">1.14</td></tr>
+<tr><td>PS</td><td class="n">1.05</td><td>PA66</td><td class="n">1.15</td></tr>
+<tr><td>AS/SAN</td><td class="n">1.08</td><td>POM</td><td class="n">1.41</td></tr>
+<tr><td>PVC</td><td class="n">1.38</td><td>PBT</td><td class="n">1.31</td></tr>
+<tr><td>TPU</td><td class="n">1.14</td><td>PET</td><td class="n">1.34</td></tr>
+<tr><td>TPE</td><td class="n">1.10</td><td>PPS</td><td class="n">1.35</td></tr>
+</table></div>
+<p>注意：加玻纤会显著提高密度。PA6 是 1.14，PA6+30%GF 是 1.36——差 19%，直接算错克重。改性料请以供应商 TDS 为准。</p>
+
+<h2>排水法实测体积</h2>
+<p>手边有实物又没有三维图时，这是最准的办法：</p>
+<ol>
+  <li>量筒装水，记录刻度 V1。</li>
+  <li>把样品完全浸入（用细线吊着，别用手，也别带气泡）。</li>
+  <li>记录刻度 V2。</li>
+  <li>体积 = V2 − V1（单位 mL = cm³）。</li>
+</ol>
+<p>样品会浮起来的话，用细针压下去。气泡用牙签拨掉。这个方法精度能到 ±2%，比包围盒估准得多。</p>
+
+<h2>从体积到成本</h2>
+<div class="formula">克重 = 体积 (cm³) × 密度 (g/cm³)
+材料费 = 克重 ÷ 1000 × 单价 (元/kg)
+单件成本 ≈ 材料费 ÷ 0.55（材料通常占总成本 50%~60%）</div>
+<p>最后这个"除以 0.55"只是快速估个总成本，真实核算要用<a href="./injection-cost.html">注塑件成本计算器</a>，把机台费和人工分开算。</p>
+
+</article>
+  <h2>常见问题</h2>
+  <div class="faq">
+    <details>
+      <summary>网页版能直接读 STEP 吗？</summary>
+      <div class="ans"><p>能。<a href='./../web/'>免费网页版</a>支持拖入 STEP/STP，在浏览器里直接算出每个零件的体积、克重和材料费，不用装任何东西，文件也不上传（全在本地算）。</p></div>
+    </details>
+    <details>
+      <summary>填充系数有没有通用值？</summary>
+      <div class="ans"><p>没有。同一类产品的填充系数可以复用，跨类就不行。最可靠的办法是拿一个<strong>已知重量</strong>的老产品反算一次，本页正文有校准示例。</p></div>
+    </details>
+    <details>
+      <summary>STEP 里读出的体积和自己算的差很多？</summary>
+      <div class="ans"><p>大概率是单位问题。有的 STEP 用 mm，有的用 inch 或 m。另外装配体里如果包含多个实体，体积是累加的，要按零件拆开看。</p></div>
+    </details>
+    <details>
+      <summary>加玻纤的材料密度怎么定？</summary>
+      <div class="ans"><p>按重量比例估：PA6 1.14 + 30% 玻纤（2.54）≈ 1.14×0.7 + 2.54×0.3 = 1.56？不对，实际只有 1.36。因为玻纤填充后体积不是简单相加，请以供应商 TDS 为准。</p></div>
+    </details>
+  </div>
+
+  <section class="cta">
+    <h2>这只是单件材料费，出厂价还有 13 项</h2>
+    <p>机台费、人工、模具摊销、外购件、包材、物流、损耗、管理费、资金占用、销售佣金——桌面版把这些全算进去，一路算到含税出厂价，还能做阶梯报价和方案对比。</p>
+    <a class="btn" href="../">下载桌面版 · 免费试用 30 天</a>
+    <a class="btn btn-ghost" href="../web/">先用网页版算材料费</a>
+  </section>
+  <section class="related">
+    <h2>相关计算器</h2>
+    <div class="rel-grid">
+      <a class="rel-card" href="./injection-cost.html"><span class="rel-t">注塑件成本计算器</span><span class="rel-d">单件材料费+机台费+人工，一次算清</span></a>
+      <a class="rel-card" href="./material-cost.html"><span class="rel-t">塑料件材料费计算器</span><span class="rel-d">克重×单价，含损耗与水口</span></a>
+      <a class="rel-card" href="./weight-price.html"><span class="rel-t">克重单价换算器</span><span class="rel-d">元/kg ↔ 元/g ↔ 每件成本</span></a>
+      <a class="rel-card" href="./mold-amortization.html"><span class="rel-t">模具摊销计算器</span><span class="rel-d">模具费摊到每件是多少</span></a>
+      <a class="rel-card" href="./regrind.html"><span class="rel-t">水口回用抵扣计算器</span><span class="rel-d">回用料能省多少钱</span></a>
+      <a class="rel-card" href="./carton-size.html"><span class="rel-t">纸箱尺寸与材积计算器</span><span class="rel-d">内箱/外箱/材积重一次出</span></a>
+      <a class="rel-card" href="./tier-pricing.html"><span class="rel-t">阶梯报价计算器</span><span class="rel-d">按数量自动递降的单价</span></a>
+      <a class="rel-card" href="./machine-rate.html"><span class="rel-t">注塑机台费计算器</span><span class="rel-d">吨位→台时费→单件</span></a>
+      <a class="rel-card" href="./labor-cost.html"><span class="rel-t">注塑人工费计算器</span><span class="rel-d">人数×时薪÷产出</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>© 2026 产品成本核算工具</span>
+    <span class="foot-sp"></span>
+    <a href="../">产品首页</a>
+    <a href="./">全部计算器</a>
+    <a href="../web/">网页版</a>
+    <a href="../privacy">隐私政策</a>
+  </div>
+</footer>
+
+</body>
+</html>
+
+<script type="module">
+import * as C from "./calc.js";
+const $ = id => document.getElementById(id);
+const n = C.num, f = C.fmt;
+function rows(list) {
+  return list.filter(Boolean).map(r =>
+    '<div class="row' + (r[2] ? ' sum' : '') + '"><span class="row-k">' + r[0] +
+    '</span><span class="row-v">' + r[1] + '</span></div>').join("");
+}
+function put(v, sub, data) {
+  $("out").textContent = v;
+  if (sub !== undefined) $("outs").innerHTML = sub || "&nbsp;";
+  if (typeof data === "string") $("outr").innerHTML = data;
+  else if (data) $("outr").innerHTML = rows(data);
+}
+
+const M = C.MATERIALS;
+function calc() {
+  const m = M[$("mat").value] || M["ABS"];
+  const mode = $("mode").value;
+  const l = n($("l").value), w = n($("w").value), h = n($("h").value);
+  const boxCm3 = l * w * h / 1000;
+  const fill = C.clamp(n($("fill").value), 0.02, 1);
+  let vol = 0, how = "";
+  if (mode === "box") { vol = boxCm3 * fill; how = "包围盒 " + f(boxCm3, 1) + " cm³ × " + f(fill, 2); }
+  else if (mode === "direct") { vol = n($("vol2").value); how = "直接输入"; }
+  else { vol = n($("gram").value) / m.density; how = "实测重量 ÷ 密度"; }
+
+  const gram = vol * m.density;
+  const material = gram / 1000 * m.price;
+  const withScrap = material * 1.05;
+
+  put(C.fmtG(gram), how,
+      rows([
+        ["体积", f(vol, 2) + " cm³"],
+        ["密度（" + $("mat").value + "）", f(m.density, 2) + " g/cm³"],
+        ["克重", C.fmtG(gram), 1],
+        ["含料单价", "¥ " + f(m.price, 2) + " /kg"],
+        ["材料费（含税）", "¥ " + f(material, 3)],
+        ["含 5% 损耗", "¥ " + f(withScrap, 3)],
+        ["千件用米", f(gram, 1) + " kg"],
+        mode === "box" ? ["包围盒体积", f(boxCm3, 2) + " cm³"] : null,
+        mode === "box" ? ["误差区间", f(Math.max(0, gram * 0.85), 1) + " ~ " + f(gram * 1.15, 1) + " g"] : null,
+      ]));
+  C.syncUrl({ mo: mode, l: l, w: w, h: h, f: fill, v: $("vol2").value, g: $("gram").value, m: $("mat").value });
+}
+["l","w","h","fill","vol2","gram"].forEach(i => C.on($(i), calc));
+["mode","mat"].forEach(i => C.on($(i), calc));
+calc();
+
+</script>
