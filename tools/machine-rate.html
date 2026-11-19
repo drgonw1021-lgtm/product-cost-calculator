@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>注塑机台费计算器 · 吨位→台时费→单件成本</title>
+<meta name="description" content="按锁模力和产品投影面积估算需要多大吨位的注塑机，再按台时费、周期和腔数算出单件机台费。">
+<meta name="keywords" content="注塑机台费,注塑机吨位选择,锁模力计算,台时费,注塑机小时费率">
+<link rel="canonical" href="https://product-cost-calculator.pages.dev/tools/machine-rate">
+<meta property="og:title" content="注塑机台费计算器 · 吨位→台时费→单件成本">
+<meta property="og:description" content="按锁模力和产品投影面积估算需要多大吨位的注塑机，再按台时费、周期和腔数算出单件机台费。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://product-cost-calculator.pages.dev/tools/machine-rate">
+<meta property="og:site_name" content="产品成本核算工具">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#08182A">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./tools.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "注塑机台费计算器",
+  "url": "https://product-cost-calculator.pages.dev/tools/machine-rate",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "description": "按锁模力和产品投影面积估算需要多大吨位的注塑机，再按台时费、周期和腔数算出单件机台费。",
+  "isPartOf": { "@type": "WebSite", "name": "产品成本核算工具", "url": "https://product-cost-calculator.pages.dev/" }
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "投影面积是产品表面积吗？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "不是。是分型面上的投影，简单说就是从上往下看产品的轮廓面积（长×宽），再加流道。一个 200×120 mm 的外壳，投影面积是 240 cm²，而不是它的表面积（那会有 600+ cm²）。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "双色机怎么算？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "双色机的台时费比同吨位单色机高 60%~100%（双色 160T 82 元/h vs 单色 160T 52 元/h），因为多一套注射单元和转盘。周期也更长（两次注射）。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "台时费填多少才对？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "问车间实际数据最准。没有的话用本工具按吨位自动取参考值，然后记住一个原则：自建厂算折旧，外发加工看报价。外发时供应商报的加工费里已经含了他的台时费 + 人工 + 利润。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "为什么周期影响这么大？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "机台费按时间收，周期直接线性影响。30 秒和 40 秒差 33%。缩短周期的办法：优化水路、用热流道、减薄壁厚、提高模具冷却效率。这是注塑降本最有效的一招。"
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>产品成本核算工具</a>
+    <span class="top-sp"></span>
+    <a class="top-link" href="./">全部在线计算器</a>
+    <a class="top-cta" href="../">下载桌面版</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <nav class="crumb"><a href="../">首页</a><span>/</span><a href="./">在线计算器</a><span>/</span>注塑机台费计算器</nav>
+    <h1>注塑机台费计算器：多大的机、一小时多少钱、一件摊多少</h1>
+    <p class="lead">选机台看锁模力，算成本看台时费。选大了台时费白花，选小了打不满、飞边。</p>
+  </div>
+  <div class="calc">
+    <div class="calc-grid">
+      <div class="calc-in">
+<div class="field"><label class="lab" for="area">产品投影面积<span class="hint">长×宽（含流道），不是表面积</span></label><div class="inrow"><input type="number" id="area" value="120" min="0" max="99999999" step="any"><span class="unit">cm²</span></div></div>
+<div class="field"><label class="lab" for="cav">模穴数</label><div class="inrow"><input type="number" id="cav" value="2" min="1" max="128" step="1"><span class="unit">腔</span></div></div>
+<div class="field"><label class="lab" for="press">型腔压力<span class="hint">一般件 300~500，精密件 600~800</span></label><div class="inrow"><input type="number" id="press" value="400" min="100" max="1200" step="50"><span class="unit">kg/cm²</span></div></div>
+<div class="field"><label class="lab" for="safe">安全系数</label><input type="number" id="safe" value="1.2" min="1" max="2" step="0.05"></div>
+<div class="field"><label class="lab" for="cycle">成型周期</label><div class="inrow"><input type="number" id="cycle" value="30" min="0" max="99999999" step="any"><span class="unit">秒/啤</span></div></div>
+<div class="field"><label class="lab" for="rate">实际台时费<span class="hint">填 0 = 按推荐吨位自动取</span></label><div class="inrow"><input type="number" id="rate" value="0" min="0" max="99999999" step="any"><span class="unit">元/小时</span></div></div>
+      </div>
+      <div class="calc-out">
+        <p class="res-cap">单件机台费</p>
+        <div class="res-main" id="out">—</div>
+        <p class="res-sub" id="outs">&nbsp;</p>
+        <div class="rows" id="outr"></div>
+
+      </div>
+    </div>
+  </div>
+
+<article class="doc">
+
+<h2>锁模力怎么估</h2>
+<p>锁模力必须大于注塑时的涨模力，否则会飞边。经验公式：</p>
+<div class="formula">锁模力 (吨) = 投影面积 (cm²) × 型腔压力 (kg/cm²) ÷ 1000 × 安全系数</div>
+<p>其中<strong>投影面积</strong>是模具分型面上的投影（长×宽），不是产品表面积——这是最常搞错的地方。多腔时按所有腔的总投影面积算，再加流道。</p>
+<div class="formula">例：单腔投影 120 cm²，2 腔，压力 400，安全 1.2
+锁模力 = 120 × 2 × 400 ÷ 1000 × 1.2 = 115 吨
+→ 选 130T 或 150T 机台</div>
+
+<h2>常见塑料的型腔压力参考</h2>
+<div class="tbl-wrap"><table>
+<tr><th>材料</th><th>型腔压力 kg/cm²</th><th>说明</th></tr>
+<tr><td>PE / PP</td><td class="n">250~350</td><td>流动性好，压力低</td></tr>
+<tr><td>ABS / HIPS</td><td class="n">300~450</td><td>通用</td></tr>
+<tr><td>PS</td><td class="n">300~400</td><td>脆料，注意内应力</td></tr>
+<tr><td>PC</td><td class="n">500~700</td><td>黏度高，要高压高温</td></tr>
+<tr><td>PA6 / PA66</td><td class="n">400~600</td><td>结晶料，收缩大</td></tr>
+<tr><td>POM</td><td class="n">500~700</td><td>结晶度高</td></tr>
+<tr><td>PPS / PEEK</td><td class="n">700~1000</td><td>高温工程料</td></tr>
+</table></div>
+
+<h2>台时费里包含什么</h2>
+<p>机台综合费率（元/小时）通常包含：</p>
+<ul>
+  <li><strong>电费</strong>：注塑机功率 × 负载率，约占 35%~45%。</li>
+  <li><strong>折旧</strong>：设备原值 ÷ 折旧年限 ÷ 年工作小时。一台 100T 机 30 万，10 年，每年 6000 小时 ≈ 5 元/h。</li>
+  <li><strong>维修保养</strong>：约占 5%~10%。</li>
+  <li><strong>厂房租金分摊</strong>：部分工厂算进来，部分单列。</li>
+  <li><strong>不含人工</strong>：操作员是单独一项（详见<a href="./labor-cost.html">人工费计算器</a>）。</li>
+  <li><strong>不含模具</strong>：模具是摊销项。</li>
+</ul>
+
+<h2>台时费对照表</h2>
+<div class="tbl-wrap"><table>
+<tr><th>吨位</th><th>元/小时</th><th>典型产品</th></tr>
+<tr><td>立式 60T</td><td class="n">35</td><td>嵌件、连接器、小件</td></tr>
+<tr><td>海天 90T</td><td class="n">38</td><td>小外壳</td></tr>
+<tr><td>海天 100T</td><td class="n">40</td><td>手机壳、遥控器</td></tr>
+<tr><td>海天 130T</td><td class="n">45</td><td>家电小件</td></tr>
+<tr><td>海天 160T</td><td class="n">52</td><td>家电外壳</td></tr>
+<tr><td>海天 220T</td><td class="n">60</td><td>中大件</td></tr>
+<tr><td>海天 280T</td><td class="n">75</td><td>周转箱</td></tr>
+<tr><td>海天 450T</td><td class="n">105</td><td>汽车件</td></tr>
+<tr><td>海天 530T</td><td class="n">125</td><td>超大件、内饰</td></tr>
+</table></div>
+<p>这些是华东地区 2024 年的大致水平，实际报价跟工厂规模、订单饱满度、电费峰谷有关，上下浮动 20% 都正常。</p>
+
+<h2>为什么不能"选大不选小"</h2>
+<p>大机台台时费高，而且大机打小模能耗效率低（同样的产品要更长时间保压）。一台 450T 打本该 100T 做的件，台时费从 40 涨到 105，单件机台费翻 2.6 倍。反过来选小了：打不满、飞边、模具受损、良率掉。</p>
+<p><strong>正确做法是按算出来的吨位往上取一档</strong>，不要跳两档。</p>
+
+</article>
+  <h2>常见问题</h2>
+  <div class="faq">
+    <details>
+      <summary>投影面积是产品表面积吗？</summary>
+      <div class="ans"><p>不是。是<strong>分型面上的投影</strong>，简单说就是从上往下看产品的轮廓面积（长×宽），再加流道。一个 200×120 mm 的外壳，投影面积是 240 cm²，而不是它的表面积（那会有 600+ cm²）。</p></div>
+    </details>
+    <details>
+      <summary>双色机怎么算？</summary>
+      <div class="ans"><p>双色机的台时费比同吨位单色机高 60%~100%（双色 160T 82 元/h vs 单色 160T 52 元/h），因为多一套注射单元和转盘。周期也更长（两次注射）。</p></div>
+    </details>
+    <details>
+      <summary>台时费填多少才对？</summary>
+      <div class="ans"><p>问车间实际数据最准。没有的话用本工具按吨位自动取参考值，然后记住一个原则：<strong>自建厂算折旧，外发加工看报价</strong>。外发时供应商报的加工费里已经含了他的台时费 + 人工 + 利润。</p></div>
+    </details>
+    <details>
+      <summary>为什么周期影响这么大？</summary>
+      <div class="ans"><p>机台费按时间收，周期直接线性影响。30 秒和 40 秒差 33%。缩短周期的办法：优化水路、用热流道、减薄壁厚、提高模具冷却效率。这是注塑降本最有效的一招。</p></div>
+    </details>
+  </div>
+
+  <section class="cta">
+    <h2>这只是单件材料费，出厂价还有 13 项</h2>
+    <p>机台费、人工、模具摊销、外购件、包材、物流、损耗、管理费、资金占用、销售佣金——桌面版把这些全算进去，一路算到含税出厂价，还能做阶梯报价和方案对比。</p>
+    <a class="btn" href="../">下载桌面版 · 免费试用 30 天</a>
+    <a class="btn btn-ghost" href="../web/">先用网页版算材料费</a>
+  </section>
+  <section class="related">
+    <h2>相关计算器</h2>
+    <div class="rel-grid">
+      <a class="rel-card" href="./injection-cost.html"><span class="rel-t">注塑件成本计算器</span><span class="rel-d">单件材料费+机台费+人工，一次算清</span></a>
+      <a class="rel-card" href="./material-cost.html"><span class="rel-t">塑料件材料费计算器</span><span class="rel-d">克重×单价，含损耗与水口</span></a>
+      <a class="rel-card" href="./weight-price.html"><span class="rel-t">克重单价换算器</span><span class="rel-d">元/kg ↔ 元/g ↔ 每件成本</span></a>
+      <a class="rel-card" href="./mold-amortization.html"><span class="rel-t">模具摊销计算器</span><span class="rel-d">模具费摊到每件是多少</span></a>
+      <a class="rel-card" href="./regrind.html"><span class="rel-t">水口回用抵扣计算器</span><span class="rel-d">回用料能省多少钱</span></a>
+      <a class="rel-card" href="./carton-size.html"><span class="rel-t">纸箱尺寸与材积计算器</span><span class="rel-d">内箱/外箱/材积重一次出</span></a>
+      <a class="rel-card" href="./tier-pricing.html"><span class="rel-t">阶梯报价计算器</span><span class="rel-d">按数量自动递降的单价</span></a>
+      <a class="rel-card" href="./step-weight.html"><span class="rel-t">STEP 体积克重估算</span><span class="rel-d">没有三维软件也能估</span></a>
+      <a class="rel-card" href="./labor-cost.html"><span class="rel-t">注塑人工费计算器</span><span class="rel-d">人数×时薪÷产出</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>© 2026 产品成本核算工具</span>
+    <span class="foot-sp"></span>
+    <a href="../">产品首页</a>
+    <a href="./">全部计算器</a>
+    <a href="../web/">网页版</a>
+    <a href="../privacy">隐私政策</a>
+  </div>
+</footer>
+
+</body>
+</html>
+
+<script type="module">
+import * as C from "./calc.js";
+const $ = id => document.getElementById(id);
+const n = C.num, f = C.fmt;
+function rows(list) {
+  return list.filter(Boolean).map(r =>
+    '<div class="row' + (r[2] ? ' sum' : '') + '"><span class="row-k">' + r[0] +
+    '</span><span class="row-v">' + r[1] + '</span></div>').join("");
+}
+function put(v, sub, data) {
+  $("out").textContent = v;
+  if (sub !== undefined) $("outs").innerHTML = sub || "&nbsp;";
+  if (typeof data === "string") $("outr").innerHTML = data;
+  else if (data) $("outr").innerHTML = rows(data);
+}
+
+const R = C.MACHINE_RATES;
+const TIERS = Object.keys(R).map(k => ({ name: k, ton: parseInt(k.replace(/[^0-9]/g,""),10) || 60, rate: R[k] }));
+TIERS.sort((a,b) => a.ton - b.ton);
+function pick(ton) {
+  for (const t of TIERS) if (t.ton >= ton) return t;
+  return TIERS[TIERS.length - 1];
+}
+function calc() {
+  const area = n($("area").value), cav = Math.max(1, n($("cav").value));
+  const press = n($("press").value), safe = n($("safe").value);
+  const cycle = n($("cycle").value);
+  const needTon = area * cav * press * safe / 1000;
+  const rec = pick(needTon);
+  const manual = n($("rate").value);
+  const rate = manual > 0 ? manual : rec.rate;
+  const perPc = cycle / 3600 * rate / cav;
+  const hourly = 3600 / Math.max(1, cycle) * cav;
+  put("¥ " + f(perPc, 4),
+      "需要 " + f(needTon, 0) + " 吨 → 建议 " + rec.name + "（" + f(rate, 0) + " 元/h）",
+      rows([
+        ["单腔投影面积", f(area, 1) + " cm²"],
+        ["总投影面积", f(area * cav, 1) + " cm²"],
+        ["所需锁模力", f(needTon, 0) + " 吨", 1],
+        ["推荐机台", rec.name],
+        ["台时费", "¥ " + f(rate, 0) + " /h"],
+        manual > 0 ? ["（手动覆盖）", "自动值 ¥ " + f(rec.rate, 0)] : null,
+        ["每小时产出", f(hourly, 0) + " 件"],
+        ["单件机台费", "¥ " + f(perPc, 4), 1],
+        ["千件机台费", "¥ " + f(perPc * 1000, 2)],
+        ["占机台时间", f(cycle / 3600, 4) + " h/啤"],
+      ]));
+  C.syncUrl({ a: $("area").value, c: $("cav").value, p: $("press").value,
+              s: $("safe").value, t: $("cycle").value, r: $("rate").value });
+}
+["area","cav","press","safe","cycle","rate"].forEach(i => C.on($(i), calc));
+calc();
+
+</script>
