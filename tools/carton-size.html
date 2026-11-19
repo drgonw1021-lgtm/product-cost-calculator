@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>纸箱尺寸与材积计算器 · 内箱/外箱/材积重一次出</title>
+<meta name="description" content="输入产品尺寸和装箱数量，算出内盒、外箱尺寸、材积重、体积重和柜量，含瓦楞纸板厚度余量。">
+<meta name="keywords" content="纸箱尺寸计算器,外箱尺寸怎么算,材积重,体积重,装箱数量,纸箱材积">
+<link rel="canonical" href="https://product-cost-calculator.pages.dev/tools/carton-size">
+<meta property="og:title" content="纸箱尺寸与材积计算器 · 内箱/外箱/材积重一次出">
+<meta property="og:description" content="输入产品尺寸和装箱数量，算出内盒、外箱尺寸、材积重、体积重和柜量，含瓦楞纸板厚度余量。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://product-cost-calculator.pages.dev/tools/carton-size">
+<meta property="og:site_name" content="产品成本核算工具">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#08182A">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./tools.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "纸箱尺寸与材积计算器",
+  "url": "https://product-cost-calculator.pages.dev/tools/carton-size",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "description": "输入产品尺寸和装箱数量，算出内盒、外箱尺寸、材积重、体积重和柜量，含瓦楞纸板厚度余量。",
+  "isPartOf": { "@type": "WebSite", "name": "产品成本核算工具", "url": "https://product-cost-calculator.pages.dev/" }
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "为什么我算的外箱和纸箱厂报的不一样？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "大概率是尺寸基准不同。纸箱厂报的是制造尺寸（压线尺寸），本工具算的是外尺寸。下单时要明确说“内尺寸 XXX”，让纸箱厂自己换算。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "材积除数 6000 还是 5000？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "看承运商。顺丰/京东国内常用 6000，部分国际快递用 5000（更贵）。海运按 CBM，不按材积重。填错除数，运费能差 20%。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "纸箱成本怎么估？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "按展开面积 × 单价。B 瓦约 3~5 元/m²，彩印再加 2~4 元/m²。展开面积 ≈ 2×(L+W)×(W+H)（含摇盖）。本工具不算纸箱价格，只算尺寸——价格要问纸箱厂，因为跟订购量关系极大。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "一格装多个和分格有什么区别？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "分格（隔板）能防碰撞，但会增加纸箱尺寸和成本。塑料件如果本身有外壳保护，通常不需要分格，只用一层PE袋。"
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>产品成本核算工具</a>
+    <span class="top-sp"></span>
+    <a class="top-link" href="./">全部在线计算器</a>
+    <a class="top-cta" href="../">下载桌面版</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <nav class="crumb"><a href="../">首页</a><span>/</span><a href="./">在线计算器</a><span>/</span>纸箱尺寸与材积计算器</nav>
+    <h1>纸箱尺寸与材积计算器</h1>
+    <p class="lead">产品尺寸 → 内盒 → 外箱，中间要留瓦楞厚度和间隙。算完还要看材积重——它决定快递按重量还是按体积收费。</p>
+  </div>
+  <div class="calc">
+    <div class="calc-grid">
+      <div class="calc-in">
+<div class="field"><label class="lab" for="l">产品长</label><div class="inrow"><input type="number" id="l" value="200" min="0" max="99999999" step="0.5"><span class="unit">mm</span></div></div>
+<div class="field"><label class="lab" for="w">产品宽</label><div class="inrow"><input type="number" id="w" value="120" min="0" max="99999999" step="0.5"><span class="unit">mm</span></div></div>
+<div class="field"><label class="lab" for="h">产品高</label><div class="inrow"><input type="number" id="h" value="60" min="0" max="99999999" step="0.5"><span class="unit">mm</span></div></div>
+<div class="field"><label class="lab" for="nx">每箱排列（长向）</label><div class="inrow"><input type="number" id="nx" value="4" min="1" max="50" step="1"><span class="unit">个</span></div></div>
+<div class="field"><label class="lab" for="ny">每箱排列（宽向）</label><div class="inrow"><input type="number" id="ny" value="3" min="1" max="50" step="1"><span class="unit">个</span></div></div>
+<div class="field"><label class="lab" for="nz">每箱排列（高向）</label><div class="inrow"><input type="number" id="nz" value="2" min="1" max="20" step="1"><span class="unit">层</span></div></div>
+<div class="field"><label class="lab" for="gap">单件间隙<span class="hint">含内衬、气泡袋厚度</span></label><div class="inrow"><input type="number" id="gap" value="2" min="0" max="99999999" step="0.5"><span class="unit">mm</span></div></div>
+<div class="field"><label class="lab" for="flute">瓦楞类型</label><select id="flute"><option value="A">A 瓦（5mm，缓冲好）</option><option value="B" selected>B 瓦（3mm，常用）</option><option value="C">C 瓦（4mm，折中）</option><option value="E">E 瓦（1.5mm，精细）</option><option value="BC">BC 双瓦（7mm，重货）</option></select></div>
+<div class="field"><label class="lab" for="wt">单件重量</label><div class="inrow"><input type="number" id="wt" value="0.15" min="0" max="99999999" step="0.01"><span class="unit">kg</span></div></div>
+<div class="field"><label class="lab" for="div">材积除数<span class="hint">快递 6000，空运 6000，海运 1000000</span></label><input type="number" id="div" value="6000" min="1000" max="10000" step="1000"></div>
+      </div>
+      <div class="calc-out">
+        <p class="res-cap">外箱尺寸</p>
+        <div class="res-main" id="out">—</div>
+        <p class="res-sub" id="outs">&nbsp;</p>
+        <div class="rows" id="outr"></div>
+
+      </div>
+    </div>
+  </div>
+
+<article class="doc">
+
+<h2>内尺寸、外尺寸、制造尺寸</h2>
+<p>纸箱有三个尺寸，报价和画图时必须说清是哪个：</p>
+<div class="tbl-wrap"><table>
+<tr><th>尺寸</th><th>含义</th><th>用途</th></tr>
+<tr><td><strong>内尺寸</strong></td><td>箱子内部可用空间</td><td>算能装多少产品</td></tr>
+<tr><td><strong>制造尺寸</strong></td><td>纸板展开时的压线尺寸</td><td>给纸箱厂下单</td></tr>
+<tr><td><strong>外尺寸</strong></td><td>箱子外面的实际尺寸</td><td>算体积、柜量、运费</td></tr>
+</table></div>
+<div class="formula">制造尺寸 ≈ 内尺寸 + 纸厚
+外尺寸 ≈ 内尺寸 + 2 × 纸厚</div>
+<p>本工具算的是内尺寸 → 外尺寸。给纸箱厂下单时要用<strong>制造尺寸</strong>，一般在内尺寸基础上单边加 1 个纸厚。</p>
+
+<h2>瓦楞类型怎么选</h2>
+<div class="tbl-wrap"><table>
+<tr><th>类型</th><th>厚度</th><th>特点</th><th>适用</th></tr>
+<tr><td>A 瓦</td><td class="n">5 mm</td><td>缓冲最好，抗压高</td><td>易碎品、重货</td></tr>
+<tr><td>B 瓦</td><td class="n">3 mm</td><td>平整、印刷好</td><td>最常用，小件</td></tr>
+<tr><td>C 瓦</td><td class="n">4 mm</td><td>A 和 B 的折中</td><td>通用</td></tr>
+<tr><td>E 瓦</td><td class="n">1.5 mm</td><td>薄、精细，像卡纸</td><td>彩盒、小电子产品</td></tr>
+<tr><td>BC 双瓦</td><td class="n">7 mm</td><td>最抗压</td><td>大件、长途海运</td></tr>
+</table></div>
+
+<h2>材积重：运费按哪个算</h2>
+<p>快递和空运不比实际重量，而是比<strong>材积重</strong>（也叫体积重），取两者大的那个收费：</p>
+<div class="formula">材积重 (kg) = 长(cm) × 宽(cm) × 高(cm) ÷ 除数
+快递/空运除数 = 6000
+海运按 CBM 计，除数 1,000,000</div>
+<p>例：外箱 45 × 30 × 25 cm，毛重 8 kg：</p>
+<div class="formula">材积重 = 45 × 30 × 25 ÷ 6000 = 5.63 kg
+实际 8 kg &gt; 5.63 kg → 按 8 kg 计费</div>
+<p>反过来，如果产品很轻（塑料件常见），往往是<strong>材积重大于实重</strong>，运费按体积算。这时候压缩包装体积比减重更省钱。</p>
+
+<h2>柜量估算</h2>
+<div class="formula">20GP 内容积 ≈ 28 m³
+40GP ≈ 58 m³
+40HQ ≈ 68 m³</div>
+<p>这是理论值，实际装柜要打 85%~90% 的折扣（箱子不能完美堆叠、要留门位）。所以本工具算出来的箱数再乘 0.88 才是真实装柜量。</p>
+
+<h2>间隙留多少</h2>
+<ul>
+  <li><strong>裸件直接装</strong>：1~2 mm，防止晃动和刮伤。</li>
+  <li><strong>套气泡袋</strong>：+3~5 mm（气泡袋双边）。</li>
+  <li><strong>有内衬/吸塑</strong>：按内衬实际厚度 + 1 mm。</li>
+  <li><strong>需要机械手装箱</strong>：+3~5 mm，留抓取公差。</li>
+</ul>
+<p>间隙留太小，装箱时卡住、压坏；留太大，箱子空、运输中晃动、材积重上升。塑料件通常 1.5~2.5 mm 是甜点。</p>
+
+</article>
+  <h2>常见问题</h2>
+  <div class="faq">
+    <details>
+      <summary>为什么我算的外箱和纸箱厂报的不一样？</summary>
+      <div class="ans"><p>大概率是尺寸基准不同。纸箱厂报的是<strong>制造尺寸</strong>（压线尺寸），本工具算的是<strong>外尺寸</strong>。下单时要明确说“内尺寸 XXX”，让纸箱厂自己换算。</p></div>
+    </details>
+    <details>
+      <summary>材积除数 6000 还是 5000？</summary>
+      <div class="ans"><p>看承运商。顺丰/京东国内常用 6000，部分国际快递用 5000（更贵）。海运按 CBM，不按材积重。填错除数，运费能差 20%。</p></div>
+    </details>
+    <details>
+      <summary>纸箱成本怎么估？</summary>
+      <div class="ans"><p>按展开面积 × 单价。B 瓦约 3~5 元/m²，彩印再加 2~4 元/m²。展开面积 ≈ 2×(L+W)×(W+H)（含摇盖）。本工具不算纸箱价格，只算尺寸——价格要问纸箱厂，因为跟订购量关系极大。</p></div>
+    </details>
+    <details>
+      <summary>一格装多个和分格有什么区别？</summary>
+      <div class="ans"><p>分格（隔板）能防碰撞，但会增加纸箱尺寸和成本。塑料件如果本身有外壳保护，通常不需要分格，只用一层PE袋。</p></div>
+    </details>
+  </div>
+
+  <section class="cta">
+    <h2>这只是单件材料费，出厂价还有 13 项</h2>
+    <p>机台费、人工、模具摊销、外购件、包材、物流、损耗、管理费、资金占用、销售佣金——桌面版把这些全算进去，一路算到含税出厂价，还能做阶梯报价和方案对比。</p>
+    <a class="btn" href="../">下载桌面版 · 免费试用 30 天</a>
+    <a class="btn btn-ghost" href="../web/">先用网页版算材料费</a>
+  </section>
+  <section class="related">
+    <h2>相关计算器</h2>
+    <div class="rel-grid">
+      <a class="rel-card" href="./injection-cost.html"><span class="rel-t">注塑件成本计算器</span><span class="rel-d">单件材料费+机台费+人工，一次算清</span></a>
+      <a class="rel-card" href="./material-cost.html"><span class="rel-t">塑料件材料费计算器</span><span class="rel-d">克重×单价，含损耗与水口</span></a>
+      <a class="rel-card" href="./weight-price.html"><span class="rel-t">克重单价换算器</span><span class="rel-d">元/kg ↔ 元/g ↔ 每件成本</span></a>
+      <a class="rel-card" href="./mold-amortization.html"><span class="rel-t">模具摊销计算器</span><span class="rel-d">模具费摊到每件是多少</span></a>
+      <a class="rel-card" href="./regrind.html"><span class="rel-t">水口回用抵扣计算器</span><span class="rel-d">回用料能省多少钱</span></a>
+      <a class="rel-card" href="./tier-pricing.html"><span class="rel-t">阶梯报价计算器</span><span class="rel-d">按数量自动递降的单价</span></a>
+      <a class="rel-card" href="./step-weight.html"><span class="rel-t">STEP 体积克重估算</span><span class="rel-d">没有三维软件也能估</span></a>
+      <a class="rel-card" href="./machine-rate.html"><span class="rel-t">注塑机台费计算器</span><span class="rel-d">吨位→台时费→单件</span></a>
+      <a class="rel-card" href="./labor-cost.html"><span class="rel-t">注塑人工费计算器</span><span class="rel-d">人数×时薪÷产出</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>© 2026 产品成本核算工具</span>
+    <span class="foot-sp"></span>
+    <a href="../">产品首页</a>
+    <a href="./">全部计算器</a>
+    <a href="../web/">网页版</a>
+    <a href="../privacy">隐私政策</a>
+  </div>
+</footer>
+
+</body>
+</html>
+
+<script type="module">
+import * as C from "./calc.js";
+const $ = id => document.getElementById(id);
+const n = C.num, f = C.fmt;
+function rows(list) {
+  return list.filter(Boolean).map(r =>
+    '<div class="row' + (r[2] ? ' sum' : '') + '"><span class="row-k">' + r[0] +
+    '</span><span class="row-v">' + r[1] + '</span></div>').join("");
+}
+function put(v, sub, data) {
+  $("out").textContent = v;
+  if (sub !== undefined) $("outs").innerHTML = sub || "&nbsp;";
+  if (typeof data === "string") $("outr").innerHTML = data;
+  else if (data) $("outr").innerHTML = rows(data);
+}
+
+const FLUTE = { A: 5, B: 3, C: 4, E: 1.5, BC: 7 };
+function calc() {
+  const l = n($("l").value), w = n($("w").value), h = n($("h").value);
+  const nx = Math.max(1, n($("nx").value)), ny = Math.max(1, n($("ny").value)), nz = Math.max(1, n($("nz").value));
+  const gap = n($("gap").value);
+  const t = FLUTE[$("flute").value] || 3;
+  const wt = n($("wt").value), div = Math.max(1, n($("div").value));
+
+  // 内尺寸 = 排列尺寸 + 间隙；外尺寸 = 内尺寸 + 2×纸厚
+  const inL = nx * (l + gap) - gap, inW = ny * (w + gap) - gap, inH = nz * (h + gap) - gap;
+  const outL = inL + 2 * t, outW = inW + 2 * t, outH = inH + 2 * t;
+  const qty = nx * ny * nz;
+  const volM3 = outL * outW * outH / 1e9;
+  const gross = wt * qty;
+  const volWeight = outL * outW * outH / 1000 / div;  // mm³ → cm³ 再除材积系数
+  const charge = Math.max(gross, volWeight);
+  const perM3 = volM3 > 0 ? 1 / volM3 : 0;
+
+  put(qty + " 个 / 箱",
+      "外箱 " + f(outL, 0) + " × " + f(outW, 0) + " × " + f(outH, 0) + " mm",
+      rows([
+        ["内尺寸", f(inL,0) + " × " + f(inW,0) + " × " + f(inH,0) + " mm"],
+        ["外尺寸", f(outL,0) + " × " + f(outW,0) + " × " + f(outH,0) + " mm", 1],
+        ["纸板厚度", f(t, 1) + " mm（" + $("flute").value + " 瓦）"],
+        ["单箱体积", f(volM3, 4) + " m³"],
+        ["1 m³ 装", f(perM3, 1) + " 箱"],
+        ["装箱数", qty + " 个"],
+        ["毛重", f(gross, 2) + " kg"],
+        ["材积重", f(volWeight, 2) + " kg"],
+        ["计费重", f(charge, 2) + " kg", 1],
+        ["20GP 装", f(28 / Math.max(0.0001, volM3), 0) + " 箱"],
+        ["40HQ 装", f(68 / Math.max(0.0001, volM3), 0) + " 箱"],
+      ]));
+  C.syncUrl({ l: $("l").value, w: $("w").value, h: $("h").value,
+              x: $("nx").value, y: $("ny").value, z: $("nz").value,
+              g: $("gap").value, f: $("flute").value, t: $("wt").value, d: $("div").value });
+}
+["l","w","h","nx","ny","nz","gap","wt","div"].forEach(i => C.on($(i), calc));
+C.on($("flute"), calc);
+calc();
+
+</script>
