@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>水口回用抵扣计算器 · 回用料能省多少钱</title>
+<meta name="description" content="冷流道注塑的水口料可以粉碎回用，按新料折价抵扣。输入水口重量、回用比例和材料单价，算出每件省多少、一年省多少。">
+<meta name="keywords" content="水口回用,回料抵扣,水口料计算,注塑回料比例,冷流道水口">
+<link rel="canonical" href="https://product-cost-calculator.pages.dev/tools/regrind">
+<meta property="og:title" content="水口回用抵扣计算器 · 回用料能省多少钱">
+<meta property="og:description" content="冷流道注塑的水口料可以粉碎回用，按新料折价抵扣。输入水口重量、回用比例和材料单价，算出每件省多少、一年省多少。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://product-cost-calculator.pages.dev/tools/regrind">
+<meta property="og:site_name" content="产品成本核算工具">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#08182A">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./tools.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "水口回用抵扣计算器",
+  "url": "https://product-cost-calculator.pages.dev/tools/regrind",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "description": "冷流道注塑的水口料可以粉碎回用，按新料折价抵扣。输入水口重量、回用比例和材料单价，算出每件省多少、一年省多少。",
+  "isPartOf": { "@type": "WebSite", "name": "产品成本核算工具", "url": "https://product-cost-calculator.pages.dev/" }
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "水口重量填一啤还是单件？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "填一啤（整模）的总水口重量，程序会除以腔数摊到每件。填错这一项是水口回用算不准的最常见原因。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "回料折价为什么按 50%？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "行业惯例 50%~70%。按 50% 算偏保守——也就是算出来的节省偏小，不会让你过度乐观。实际采购价更好的话可以手动调整这里的假设。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "全部回用（100%）行不行？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "技术上能注塑出来，但质量会崩：强度下降、黑点、色差、流动不稳。除了极低要求的件，不建议超过 30%。"
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "废料售价填多少？",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "问本地回料商。常见是 ABS 4~6 元/kg、PP 3~5 元/kg。不确定就填 0，只看回用收益。"
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>产品成本核算工具</a>
+    <span class="top-sp"></span>
+    <a class="top-link" href="./">全部在线计算器</a>
+    <a class="top-cta" href="../">下载桌面版</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <nav class="crumb"><a href="../">首页</a><span>/</span><a href="./">在线计算器</a><span>/</span>水口回用</nav>
+    <h1>水口回用：回用料到底能省多少钱</h1>
+    <p class="lead">冷流道每啤都会产生水口料。全部当废料卖是浪费，全部回用会出质量问题。合理的回用比例能省 3%~8% 材料费——但多数报价里这一项是拍脑袋填的。</p>
+  </div>
+  <div class="calc">
+    <div class="calc-grid">
+      <div class="calc-in">
+<div class="field"><label class="lab" for="runner">水口料重量<span class="hint">一啤的全部水口，不是单件</span></label><div class="inrow"><input type="number" id="runner" value="24" min="0" max="99999999" step="0.5"><span class="unit">g/啤</span></div></div>
+<div class="field"><label class="lab" for="cav">模穴数</label><div class="inrow"><input type="number" id="cav" value="2" min="1" max="128" step="1"><span class="unit">腔</span></div></div>
+<div class="field"><label class="lab" for="price">材料单价（含税）</label><div class="inrow"><input type="number" id="price" value="12.8" min="0" max="99999999" step="0.1"><span class="unit">元/kg</span></div></div>
+<div class="field"><label class="lab" for="regrind">回用比例<span class="hint">20%~30% 是常规安全区间</span></label><div class="inrow"><input type="number" id="regrind" value="30" min="0" max="100" step="5"><span class="unit">%</span></div></div>
+<div class="field"><label class="lab" for="qty">年产量</label><div class="inrow"><input type="number" id="qty" value="500000" min="0" max="99999999" step="10000"><span class="unit">件</span></div></div>
+<div class="field"><label class="lab" for="scrapval">废料售价<span class="hint">不回用、直接卖废料时的价格</span></label><div class="inrow"><input type="number" id="scrapval" value="0" min="0" max="99999999" step="0.1"><span class="unit">元/kg</span></div></div>
+      </div>
+      <div class="calc-out">
+        <p class="res-cap">每件省下</p>
+        <div class="res-main" id="out">—</div>
+        <p class="res-sub" id="outs">&nbsp;</p>
+        <div class="rows" id="outr"></div>
+
+      </div>
+    </div>
+  </div>
+
+<article class="doc">
+
+<h2>回用的钱是怎么省的</h2>
+<p>水口料粉碎后可以当原料再用，但它不是新料——性能下降，所以只能按新料折价算。行业惯例是<strong>回料按新料 50%~70% 计价</strong>，本工具按 50%（保守）。</p>
+<div class="formula">每件抵扣 = 水口摊每件 ÷ 1000 × 不含税单价 × 回用% × (1 − 50%)</div>
+<p>例：水口 24 g/啤、2 腔 → 每件 12 g；单价 12.8 元/kg（不含税 11.33）；回用 30%：</p>
+<div class="formula">12 ÷ 1000 × 11.33 × 30% × 0.5 = 0.0204 元/件
+50 万件 = 10,195 元</div>
+
+<h2>回用比例的三条红线</h2>
+<div class="tbl-wrap"><table>
+<tr><th>产品类型</th><th>建议回用上限</th><th>原因</th></tr>
+<tr><td>普通结构件（外壳、支架）</td><td class="n">30%</td><td>性能余量够</td></tr>
+<tr><td>透明件（PMMA/PC）</td><td class="n">0%~10%</td><td>回料发黄、有黑点</td></tr>
+<tr><td>食品接触件</td><td class="n">0%</td><td>法规不允许（FDA/GB 4806）</td></tr>
+<tr><td>受力件、卡扣、齿轮</td><td class="n">10%~20%</td><td>分子链断裂，强度下降</td></tr>
+<tr><td>外观件（高光、蚀纹）</td><td class="n">10%~20%</td><td>流痕、色差明显</td></tr>
+</table></div>
+<p>回用次数也有讲究：同一批料反复回用 3 次以上，冲击强度可能下降 30%~50%。规范做法是<strong>新旧料按比例掺</strong>，而不是纯回料。</p>
+
+<h2>回用 vs 卖废料：哪个划算</h2>
+<p>水口料也可以直接卖给回料商，价格通常是新料的 30%~50%。本工具底部有这个对比：</p>
+<div class="formula">回用收益 = 抵扣额（新料价 − 回料成本）
+卖废料收益 = 废料单价 × 水口重量
+哪个大用哪个</div>
+<p>一般来说回用更划算——因为回料商的收购价压得很低，而你自己回用等于按"新料 − 50% 折价"省。但如果回用会影响品质或需要额外人工（粉碎、干燥、掺料），就要把这部分成本算进去。</p>
+
+<h2>热流道为什么没有这一项</h2>
+<p>热流道把流道里的料一直保持熔融状态，下一啤直接推进型腔，<strong>不产生水口</strong>。所以热流道模具的水口重量是 0，材料费更低，但模具费会贵 1.5~3 万（热流道系统本身）。</p>
+<p>什么时候值得上热流道：材料贵（PC、PPS）、件重要求高、批量大、外观要求高。<a href="./mold-amortization.html">用模具摊销算一下</a>就能看出多久回本。</p>
+
+</article>
+  <h2>常见问题</h2>
+  <div class="faq">
+    <details>
+      <summary>水口重量填一啤还是单件？</summary>
+      <div class="ans"><p>填<strong>一啤</strong>（整模）的总水口重量，程序会除以腔数摊到每件。填错这一项是水口回用算不准的最常见原因。</p></div>
+    </details>
+    <details>
+      <summary>回料折价为什么按 50%？</summary>
+      <div class="ans"><p>行业惯例 50%~70%。按 50% 算偏保守——也就是算出来的节省偏小，不会让你过度乐观。实际采购价更好的话可以手动调整这里的假设。</p></div>
+    </details>
+    <details>
+      <summary>全部回用（100%）行不行？</summary>
+      <div class="ans"><p>技术上能注塑出来，但质量会崩：强度下降、黑点、色差、流动不稳。除了极低要求的件，不建议超过 30%。</p></div>
+    </details>
+    <details>
+      <summary>废料售价填多少？</summary>
+      <div class="ans"><p>问本地回料商。常见是 ABS 4~6 元/kg、PP 3~5 元/kg。不确定就填 0，只看回用收益。</p></div>
+    </details>
+  </div>
+
+  <section class="cta">
+    <h2>这只是单件材料费，出厂价还有 13 项</h2>
+    <p>机台费、人工、模具摊销、外购件、包材、物流、损耗、管理费、资金占用、销售佣金——桌面版把这些全算进去，一路算到含税出厂价，还能做阶梯报价和方案对比。</p>
+    <a class="btn" href="../">下载桌面版 · 免费试用 30 天</a>
+    <a class="btn btn-ghost" href="../web/">先用网页版算材料费</a>
+  </section>
+  <section class="related">
+    <h2>相关计算器</h2>
+    <div class="rel-grid">
+      <a class="rel-card" href="./injection-cost.html"><span class="rel-t">注塑件成本计算器</span><span class="rel-d">单件材料费+机台费+人工，一次算清</span></a>
+      <a class="rel-card" href="./material-cost.html"><span class="rel-t">塑料件材料费计算器</span><span class="rel-d">克重×单价，含损耗与水口</span></a>
+      <a class="rel-card" href="./weight-price.html"><span class="rel-t">克重单价换算器</span><span class="rel-d">元/kg ↔ 元/g ↔ 每件成本</span></a>
+      <a class="rel-card" href="./mold-amortization.html"><span class="rel-t">模具摊销计算器</span><span class="rel-d">模具费摊到每件是多少</span></a>
+      <a class="rel-card" href="./carton-size.html"><span class="rel-t">纸箱尺寸与材积计算器</span><span class="rel-d">内箱/外箱/材积重一次出</span></a>
+      <a class="rel-card" href="./tier-pricing.html"><span class="rel-t">阶梯报价计算器</span><span class="rel-d">按数量自动递降的单价</span></a>
+      <a class="rel-card" href="./step-weight.html"><span class="rel-t">STEP 体积克重估算</span><span class="rel-d">没有三维软件也能估</span></a>
+      <a class="rel-card" href="./machine-rate.html"><span class="rel-t">注塑机台费计算器</span><span class="rel-d">吨位→台时费→单件</span></a>
+      <a class="rel-card" href="./labor-cost.html"><span class="rel-t">注塑人工费计算器</span><span class="rel-d">人数×时薪÷产出</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>© 2026 产品成本核算工具</span>
+    <span class="foot-sp"></span>
+    <a href="../">产品首页</a>
+    <a href="./">全部计算器</a>
+    <a href="../web/">网页版</a>
+    <a href="../privacy">隐私政策</a>
+  </div>
+</footer>
+
+</body>
+</html>
+
+<script type="module">
+import * as C from "./calc.js";
+const $ = id => document.getElementById(id);
+const n = C.num, f = C.fmt;
+function rows(list) {
+  return list.filter(Boolean).map(r =>
+    '<div class="row' + (r[2] ? ' sum' : '') + '"><span class="row-k">' + r[0] +
+    '</span><span class="row-v">' + r[1] + '</span></div>').join("");
+}
+function put(v, sub, data) {
+  $("out").textContent = v;
+  if (sub !== undefined) $("outs").innerHTML = sub || "&nbsp;";
+  if (typeof data === "string") $("outr").innerHTML = data;
+  else if (data) $("outr").innerHTML = rows(data);
+}
+
+function calc() {
+  const runner = n($("runner").value), cav = Math.max(1, n($("cav").value));
+  const price = n($("price").value), net = price / 1.13;
+  const pct = C.clamp(n($("regrind").value), 0, 100);
+  const qty = n($("qty").value);
+  const perPc = runner / cav;
+  const credit = perPc / 1000 * net * pct / 100 * (1 - C.REGRIND_PRICE);
+  const total = credit * qty;
+  const scrapVal = n($("scrapval").value) * perPc * pct / 100 / 1000;
+  const better = scrapVal > 0 ? credit - scrapVal : 0;
+  put("¥ " + f(credit, 4),
+      "每件省这么多 · 年省 ¥ " + f(total, 0),
+      rows([
+        ["水口摊每件", C.fmtG(perPc)],
+        ["不含税单价", "¥ " + f(net, 2) + " /kg"],
+        ["水口料值", "¥ " + f(perPc / 1000 * net, 4) + " /件"],
+        ["回用比例", f(pct, 0) + "%"],
+        ["回料折价", "新料 × 50%"],
+        ["每件抵扣", "¥ " + f(credit, 4), 1],
+        ["年省", "¥ " + f(total, 0)],
+        scrapVal > 0 ? ["卖废料可得", "¥ " + f(scrapVal, 4) + " /件"] : null,
+        scrapVal > 0 ? ["回用更划算" + (better >= 0 ? "" : "（否）"), "¥ " + f(Math.abs(better), 4) + " /件"] : null,
+      ]));
+  C.syncUrl({ g: $("runner").value, c: $("cav").value, p: $("price").value,
+              r: $("regrind").value, q: $("qty").value });
+}
+["runner","cav","price","regrind","qty","scrapval"].forEach(i => C.on($(i), calc));
+calc();
+
+</script>
