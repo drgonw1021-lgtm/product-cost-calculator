@@ -233,7 +233,7 @@
       "Product Cost Calculator — drop in a STEP, get 14 cost lines and an ex-works price",
     "甲方内部核价工具：STEP → 单件成本 → 出厂价，每一分钱都能点开看它怎么来的。":
       "A buyer-side costing tool: STEP → unit cost → ex-works price. Every cent opens up to show where it came from.",
-    "产品成本核算工具 v10.2 塑料件页：零件表与右侧 14 行成本构成、出厂价 14.361 元":      "Product Cost Calculator v10.4, plastic parts page: parts table and the 14-line cost breakdown showing an ex-works price of ¥14.361",
+    "产品成本核算工具 v10.2 塑料件页：零件表与右侧 14 行成本构成、出厂价 14.361 元":      "Product Cost Calculator v10.5, plastic parts page: parts table and the 14-line cost breakdown showing an ex-works price of ¥14.361",
     "阶梯报价页：五档数量自动算出材料折扣、单件成本与出厂价":
       "Tier pricing page: five quantities with auto-computed material discount, unit cost and ex-works price",
     "模具方案页：零件投影面积 26.6 cm²、腔数 2、模具工艺要求":
@@ -322,7 +322,7 @@
 
     // 版本号：写死在 HTML 里，字典抓不到，这里统一覆盖
     root.querySelectorAll(".nav-ver, .foot-brand span").forEach(function (el) {
-      el.textContent = "v10.4";
+      el.textContent = "v10.5";
     });
   }
 
