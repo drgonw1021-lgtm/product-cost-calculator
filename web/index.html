@@ -279,7 +279,10 @@
           <div class="icon">📦</div>
           <b>把 STEP / IGES 文件拖到这里，或点击选择（可一次选多个）</b>
           <span>支持 .stp / .step / .igs / .iges / .brep，建议单个文件 &lt; 50 MB；多个文件会分别计算再合计</span>
-          <input type="file" id="file" accept=".stp,.step,.igs,.iges,.brep" multiple>
+          <!-- 不要在 accept 里写 .stp/.igs 这类扩展名：安卓的 MimeTypeMap 查不到它们，
+             Chrome/WebView 会给文件选择器传空 MIME 数组，导致所有文件被置灰不可选。
+             后缀校验在 handleFiles() 里用正则做，桌面与手机一致。 -->
+          <input type="file" id="file" multiple>
         </div>
         <div class="status" id="status">等待上传…</div>
         <p class="hint">没有模型？<a href="#" id="demo-link">用示例模型试试</a>（一个 40×30×10mm 的方块，12 cm³）</p>
