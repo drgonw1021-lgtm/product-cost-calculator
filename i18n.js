@@ -43,10 +43,15 @@
     "一个 STEP 文件进去，体积、克重、材料费、机台费、人工、模具摊销、外购件、包材一路摊到单件成本， 再加上毛利，出厂价就出来了。每一分钱都能点开看它怎么来的。":
       "One STEP file goes in: volume, weight, material, machine time, labor, mold amortization, purchased parts and packaging all roll into a unit cost — add margin and you have the ex-works price. Every cent opens up to show where it came from.",
     "下载桌面版 · 免费试用 30 天": "Download for Windows · 30-day free trial",
+    "macOS 版（Apple 芯片 / Intel）": "macOS version (Apple silicon / Intel)",
+    "macOS 版 · 76 MB": "macOS · 76 MB",
+    "安卓版（手机 / 平板）": "Android version (phone / tablet)",
+    "安卓版 · 6.2 MB": "Android · 6.2 MB",
+    "Windows 10 / 11 · macOS 11+ · Android 8+": "Windows 10 / 11 · macOS 11+ · Android 8+",
     "或先试网页版（只算塑料件材料费，免安装）":
       "Or try the web version first (plastics material only, no install)",
     "399 元 / 台 · 一次买断": "US$59.9 / seat · one-time purchase (≈ ¥399)",
-    "下载 89 MB": "89 MB download",
+    "下载 89.5 MB": "89.5 MB download",
     "离线可用": "Works offline",
     "一机一码": "One machine, one code",
 
@@ -183,7 +188,8 @@
     "多台按台数算，10 台以上可以谈": "Priced per seat; volume pricing from 10 seats up",
     "立即购买（邮件下单）": "Buy now (order by email)",
     "立即购买（自助下单）": "Buy now (self-service checkout)",
-    "先下载试用 30 天 · 89 MB": "Download the 30-day trial · 89 MB",
+    "先下载试用 30 天 · 89.5 MB": "Download the 30-day trial · 89.5 MB",
+    "macOS 版 · 76 MB": "macOS version · 76 MB",
     "解压即用，不用安装。程序没有买代码签名证书，首次运行 Windows 可能弹 「Windows 已保护你的电脑」——点「更多信息 → 仍要运行」即可，这是未签名程序的正常提示。":
       "Unzip and run — no installer. The app carries no code-signing certificate, so Windows may show “Windows protected your PC” on first launch: click “More info → Run anyway”. That's normal for unsigned software.",
     "发票": "Invoice",
@@ -322,7 +328,7 @@
 
     // 版本号：写死在 HTML 里，字典抓不到，这里统一覆盖
     root.querySelectorAll(".nav-ver, .foot-brand span").forEach(function (el) {
-      el.textContent = "v10.5";
+      el.textContent = "v10.6";
     });
   }
 
