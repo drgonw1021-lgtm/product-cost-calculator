@@ -1619,9 +1619,13 @@ label:focus-visible {
   }
 }
 
-/* 导航在 900px 以下就收成汉堡：7 个中文项 + 品牌 + 按钮在 834px 时放不下，
-   曾把导航项挤成"拆 解"两行并顶出导航栏 */
-@media (max-width: 900px) {
+/* 导航在 1089px 以下就收成汉堡。
+   实测：7 个中文项 + 品牌 + 语言切换 + 下载按钮，真 Chrome 里要 1090px 才放得下
+   （901/940/980/1020/1060/1080/1088 时「下载试用」都被顶出屏幕右侧，最多溢出 177px）。
+   原先定 900px 是按「834px 时导航项被挤成两行」算的，门槛低了约 190px；
+   这类溢出不会让 scrollWidth 变大（.nav 是 fixed，子元素溢出到可视区外），
+   所以只查 document.scrollWidth 会漏判，必须逐元素量 right。 */
+@media (max-width: 1089px) {
   .nav-burger {
     display: flex;
   }
@@ -2237,8 +2241,9 @@ label:focus-visible {
   outline-offset: 2px;
 }
 
-/* 窄屏：语言切换贴右，下载按钮跟在它后面 */
-@media (max-width: 900px) {
+/* 窄屏：语言切换贴右，下载按钮跟在它后面
+   （阈值与上面的导航汉堡断点保持一致，否则 901–1089 区间会错位） */
+@media (max-width: 1089px) {
   .lang-switch {
     margin-left: auto;
     margin-right: 8px;
