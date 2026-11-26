@@ -43,11 +43,11 @@
     "一个 STEP 文件进去，体积、克重、材料费、机台费、人工、模具摊销、外购件、包材一路摊到单件成本， 再加上毛利，出厂价就出来了。每一分钱都能点开看它怎么来的。":
       "One STEP file goes in: volume, weight, material, machine time, labor, mold amortization, purchased parts and packaging all roll into a unit cost — add margin and you have the ex-works price. Every cent opens up to show where it came from.",
     "下载桌面版 · 免费试用 30 天": "Download for Windows · 30-day free trial",
-    "macOS 版（Apple 芯片 / Intel）": "macOS version (Apple silicon / Intel)",
+    "macOS 版（Apple 芯片）": "macOS version (Apple silicon)",
     "macOS 版 · 151 MB": "macOS · 151 MB",
     "安卓版（手机 / 平板）": "Android version (phone / tablet)",
     "安卓版 · 6.2 MB": "Android · 6.2 MB",
-    "Windows 10 / 11 · macOS 11+ · Android 8+": "Windows 10 / 11 · macOS 11+ · Android 8+",
+    "Windows 10 / 11 · macOS 11+（Apple 芯片）· Android 8+": "Windows 10 / 11 · macOS 11+ (Apple silicon) · Android 8+",
     "或先试网页版（只算塑料件材料费，免安装）":
       "Or try the web version first (plastics material only, no install)",
     "399 元 / 台 · 一次买断": "US$59.9 / seat · one-time purchase (≈ ¥399)",
