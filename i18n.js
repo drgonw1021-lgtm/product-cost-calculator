@@ -44,7 +44,7 @@
       "One STEP file goes in: volume, weight, material, machine time, labor, mold amortization, purchased parts and packaging all roll into a unit cost — add margin and you have the ex-works price. Every cent opens up to show where it came from.",
     "下载桌面版 · 免费试用 30 天": "Download for Windows · 30-day free trial",
     "macOS 版（Apple 芯片 / Intel）": "macOS version (Apple silicon / Intel)",
-    "macOS 版 · 76 MB": "macOS · 76 MB",
+    "macOS 版 · 151 MB": "macOS · 151 MB",
     "安卓版（手机 / 平板）": "Android version (phone / tablet)",
     "安卓版 · 6.2 MB": "Android · 6.2 MB",
     "Windows 10 / 11 · macOS 11+ · Android 8+": "Windows 10 / 11 · macOS 11+ · Android 8+",
@@ -189,7 +189,7 @@
     "立即购买（邮件下单）": "Buy now (order by email)",
     "立即购买（自助下单）": "Buy now (self-service checkout)",
     "先下载试用 30 天 · 132 MB": "Download the 30-day trial · 132 MB",
-    "macOS 版 · 76 MB": "macOS version · 76 MB",
+    "macOS 版 · 151 MB": "macOS version · 151 MB",
     "解压即用，不用安装。程序没有买代码签名证书，首次运行 Windows 可能弹 「Windows 已保护你的电脑」——点「更多信息 → 仍要运行」即可，这是未签名程序的正常提示。":
       "Unzip and run — no installer. The app carries no code-signing certificate, so Windows may show “Windows protected your PC” on first launch: click “More info → Run anyway”. That's normal for unsigned software.",
     "发票": "Invoice",
