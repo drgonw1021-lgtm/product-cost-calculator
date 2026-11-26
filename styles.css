@@ -2316,7 +2316,7 @@ html[data-lang="en"] .hero-meta li {
 /* 复用 900px 那套 opacity/visibility 写法，避免与基础样式打架                  */
 /* -------------------------------------------------------------------------- */
 
-@media (max-width: 1120px) {
+@media (max-width: 1290px) {
   html[data-lang="en"] .nav {
     gap: 12px;
   }
@@ -2372,6 +2372,30 @@ html[data-lang="en"] .hero-meta li {
     padding: 0 14px;
     min-height: 34px;
     font-size: 13.5px;
+  }
+}
+
+/* 英文导航在 1241～1520px 之间必须压一点字号才放得下：
+   英文明细项比中文宽 267px，1440 笔电上「Download trial」曾被顶到 right:1454、
+   直接切出屏幕右侧（真浏览器逐宽度量出来的，不是猜的）。
+   实测：常规字号最小内容宽 1456px、压到 12.5px 后 1284px。1511px 以上恢复常规。 */
+@media (min-width: 1291px) and (max-width: 1510px) {
+  html[data-lang="en"] .nav {
+    gap: 16px;
+  }
+
+  html[data-lang="en"] .nav-links {
+    font-size: 12.5px;
+    gap: 1px;
+  }
+
+  html[data-lang="en"] .nav-links a {
+    padding: 6px 8px;
+  }
+
+  html[data-lang="en"] .nav-cta {
+    padding: 0 11px;
+    font-size: 13px;
   }
 }
 
