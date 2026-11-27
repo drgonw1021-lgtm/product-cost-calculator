@@ -45,9 +45,9 @@
     "下载桌面版 · 免费试用 30 天": "Download for Windows · 30-day free trial",
     "macOS 版（Apple 芯片）": "macOS version (Apple silicon)",
     "macOS 版 · 151 MB": "macOS · 151 MB",
-    "安卓版（手机 / 平板）": "Android version (phone / tablet)",
-    "安卓版 · 6.2 MB": "Android · 6.2 MB",
-    "Windows 10 / 11 · macOS 11+（Apple 芯片）· Android 8+": "Windows 10 / 11 · macOS 11+ (Apple silicon) · Android 8+",
+    "安卓版（随桌面版赠送）": "Android (included with desktop)",
+    "安卓版 · 随桌面版赠送": "Android · included with desktop",
+    "Windows 10 / 11 · macOS 11+（Apple 芯片）· 安卓 8+（桌面版赠品）": "Windows 10 / 11 · macOS 11+ (Apple silicon) · Android 8+ (with desktop)",
     "或先试网页版（只算塑料件材料费，免安装）":
       "Or try the web version first (plastics material only, no install)",
     "399 元 / 台 · 一次买断": "US$59.9 / seat · one-time purchase (≈ ¥399)",
