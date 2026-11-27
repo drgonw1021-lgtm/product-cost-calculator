@@ -48,6 +48,122 @@
 })();
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6fc5a35c37040679558732a27f0181a"}'></script><!-- End Cloudflare Web Analytics -->
+<!-- 结构化数据：SoftwareApplication + FAQPage。FAQ 的问答必须与页面可见文字一致，否则会被判为作弊，所以两处要一起改 -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "产品成本核算工具",
+  "alternateName": "Product Cost Calculator",
+  "url": "https://product-cost-calculator.pages.dev/",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "Cost estimating",
+  "operatingSystem": "Windows 10, Windows 11, macOS 11+",
+  "softwareVersion": "v10.10",
+  "inLanguage": [
+    "zh-Hans",
+    "en"
+  ],
+  "description": "导入 STEP 模型和 BOM，把一件货的钱拆成 14 行（材料、机台、人工、模具摊销、外购件、包材、物流、管理费、资金占用、佣金、利润、增值税）一路算到含税出厂价，支持阶梯报价自动折扣、模具费摊销、方案对比、Excel/PDF 导出。甲方内部核价用。",
+  "featureList": [
+    "STEP 模型导入，自动算体积与克重",
+    "14 行成本拆解，每行可点开看公式",
+    "阶梯报价：材料/外购件折扣与毛利率按量自动生成",
+    "模具费估算与按订单量摊销",
+    "方案对比：改一个参数看差多少",
+    "包材核算：内盒与外箱按模型尺寸推算",
+    "导出 Excel 与白标 PDF 报价单",
+    "离线激活，一机一码"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "399",
+    "priceCurrency": "CNY",
+    "priceValidUntil": "2027-12-31",
+    "availability": "https://schema.org/InStock",
+    "description": "399 元 / 台，一次买断，含 1 年更新；30 天免费试用。"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "产品成本核算工具",
+    "url": "https://product-cost-calculator.pages.dev/",
+    "email": "871756851@qq.com",
+    "logo": "https://product-cost-calculator.pages.dev/assets/app-plastic.png"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "这个工具是给谁用的？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "给甲方（买产品的一方）内部核价用，不是模具厂/注塑厂对外报价用。输入是 STEP 模型和 BOM，输出是这一件货的出厂价——你拿它判断供应商报价合不合理，以及自己定价时底线在哪。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "导入 STEP 之后，一件货的钱是怎么拆出来的？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "按 14 行拆：材料费（体积×密度×单价，含损耗，扣水口回用）、机台费（周期÷3600×台时费÷腔数）、人工、模具摊销、外购件、包材、物流、管理费、资金占用、销售佣金、其他一次性费用、损耗、利润、增值税。每一行都能点开看公式和代入的数字，对不上账就能查到是哪一行错了。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "材料单价和台时费是软件内置的吗？准不准？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "内置的是华东地区常见值（ABS 12.8 元/kg、海天 100T 40 元/h 这类），可以直接改。材料行情能联网取生意社公开报价，取不到就保留上次价格并标注日期。真实核价一定要换成你自己采购的实际单价——内置值只是「够用」的起点，不是标准答案。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "模具费怎么处理？要单独算吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不用单独算。模具费在「模具费估算」里按面积、钢材、腔数、热处理估一个总额，再按订单量摊销到单件，进第 4 行。所以同一套模具，订 1 万件和订 10 万件，单件成本不一样——这正是供应商愿意跟你谈量的原因。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "阶梯报价的折扣是手工填还是自动算的？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "自动算。你只填数量档位（默认 1000 / 5000 / 1 万 / 5 万 / 10 万），材料折扣按「用米总重量」分档、外购件折扣按订单量分档、毛利率按量级自动下浮，三个系数都是算出来的结果，不用你自己拍。改数量或改材料价，整张表立刻重算。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "水口回用（回料）能抵扣多少？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "按回料比例抵扣材料费。注意两点：一是水口重量按「单件重量 + 水口重 ÷ 腔数」算，不是简单按单件重；二是回料不是全价抵扣，默认按 50% 折算（回料性能下降、要掺新料），这个折算率可以改。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "算出来的是成本还是售价？差多少？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "是出厂价（ex-works，不含运费和关税），已经含了毛利和增值税。如果只算到「单件成本」，那是成本；成本到售价中间还要加管理费、资金占用、渠道佣金和账期成本。经验上同类产品售价是成本的 1.3~1.8 倍，具体看行业和账期。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "一定要联网吗？数据和报价会上传吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不用联网，装好就能用，激活也是离线的（填券 + 机器码换 16 位激活码，不联网校验）。模型、BOM、报价全部只存在你本机，不上传。唯一会联网的是「材料行情」和「汇率」，取不到就跳过，不影响算账。"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -474,11 +590,56 @@
     </div>
   </section>
 
+  <!-- ============ 常见问题（兼作 FAQPage 结构化数据的人类可读副本） ============ -->
+  <section class="band band-paper" id="faq">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker">09 / 常见问题</p>
+        <h2 class="h2">买之前最常问的 8 个问题</h2>
+        <p class="lead">都是口径问题，答案直接用得上——不是「本产品支持某某功能」这种话。</p>
+      </div>
+      <div class="faq">
+      <details>
+        <summary>这个工具是给谁用的？</summary>
+        <div class="ans"><p>给甲方（买产品的一方）内部核价用，不是模具厂/注塑厂对外报价用。输入是 STEP 模型和 BOM，输出是这一件货的出厂价——你拿它判断供应商报价合不合理，以及自己定价时底线在哪。</p></div>
+      </details>
+      <details>
+        <summary>导入 STEP 之后，一件货的钱是怎么拆出来的？</summary>
+        <div class="ans"><p>按 14 行拆：材料费（体积×密度×单价，含损耗，扣水口回用）、机台费（周期÷3600×台时费÷腔数）、人工、模具摊销、外购件、包材、物流、管理费、资金占用、销售佣金、其他一次性费用、损耗、利润、增值税。每一行都能点开看公式和代入的数字，对不上账就能查到是哪一行错了。</p></div>
+      </details>
+      <details>
+        <summary>材料单价和台时费是软件内置的吗？准不准？</summary>
+        <div class="ans"><p>内置的是华东地区常见值（ABS 12.8 元/kg、海天 100T 40 元/h 这类），可以直接改。材料行情能联网取生意社公开报价，取不到就保留上次价格并标注日期。真实核价一定要换成你自己采购的实际单价——内置值只是「够用」的起点，不是标准答案。</p></div>
+      </details>
+      <details>
+        <summary>模具费怎么处理？要单独算吗？</summary>
+        <div class="ans"><p>不用单独算。模具费在「模具费估算」里按面积、钢材、腔数、热处理估一个总额，再按订单量摊销到单件，进第 4 行。所以同一套模具，订 1 万件和订 10 万件，单件成本不一样——这正是供应商愿意跟你谈量的原因。</p></div>
+      </details>
+      <details>
+        <summary>阶梯报价的折扣是手工填还是自动算的？</summary>
+        <div class="ans"><p>自动算。你只填数量档位（默认 1000 / 5000 / 1 万 / 5 万 / 10 万），材料折扣按「用米总重量」分档、外购件折扣按订单量分档、毛利率按量级自动下浮，三个系数都是算出来的结果，不用你自己拍。改数量或改材料价，整张表立刻重算。</p></div>
+      </details>
+      <details>
+        <summary>水口回用（回料）能抵扣多少？</summary>
+        <div class="ans"><p>按回料比例抵扣材料费。注意两点：一是水口重量按「单件重量 + 水口重 ÷ 腔数」算，不是简单按单件重；二是回料不是全价抵扣，默认按 50% 折算（回料性能下降、要掺新料），这个折算率可以改。</p></div>
+      </details>
+      <details>
+        <summary>算出来的是成本还是售价？差多少？</summary>
+        <div class="ans"><p>是出厂价（ex-works，不含运费和关税），已经含了毛利和增值税。如果只算到「单件成本」，那是成本；成本到售价中间还要加管理费、资金占用、渠道佣金和账期成本。经验上同类产品售价是成本的 1.3~1.8 倍，具体看行业和账期。</p></div>
+      </details>
+      <details>
+        <summary>一定要联网吗？数据和报价会上传吗？</summary>
+        <div class="ans"><p>不用联网，装好就能用，激活也是离线的（填券 + 机器码换 16 位激活码，不联网校验）。模型、BOM、报价全部只存在你本机，不上传。唯一会联网的是「材料行情」和「汇率」，取不到就跳过，不影响算账。</p></div>
+      </details>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer class="foot">
   <div class="wrap foot-in">
-    <div class="foot-brand">产品成本核算工具 <span>v10.5</span></div>
+    <div class="foot-brand">产品成本核算工具 <span>v10.10</span></div>
     <div class="foot-links">
       <a href="#breakdown">拆解</a>
       <a href="#tier">阶梯报价</a>
@@ -487,6 +648,13 @@
       <a href="./web/index.html">网页版</a>
       <a href="./privacy">隐私政策</a>
       <a href="mailto:871756851@qq.com">邮箱</a>
+    </div>
+    <div class="foot-share">
+      <img class="foot-qr" src="./assets/qr-site.png" width="74" height="74" alt="扫码打开产品成本核算工具官网">
+      <div class="foot-share-txt">
+        <b>发给同事扫一下就打开</b>
+        <button type="button" class="foot-copy" id="copy-link">复制链接</button>
+      </div>
     </div>
     <div class="foot-note">页面上的数字都来自软件内置示例，可以直接复算 · 联系 871756851@qq.com</div>
   </div>
