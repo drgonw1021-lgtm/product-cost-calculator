@@ -577,3 +577,38 @@
     ScrollTrigger.refresh();
   });
 })();
+
+/* ------------------------------------------------------------ 页脚复制链接 */
+(function () {
+  var btn = document.getElementById("copy-link");
+  if (!btn) return;
+  var url = "https://product-cost-calculator.pages.dev/";
+  var label = btn.textContent;
+
+  function done(ok) {
+    btn.textContent = ok ? "已复制" : "复制失败，请手动选中地址栏";
+    btn.classList.toggle("done", ok);
+    setTimeout(function () {
+      btn.textContent = label;
+      btn.classList.remove("done");
+    }, 1800);
+  }
+
+  btn.addEventListener("click", function () {
+    // navigator.clipboard 只在安全上下文可用；file:// 或 http 预览会失败，退回 execCommand
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url).then(function () { done(true); }, function () { done(false); });
+      return;
+    }
+    var ta = document.createElement("textarea");
+    ta.value = url;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    done(ok);
+  });
+})();
