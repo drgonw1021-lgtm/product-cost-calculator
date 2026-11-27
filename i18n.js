@@ -219,7 +219,51 @@
     "网页版": "Web version",
     "邮箱": "Email",
     "页面上的数字都来自软件内置示例，可以直接复算 · 联系 871756851@qq.com":
-      "Every number here comes from the app's built-in example and can be recomputed · 871756851@qq.com"
+      "Every number here comes from the app's built-in example and can be recomputed · 871756851@qq.com",
+
+    /* ---- v10.10 首页 FAQ 与页脚分享（_p_seo_faq.py / _p_seo_i18n.py 一起改） ---- */
+    "09 / 常见问题":
+      "09 / FAQ",
+    "买之前最常问的 8 个问题":
+      "The 8 questions people ask before buying",
+    "都是口径问题，答案直接用得上——不是「本产品支持某某功能」这种话。":
+      "All of them are about how the numbers are defined. The answers are usable as-is — not “this product supports X” filler.",
+    "这个工具是给谁用的？":
+      "Who is this tool for?",
+    "给甲方（买产品的一方）内部核价用，不是模具厂/注塑厂对外报价用。输入是 STEP 模型和 BOM，输出是这一件货的出厂价——你拿它判断供应商报价合不合理，以及自己定价时底线在哪。":
+      "It is for the buyer's side doing internal cost checks — not for a mold shop or molder quoting outward. You feed in a STEP model and a BOM, you get the ex-works price of that one item, so you can judge whether a supplier's quote is reasonable and where your own floor is.",
+    "导入 STEP 之后，一件货的钱是怎么拆出来的？":
+      "After importing a STEP, how is the money broken down?",
+    "按 14 行拆：材料费（体积×密度×单价，含损耗，扣水口回用）、机台费（周期÷3600×台时费÷腔数）、人工、模具摊销、外购件、包材、物流、管理费、资金占用、销售佣金、其他一次性费用、损耗、利润、增值税。每一行都能点开看公式和代入的数字，对不上账就能查到是哪一行错了。":
+      "Into 14 lines: material (volume × density × unit price, with scrap and a regrind credit), machine time (cycle ÷ 3600 × hourly rate ÷ cavities), labor, mold amortization, purchased parts, packaging, freight, overhead, capital cost, sales commission, other one-off costs, scrap, profit and VAT. Every line opens up to show the formula and the numbers plugged in, so a mismatch points straight at the line that is wrong.",
+    "材料单价和台时费是软件内置的吗？准不准？":
+      "Are material prices and machine rates built in? How accurate are they?",
+    "内置的是华东地区常见值（ABS 12.8 元/kg、海天 100T 40 元/h 这类），可以直接改。材料行情能联网取生意社公开报价，取不到就保留上次价格并标注日期。真实核价一定要换成你自己采购的实际单价——内置值只是「够用」的起点，不是标准答案。":
+      "The built-in values are common East China figures (ABS at ¥12.8/kg, a Haitian 100T at ¥40/h, and so on) and you can edit them. Material prices can be fetched online from Sunsirs' public quotes; if the fetch fails it keeps the last price and shows the date. For real costing always swap in your own purchase prices — the built-ins are a usable starting point, not gospel.",
+    "模具费怎么处理？要单独算吗？":
+      "How is the mold cost handled? Do I need to calculate it separately?",
+    "不用单独算。模具费在「模具费估算」里按面积、钢材、腔数、热处理估一个总额，再按订单量摊销到单件，进第 4 行。所以同一套模具，订 1 万件和订 10 万件，单件成本不一样——这正是供应商愿意跟你谈量的原因。":
+      "No. The mold estimator produces a total from part area, steel grade, cavity count and heat treatment, and that total is amortized over the order quantity into line 4. So the same mold gives a different unit cost at 10,000 pieces than at 100,000 — which is exactly why suppliers will negotiate on volume.",
+    "阶梯报价的折扣是手工填还是自动算的？":
+      "Are the tier discounts entered by hand or calculated?",
+    "自动算。你只填数量档位（默认 1000 / 5000 / 1 万 / 5 万 / 10 万），材料折扣按「用米总重量」分档、外购件折扣按订单量分档、毛利率按量级自动下浮，三个系数都是算出来的结果，不用你自己拍。改数量或改材料价，整张表立刻重算。":
+      "Calculated. You only enter the quantity tiers (1,000 / 5,000 / 10k / 50k / 100k by default). The material discount follows total tonnage used, the purchased-parts discount follows order quantity, and the margin steps down with volume — all three are outputs, not inputs. Change a quantity or a material price and the whole table recomputes.",
+    "水口回用（回料）能抵扣多少？":
+      "How much does regrind offset?",
+    "按回料比例抵扣材料费。注意两点：一是水口重量按「单件重量 + 水口重 ÷ 腔数」算，不是简单按单件重；二是回料不是全价抵扣，默认按 50% 折算（回料性能下降、要掺新料），这个折算率可以改。":
+      "It credits material cost by the regrind ratio. Two things to watch: the runner weight is divided by cavities and added to the part weight, not just the part weight alone; and regrind is not credited at full price — it defaults to 50% because regrind loses properties and has to be blended with virgin resin. That ratio is editable.",
+    "算出来的是成本还是售价？差多少？":
+      "Is the result a cost or a selling price? How far apart are they?",
+    "是出厂价（ex-works，不含运费和关税），已经含了毛利和增值税。如果只算到「单件成本」，那是成本；成本到售价中间还要加管理费、资金占用、渠道佣金和账期成本。经验上同类产品售价是成本的 1.3~1.8 倍，具体看行业和账期。":
+      "It is an ex-works price, excluding freight and duty, with margin and VAT already in. A “unit cost” figure is just cost; going from cost to price you still add overhead, capital cost, channel commission and the cost of payment terms. In practice prices run 1.3–1.8× cost, depending on the industry and the terms.",
+    "一定要联网吗？数据和报价会上传吗？":
+      "Does it need an internet connection? Is my data uploaded?",
+    "不用联网，装好就能用，激活也是离线的（填券 + 机器码换 16 位激活码，不联网校验）。模型、BOM、报价全部只存在你本机，不上传。唯一会联网的是「材料行情」和「汇率」，取不到就跳过，不影响算账。":
+      "No connection needed — install and run. Activation is offline too: voucher plus machine code gives back a 16-character code, verified locally. Models, BOMs and quotes stay on your machine and are never uploaded. The only network calls are the material price feed and the FX rate, and both are skipped quietly if unavailable.",
+    "发给同事扫一下就打开":
+      "Scan to open on a phone",
+    "复制链接":
+      "Copy link",
   };
 
   /* --------------------------------------------------------------- 属性值 */
