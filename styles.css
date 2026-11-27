@@ -1547,6 +1547,120 @@ a.contact-v:hover {
 }
 
 /* -------------------------------------------------------------------------- */
+/* 常见问题（落地页 FAQ，同时是 FAQPage 结构化数据的人类可读副本）               */
+/* -------------------------------------------------------------------------- */
+
+.faq {
+  margin: 10px 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.faq details {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq summary {
+  position: relative;
+  padding: 17px 44px 17px 0;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--ink-2);
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary::before {
+  content: "+";
+  position: absolute;
+  right: 10px;
+  top: 14px;
+  font-family: var(--f-num);
+  font-size: 18px;
+  line-height: 1;
+  color: var(--accent-blue);
+}
+
+.faq details[open] summary::before {
+  content: "\2212";
+}
+
+.faq .ans {
+  padding: 0 44px 20px 0;
+  font-size: var(--t-sm);
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.faq .ans p {
+  margin: 0 0 10px;
+}
+
+.faq .ans p:last-child {
+  margin-bottom: 0;
+}
+
+.faq .ans a {
+  color: var(--accent-blue);
+}
+
+/* ---- 页脚分享（二维码 + 复制链接） ---- */
+
+.foot-share {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.foot-qr {
+  width: 74px;
+  height: 74px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.foot-share-txt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.foot-share-txt b {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.foot-copy {
+  padding: 5px 13px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent-blue);
+  font-family: inherit;
+  font-size: var(--t-xs);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.foot-copy:hover {
+  border-color: var(--accent-blue);
+}
+
+.foot-copy.done {
+  border-color: var(--accent-blue);
+  color: var(--ink);
+}
+
+/* -------------------------------------------------------------------------- */
 /* 键盘可见焦点                                                                */
 /* -------------------------------------------------------------------------- */
 
@@ -1796,6 +1910,10 @@ label:focus-visible {
   }
 
   .foot-note {
+    margin-left: 0;
+  }
+
+  .foot-share {
     margin-left: 0;
   }
 }
